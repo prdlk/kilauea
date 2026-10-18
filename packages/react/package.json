@@ -1,6 +1,6 @@
 {
   "name": "@kilauea/react",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "React bindings for kilauea: a drop-in visual Pele editor component and hooks, rendered through pele.",
   "type": "module",
   "main": "./src/index.tsx",
