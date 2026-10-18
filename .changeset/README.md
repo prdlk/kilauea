@@ -1,5 +1,7 @@
 # .changeset
 
+This file is named README.md because changesets treats every other `*.md` in this directory as a changeset.
+
 **Parent context:** `../AGENTS.md`
 **Generated:** 2026-10-17 · **Updated:** 2026-10-17
 

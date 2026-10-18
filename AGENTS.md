@@ -25,7 +25,7 @@ Kilauea is a WYSIWYG editor for Pele diagrams. [pele](https://github.com/obsidia
 | `apps/` | Private apps: React playground, vanilla-TS playground, marketing site (see `apps/AGENTS.md`) |
 | `scripts/` | `check-agent.mjs`, the lockfile-checked test gate run by `pnpm check:agent` (see `scripts/AGENTS.md`) |
 | `.github/` | CI and changesets release workflows (see `.github/AGENTS.md`) |
-| `.changeset/` | Changesets config; all five packages version together (see `.changeset/AGENTS.md`) |
+| `.changeset/` | Changesets config; all five packages version together (see `.changeset/README.md`) |
 | `assets/` | README media (`hero-loop.webp`) (see `assets/AGENTS.md`) |
 
 ## For AI Agents
