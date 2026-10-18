@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ComponentType, type ReactNode } from 'react'
+import { render as peleRender } from 'pele'
 import { PeleCanvas, usePeleEditor } from '@kilauea/react'
 import { track } from './analytics'
 import {
@@ -12,13 +13,11 @@ import {
   HERO_SUBHEAD,
 } from './hero-diagram'
 import {
-  ACCENT,
   CodeMirrorPane,
   Logo,
   PRESETS,
   SkinToggle,
   TYPE_LABELS,
-  canvasStyle,
   playgroundUrl,
   useCanvasControlTracking,
   type Skin,
@@ -30,7 +29,7 @@ import {
   CopyIcon,
   DiffIcon,
   GithubIcon,
-  MaximizeIcon,
+  PlayIcon,
   PointerIcon,
   ResetIcon,
   SyncIcon,
@@ -80,9 +79,10 @@ const stroke = { stroke: 'currentColor', strokeWidth: 2.2, strokeLinecap: 'round
  * the navbar's "Leave a star!" hint. Each one lives in its own pane and
  * points at that pane's content rather than at the chrome above it:
  *
- * - source sits in the code pane's flow directly under the last line of code, so
- *   its arrow reaches up into the source no matter how tall the preset is;
- * - preview pins to the canvas floor, clear of the zoom controls.
+ * - source sits in the code block's flow directly under the last line of code,
+ *   so its arrow reaches up into the source no matter how tall the preset is;
+ * - preview sits in the preview block's flow under the diagram, so it can never
+ *   paint over it.
  *
  * Each arrow is drawn with its tip on the viewBox's horizontal centre (x=18 of
  * 36) and the tail curving out towards its label, so centring the arrow in the
@@ -94,19 +94,19 @@ const stroke = { stroke: 'currentColor', strokeWidth: 2.2, strokeLinecap: 'round
 function PlaygroundCallout({ target }: { target: 'source' | 'preview' }) {
   if (target === 'source') {
     return (
-      <div className="pg-callout pg-callout-source" aria-hidden>
-        <svg className="pg-callout-arrow" viewBox="0 0 36 48" fill="none">
+      <div className="spin-callout spin-callout-source" aria-hidden>
+        <svg className="spin-callout-arrow" viewBox="0 0 36 48" fill="none">
           <path d="M31 41 C26 44, 15 40, 18 10" {...stroke} />
           <path d="M18 10 L13.3 16.5 M18 10 L21.3 17.3" {...stroke} />
         </svg>
-        <span className="pg-callout-text">Edit here</span>
+        <span className="spin-callout-text">Edit here</span>
       </div>
     )
   }
   return (
-    <div className="pg-callout pg-callout-preview" aria-hidden>
-      <span className="pg-callout-text">or edit here</span>
-      <svg className="pg-callout-arrow" viewBox="0 0 36 48" fill="none">
+    <div className="spin-callout spin-callout-preview" aria-hidden>
+      <span className="spin-callout-text">or edit here</span>
+      <svg className="spin-callout-arrow" viewBox="0 0 36 48" fill="none">
         <path d="M5 41 C10 44, 21 40, 18 10" {...stroke} />
         <path d="M18 10 L14.7 17.3 M18 10 L22.7 16.5" {...stroke} />
       </svg>
@@ -151,11 +151,21 @@ export default function App() {
 
   useCanvasControlTracking()
 
-  // Expanding hands off to the dedicated /playground page, carrying the
-  // current source in the URL hash so nothing is lost in the jump.
-  const goToPlayground = () => {
-    track('playground_expanded')
-    window.location.href = playgroundUrl(editor.code)
+  // pele.run-style status line under the preview: pele's render time for the
+  // current source, or the render error. The canvas renders internally, so the
+  // time is measured with a second, identical render of the same source.
+  const [renderStatus, setRenderStatus] = useState<{ ms: number | null; error: string | null }>({
+    ms: null,
+    error: null,
+  })
+  const measureRender = (ok: boolean, error?: string) => {
+    if (!ok) {
+      setRenderStatus({ ms: null, error: error ?? 'Render failed' })
+      return
+    }
+    const t0 = performance.now()
+    peleRender(editor.code)
+    setRenderStatus({ ms: performance.now() - t0, error: null })
   }
   const [copied, setCopied] = useState(false)
   const [installCopied, setInstallCopied] = useState(false)
@@ -313,7 +323,7 @@ export default function App() {
           <div className="hero-masthead" aria-hidden>
             <PeleCanvas
               editor={heroEditor}
-              accentColor={ACCENT}
+              // no accentColor: selection follows the masthead's --pele-accent
               className="site-demo-canvas"
               // The binding defaults the host to min-height 240, which fights the
               // absolute inset positioning: between 761 and 999px the band is
@@ -367,88 +377,95 @@ export default function App() {
               <h2 className="section-title">Take it for a spin.</h2>
               <p className="section-lead">The real editor, running in your browser. Nothing to install.</p>
             </div>
-            <div className="pg-frame">
-              <div className="pg-toolbar">
-                <div className="tabs pg-presets" role="tablist" aria-label="Diagram type">
+            <div className="spin">
+              <div className="spin-toolbar">
+                <div className="segmented spin-presets" role="tablist" aria-label="Diagram type">
                   {Object.keys(TYPE_LABELS).map((k) => (
-                    <button
-                      key={k}
-                      type="button"
-                      role="tab"
-                      className="tab"
-                      aria-selected={type === k}
-                      onClick={() => switchType(k)}
-                    >
+                    <button key={k} type="button" role="tab" aria-selected={type === k} onClick={() => switchType(k)}>
                       {TYPE_LABELS[k]}
                     </button>
                   ))}
                 </div>
-                <div className="pg-controls">
-                  <SkinToggle skin={skin} onChange={setSkin} />
-                  <button
-                    type="button"
-                    className="btn btn-outline btn-sm pg-expand-btn"
-                    onClick={goToPlayground}
-                    aria-label="Open the full playground page with the current diagram"
-                    title="Open the full playground"
-                  >
-                    <MaximizeIcon />
-                    Expand
-                  </button>
-                </div>
+                <SkinToggle skin={skin} onChange={setSkin} className="segmented" />
               </div>
 
-              <div className="pg-grid pg-grid-inline" data-skin={skin}>
-                <div
-                  className={
-                    skin === 'dark'
-                      ? 'pg-pane pg-code-pane pg-inline-pane demo-pane demo-pane-dark'
-                      : 'pg-pane pg-code-pane pg-inline-pane demo-pane'
-                  }
-                >
-                  <div className="pg-pane-head">
-                    <span className="pg-filename">{type}.mmd</span>
-                    <div className="pg-pane-actions">
-                      <button type="button" className="btn btn-ghost btn-xs" onClick={copySource}>
+              <div className="spin-panel">
+                <div className="spin-block spin-source demo-pane demo-pane-dark">
+                  <div className="spin-label">
+                    <span>Pele</span>
+                    <span className="spin-actions">
+                      <button
+                        type="button"
+                        className="spin-icon-btn"
+                        onClick={copySource}
+                        aria-label="Copy code"
+                        title="Copy code"
+                        data-copied={copied || undefined}
+                      >
                         {copied ? <CheckIcon /> : <CopyIcon />}
-                        {copied ? 'Copied' : 'Copy'}
                       </button>
-                      <button type="button" className="btn btn-ghost btn-xs" onClick={reset}>
+                      <button type="button" className="spin-icon-btn" onClick={reset} aria-label="Reset" title="Reset">
                         <ResetIcon />
-                        Reset
                       </button>
-                    </div>
+                    </span>
                   </div>
                   <CodeMirrorPane editor={editor} />
                   <PlaygroundCallout target="source" />
-                  <div className="pg-callout-filler" />
                 </div>
 
-                <div className="pg-pane">
-                  <div className="pg-pane-head">
-                    <span className="pg-pane-title">Preview</span>
-                    <span className="pg-hint pg-hint-long">
-                      click to select · double-click to edit · alt + drag to connect · pinch to zoom
+                <div
+                  className={skin === 'light' ? 'spin-block spin-preview spin-light' : 'spin-block spin-preview'}
+                  data-error={renderStatus.error ? '' : undefined}
+                >
+                  <div className="spin-label">
+                    <span>Kilauea</span>
+                    <span className="spin-actions">
+                      {/* Hands off to /playground with the current source in the
+                          URL hash, so nothing is lost in the jump. */}
+                      <a
+                        className="spin-link"
+                        href={playgroundUrl(editor.code)}
+                        onClick={() => track('playground_expanded')}
+                      >
+                        <PlayIcon />
+                        <span>
+                          <span className="spin-link-prefix">Open in </span>Playground
+                        </span>
+                      </a>
                     </span>
-                    <span className="pg-hint pg-hint-short">tap to select · double-tap to edit · pinch to zoom</span>
                   </div>
-                  <div className="pg-canvas-wrap">
+                  <div className="spin-figure">
+                    {/* No pan/zoom: pele's SVG at its natural size, centred, the
+                        way pele.run shows it. Colours come from the --pele-*
+                        variables on .spin-figure. */}
                     <PeleCanvas
                       editor={editor}
-                      accentColor={ACCENT}
-                      panZoom
-                      className="site-demo-canvas"
-                      style={canvasStyle(skin)}
+                      className="spin-canvas"
+                      onReady={(view) => {
+                        measureRender(true)
+                        view.on('render', ({ ok, error }) => measureRender(ok, error))
+                      }}
                     />
-                    <PlaygroundCallout target="preview" />
+                  </div>
+                  <PlaygroundCallout target="preview" />
+                  <div className="spin-status">
+                    {renderStatus.error ? (
+                      <span className="spin-status-error">{renderStatus.error}</span>
+                    ) : (
+                      <span>
+                        <span className="spin-hint-long">click to select · double-click to edit · alt + drag to connect</span>
+                        <span className="spin-hint-short">tap to select · double-tap to edit</span>
+                      </span>
+                    )}
+                    {renderStatus.ms != null && (
+                      <span className="spin-status-time">
+                        {renderStatus.ms < 1 ? renderStatus.ms.toFixed(2) : renderStatus.ms.toFixed(1)} ms
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
-            <p className="section-note">
-              Tip: click any box in the preview. The popover on the diagram edits it. Watch the source pane rewrite
-              itself.
-            </p>
           </div>
         </section>
 
@@ -540,13 +557,13 @@ export default function App() {
                 {'\n'}editor.<span className="syn-id">undo</span>()
               </CodeCard>
               <CodeCard title="Theming · CSS variables">
-                <span className="syn-cmt"># chrome follows --mw-* tokens; diagrams follow --pele-*</span>
+                <span className="syn-cmt"># chrome (popover, zoom, selection) follows --pele-*; --mw-* overrides it</span>
                 {'\n'}.mw-canvas {'{'}
-                {'\n'}  <span className="syn-str">--mw-accent</span>: <span className="syn-id">#2BB39A</span>;
-                {'\n'}  <span className="syn-str">--mw-chrome-bg</span>: <span className="syn-id">#09090B</span>;
-                {'\n'}  <span className="syn-str">--mw-chrome-fg</span>: <span className="syn-id">#FAFAFA</span>;
-                {'\n'}  <span className="syn-str">--pele-surface</span>: <span className="syn-id">#18181B</span>;
-                {'\n'}  <span className="syn-str">--pele-border</span>: <span className="syn-id">#3F3F46</span>;
+                {'\n'}  <span className="syn-str">--pele-bg</span>: <span className="syn-id">#100f0f</span>;
+                {'\n'}  <span className="syn-str">--pele-fg</span>: <span className="syn-id">#cecdc3</span>;
+                {'\n'}  <span className="syn-str">--pele-surface</span>: <span className="syn-id">#1c1b1a</span>;
+                {'\n'}  <span className="syn-str">--pele-border</span>: <span className="syn-id">#403e3c</span>;
+                {'\n'}  <span className="syn-str">--pele-accent</span>: <span className="syn-id">#4385be</span>;
                 {'\n'}{'}'}
                 {'\n'}
                 <span className="syn-cmt"># or per-instance: accentColor · renderOptions={'{ fontSize: 16 }'}</span>

@@ -28,8 +28,8 @@ const highlightField = StateField.define<DecorationSet>({
 
 const baseTheme = EditorView.baseTheme({
   '.mw-cm-entity': {
-    backgroundColor: 'color-mix(in srgb, var(--mw-accent, #6366f1) 28%, transparent)',
-    outline: '1px solid color-mix(in srgb, var(--mw-accent, #6366f1) 55%, transparent)',
+    backgroundColor: 'color-mix(in srgb, var(--mw-accent, var(--pele-accent, #205ea6)) 28%, transparent)',
+    outline: '1px solid color-mix(in srgb, var(--mw-accent, var(--pele-accent, #205ea6)) 55%, transparent)',
     borderRadius: '3px',
   },
 })

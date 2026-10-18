@@ -33,8 +33,8 @@ import {
 } from './popover'
 import { ICONS } from './icons'
 
-/** default swatches offered in the color panels (works on light and dark themes) */
-export const COLOR_PALETTE = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#6366f1', '#d946ef', '#64748b']
+/** default swatches offered in the color panels: Flexoki's 400 accents, pele.run's palette (works on light and dark themes) */
+export const COLOR_PALETTE = ['#d14d41', '#da702c', '#d0a215', '#879a39', '#3aa99f', '#4385be', '#8b7ec8', '#ce5d97']
 
 // ---------- edge popover previews + read-back helpers ----------
 
@@ -200,6 +200,47 @@ type ViewEventMap = {
 }
 
 const BASE_CSS = `
+/* Theme. The diagram defaults to pele.run's light Flexoki palette without
+   shadowing a theme the host sets: each --pele-* value (inherited from an
+   ancestor or set inline on the container) is captured on .mw-canvas under a
+   --mw-t-* alias with the Flexoki fallback, then re-declared on the svg host
+   below it. Declaring --pele-* on .mw-canvas directly would override ancestors.
+   Variables set on svg.pele itself still win. */
+.mw-canvas {
+  --mw-t-bg: var(--pele-bg, #fffcf0);
+  --mw-t-fg: var(--pele-fg, #100f0f);
+  --mw-t-muted: var(--pele-muted, #6f6e69);
+  --mw-t-line: var(--pele-line, #100f0f);
+  --mw-t-surface: var(--pele-surface, #f2f0e5);
+  --mw-t-surface-alt: var(--pele-surface-alt, #e6e4d9);
+  --mw-t-border: var(--pele-border, #cecdc3);
+  --mw-t-accent: var(--pele-accent, #205ea6);
+  --mw-t-critical: var(--pele-critical, #af3029);
+}
+.mw-canvas .mw-svg-host {
+  --pele-bg: var(--mw-t-bg);
+  --pele-fg: var(--mw-t-fg);
+  --pele-muted: var(--mw-t-muted);
+  --pele-line: var(--mw-t-line);
+  --pele-surface: var(--mw-t-surface);
+  --pele-surface-alt: var(--mw-t-surface-alt);
+  --pele-border: var(--mw-t-border);
+  --pele-accent: var(--mw-t-accent);
+  --pele-critical: var(--mw-t-critical);
+}
+/* Chrome tokens: the public override (--mw-accent, --mw-chrome-*) first, then
+   the diagram theme above — so popovers, zoom buttons and highlights match
+   whatever theme the diagram is drawn in. The --mw-c-* names are internal. */
+.mw-canvas {
+  --mw-c-accent: var(--mw-accent, var(--mw-t-accent));
+  --mw-c-bg: var(--mw-chrome-bg, var(--mw-t-bg));
+  --mw-c-border: var(--mw-chrome-border, var(--mw-t-border));
+  --mw-c-fg: var(--mw-chrome-fg, var(--mw-t-fg));
+  --mw-c-dim: var(--mw-chrome-dim, var(--mw-t-muted));
+  --mw-c-hover: var(--mw-chrome-hover, var(--mw-t-surface));
+  --mw-c-danger: var(--mw-t-critical);
+  --mw-c-font: -apple-system, BlinkMacSystemFont, "Inter Variable", Inter, "Segoe UI", Helvetica, Arial, sans-serif;
+}
 .mw-canvas { position: relative; overflow: auto; outline: none; }
 .mw-canvas .mw-svg-host { user-select: none; -webkit-user-select: none; }
 .mw-canvas .mw-svg-host { min-height: 100%; display: flex; align-items: flex-start; justify-content: center; padding: 16px; box-sizing: border-box; }
@@ -214,33 +255,33 @@ const BASE_CSS = `
 .mw-canvas.mw-panzoom.mw-panning .mw-svg-host { cursor: grabbing; }
 .mw-canvas.mw-panzoom [data-mw-entity] { cursor: pointer; }
 .mw-zoom-controls { position: absolute; right: 10px; bottom: 10px; display: flex; gap: 4px; z-index: 6; }
-.mw-zoom-btn { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; padding: 0; border-radius: 7px; border: 1px solid var(--mw-chrome-border, rgba(128,128,128,.35)); background: var(--mw-chrome-bg, rgba(24,24,27,.92)); color: var(--mw-chrome-fg, #e4e4e7); cursor: pointer; }
-.mw-zoom-btn:hover { background: var(--mw-chrome-hover, rgba(63,63,70,.9)); }
+.mw-zoom-btn { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; padding: 0; border-radius: 6px; border: 1px solid var(--mw-c-border); background: var(--mw-c-bg); color: var(--mw-c-fg); cursor: pointer; }
+.mw-zoom-btn:hover { background: var(--mw-c-hover); }
 .mw-zoom-btn svg { width: 14px; height: 14px; }
 .mw-canvas [data-mw-entity] { cursor: pointer; touch-action: manipulation; }
 .mw-canvas.mw-readonly [data-mw-entity] { cursor: default; }
 .mw-canvas.mw-tool-connect [data-mw-entity^="node:"] { cursor: crosshair; }
-.mw-canvas [data-mw-entity]:hover { filter: drop-shadow(0 0 3px var(--mw-accent, #6366f1)); }
-.mw-canvas .mw-selected { filter: drop-shadow(0 0 2px var(--mw-accent, #6366f1)) drop-shadow(0 0 5px var(--mw-accent, #6366f1)) !important; }
-.mw-canvas .mw-ghost-edge { stroke: var(--mw-accent, #6366f1); stroke-width: 2; stroke-dasharray: 6 4; fill: none; pointer-events: none; }
-.mw-canvas .mw-connect-source { filter: drop-shadow(0 0 5px var(--mw-accent, #6366f1)) !important; }
+.mw-canvas [data-mw-entity]:hover { filter: drop-shadow(0 0 3px var(--mw-c-accent)); }
+.mw-canvas .mw-selected { filter: drop-shadow(0 0 2px var(--mw-c-accent)) drop-shadow(0 0 5px var(--mw-c-accent)) !important; }
+.mw-canvas .mw-ghost-edge { stroke: var(--mw-c-accent); stroke-width: 2; stroke-dasharray: 6 4; fill: none; pointer-events: none; }
+.mw-canvas .mw-connect-source { filter: drop-shadow(0 0 5px var(--mw-c-accent)) !important; }
 .mw-inplace-editor {
   position: absolute; z-index: 10; white-space: pre; outline: none; cursor: text; min-width: 8px;
   padding: 1px 3px; margin: -1px -3px; border-radius: 3px;
-  caret-color: var(--mw-accent, #6366f1);
-  box-shadow: 0 1.5px 0 0 var(--mw-accent, #6366f1);
-  background: color-mix(in srgb, var(--mw-editor-bg, #fff) 35%, transparent);
+  caret-color: var(--mw-c-accent);
+  box-shadow: 0 1.5px 0 0 var(--mw-c-accent);
+  background: color-mix(in srgb, var(--mw-editor-bg, var(--mw-t-bg)) 35%, transparent);
 }
 .mw-error-badge {
   position: absolute; top: 8px; right: 8px; z-index: 5;
-  font: 500 11px/1.4 ui-sans-serif, system-ui, sans-serif;
-  background: #dc2626; color: #fff; border-radius: 6px; padding: 3px 8px;
+  font: 500 11px/1.4 var(--mw-c-font);
+  background: var(--pele-error, var(--mw-c-danger)); color: #fffcf0; border-radius: 6px; padding: 3px 8px;
   max-width: 60%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .mw-drop-indicator {
   position: absolute; left: 6%; right: 6%; height: 2.5px; z-index: 14;
-  background: var(--mw-accent, #6366f1); border-radius: 2px; pointer-events: none;
-  box-shadow: 0 0 6px var(--mw-accent, #6366f1);
+  background: var(--mw-c-accent); border-radius: 2px; pointer-events: none;
+  box-shadow: 0 0 6px var(--mw-c-accent);
 }
 @media (pointer: coarse) {
   .mw-zoom-controls { gap: 6px; right: 12px; bottom: 12px; }

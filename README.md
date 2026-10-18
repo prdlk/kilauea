@@ -56,17 +56,25 @@ pnpm install && pnpm dev   # playground at http://localhost:5173
 
 ## Theming
 
-Rendering is themed by CSS variables, set on the canvas container or any ancestor. Colors apply live with no re-render:
+Rendering is themed by CSS variables, set on the canvas container or any ancestor. Colors apply live with no re-render. [pele.run's](https://pele.run/theming) Flexoki theme, for example:
 
 ```css
 #canvas {
-  --pele-bg: #0f1115;
-  --pele-fg: #e6e6e6;
-  --pele-accent: #6366f1;
+  --pele-bg: #100f0f;
+  --pele-fg: #cecdc3;
+  --pele-muted: #878580;
+  --pele-line: #cecdc3;
+  --pele-surface: #1c1b1a;
+  --pele-surface-alt: #282726;
+  --pele-border: #403e3c;
+  --pele-accent: #4385be;
+  --pele-critical: #d14d41;
 }
 ```
 
-Available variables: `--pele-bg`, `--pele-fg`, `--pele-muted`, `--pele-line`, `--pele-surface`, `--pele-surface-alt`, `--pele-border`, `--pele-accent`, `--pele-critical`, `--pele-error`, `--pele-font`, `--pele-font-mono`, `--pele-title-weight`, `--pele-heading-weight`, `--pele-bold-weight`, `--pele-radius`, and series colors `--pele-series-1` … `--pele-series-8`. Defaults are a light palette. Colors set in the source (`style`, `classDef`, `linkStyle`) are kept.
+Available variables: `--pele-bg`, `--pele-fg`, `--pele-muted`, `--pele-line`, `--pele-surface`, `--pele-surface-alt`, `--pele-border`, `--pele-accent`, `--pele-critical`, `--pele-error`, `--pele-font`, `--pele-font-mono`, `--pele-title-weight`, `--pele-heading-weight`, `--pele-bold-weight`, `--pele-radius`, and series colors `--pele-series-1` … `--pele-series-8`. Unset colors default to pele.run's light Flexoki palette. Colors set in the source (`style`, `classDef`, `linkStyle`) are kept.
+
+The editing chrome (popovers, zoom buttons, selection glow, in-place editor) follows the same `--pele-*` variables, falling back to pele.run's light Flexoki palette. Override it with `--mw-accent` (or the `accentColor` option) and `--mw-chrome-bg`, `--mw-chrome-border`, `--mw-chrome-fg`, `--mw-chrome-dim`, `--mw-chrome-hover`. The color swatches offered in popovers are Flexoki's accents.
 
 Fonts are measured when the diagram renders: after changing `--pele-font`, call `view.refresh()`. Other pele options (`fontSize`, `padding`, `maxWidth`, `links`, `icons`, …) go in `renderOptions` / `view.setRenderOptions(...)`. Pele's `%%{init}%%` themes and `theme`/`securityLevel` configs do not apply.
 

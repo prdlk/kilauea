@@ -12,7 +12,7 @@ React source for the marketing site. `main.tsx` picks the root by `location.path
 | `main.tsx` | Route selection, StrictMode render, imports `site.css` and `./analytics` |
 | `App.tsx` | Landing page (about 1050 lines): `REPO`/`INSTALL_CMD`, `initialHeroSource()`, `PlaygroundCallout`, `CodeCard` and the inline demo |
 | `PlaygroundPage.tsx` | `/playground`: the address-bar `#code=` hash is the document (debounced replaceState); preset menu, light/dark skin, copy link |
-| `playground-shared.tsx` | `PRESETS`, `TYPE_LABELS`, `mono`, `ACCENT`, `canvasStyle(skin)`, `SkinToggle`, `codeFromHash`, `encodeCode`, `CodeMirrorPane`, `Logo`, `useCanvasControlTracking` |
+| `playground-shared.tsx` | `PRESETS`, `TYPE_LABELS`, `canvasStyle(skin)` (pele.run light/dark theme + pane dot grid), `SkinToggle`, `codeFromHash`, `encodeCode`, `CodeMirrorPane`, `Logo`, `useCanvasControlTracking` |
 | `icons.tsx` | Inlined Lucide icons (no icon dependency); sized by the surrounding CSS |
 | `HeroLoopPage.tsx` | `/hero-loop`: deterministic RAF demo (`CYCLE_MS` 10500) firing editor ops with a painted cursor; dev capture target |
 | `hero-diagram.ts` | Hero strings (`HERO_HEADLINE`, `HERO_SUBHEAD`, ...) and `heroBootHtml()` static SVG stand-in, shared by `App.tsx` and `vite.config.ts` |
@@ -22,7 +22,7 @@ React source for the marketing site. `main.tsx` picks the root by `location.path
 ## For AI Agents
 
 ### Working In This Directory
-- The site is dark-only and styled through the tokens and classes in `site.css`; don't add inline hex colours. The playground panes follow the preview-theme switch via `data-skin` on `.pg-grid` (`--pane-*` vars). Diagram colours are `--pele-*` vars (`themeVars()` behind `canvasStyle()` in `playground-shared.tsx`, `.hero-masthead` in `site.css`). The first-paint hero in index.html is rendered by pele at build time (`heroBootHtml()` via the vite plugin).
+- The site chrome is dark-only and styled through the tokens and classes in `site.css`; don't add inline hex colours. Every diagram surface uses pele.run's theme (Flexoki): the hero (`.hero-masthead`), the landing demo (`.spin*`, after pele.run's "How it works" panel: `--spin-*` vars, no pan/zoom, render-time status line) and `/playground` (`themeVars()` behind `canvasStyle()`; panes follow `data-skin` on `.pg-grid` via `--pane-*`). Don't pass `accentColor` or set `--mw-chrome-*`: the canvas chrome follows `--pele-*` by itself. The first-paint hero in index.html is rendered by pele at build time (`heroBootHtml()` via the vite plugin).
 - `PlaygroundPage` and `App.tsx` share the code in `playground-shared.tsx`; `PRESETS` here is separate from the playground apps' `SAMPLES`.
 - Use `track()` for analytics, never call posthog directly.
 

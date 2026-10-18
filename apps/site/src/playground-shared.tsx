@@ -60,46 +60,47 @@ export const TYPE_LABELS: Record<string, string> = {
   gantt: 'Gantt',
 }
 
-export const mono = "'Geist Mono', ui-monospace, monospace"
-
-/** Selection/connect highlight on every site canvas; matches `--accent` in site.css. */
-export const ACCENT = '#2BB39A'
-
 export type Skin = 'light' | 'dark'
 
 /**
- * One pele palette per preview theme, both on shadcn's zinc scale: outlined
- * nodes, quiet connectors, clusters as a half-step darker tier. pele reads
+ * pele.run's own theme (Flexoki), light and dark, with its fonts. pele reads
  * these custom properties live, so they go on the canvas `style` with no
- * re-render.
+ * re-render; the canvas chrome (zoom buttons, edit popover, selection glow)
+ * follows them too.
  */
 function themeVars(mode: Skin): CSSProperties {
   const vars: Record<string, string> =
     mode === 'dark'
       ? {
-          '--pele-bg': '#09090B',
-          '--pele-fg': '#FAFAFA',
-          '--pele-muted': '#A1A1AA',
-          '--pele-line': '#71717A',
-          '--pele-surface': '#18181B',
-          '--pele-surface-alt': '#111113',
-          '--pele-border': '#3F3F46',
-          '--pele-accent': ACCENT,
+          '--pele-bg': '#100f0f',
+          '--pele-fg': '#cecdc3',
+          '--pele-muted': '#878580',
+          '--pele-line': '#cecdc3',
+          '--pele-surface': '#1c1b1a',
+          '--pele-surface-alt': '#282726',
+          '--pele-border': '#403e3c',
+          '--pele-accent': '#4385be',
+          '--pele-critical': '#d14d41',
         }
       : {
-          '--pele-bg': '#FFFFFF',
-          '--pele-fg': '#09090B',
-          '--pele-muted': '#71717A',
-          '--pele-line': '#A1A1AA',
-          '--pele-surface': '#F4F4F5',
-          '--pele-surface-alt': '#FAFAFA',
-          '--pele-border': '#D4D4D8',
-          '--pele-accent': ACCENT,
+          '--pele-bg': '#fffcf0',
+          '--pele-fg': '#100f0f',
+          '--pele-muted': '#6f6e69',
+          '--pele-line': '#100f0f',
+          '--pele-surface': '#f2f0e5',
+          '--pele-surface-alt': '#e6e4d9',
+          '--pele-border': '#cecdc3',
+          '--pele-accent': '#205ea6',
+          '--pele-critical': '#af3029',
         }
-  vars['--pele-font'] = "'Geist', ui-sans-serif, system-ui, sans-serif"
-  vars['--pele-font-mono'] = mono
+  vars['--pele-font'] = PELE_RUN_SANS
+  vars['--pele-font-mono'] = PELE_RUN_MONO
   return vars as CSSProperties
 }
+
+const PELE_RUN_SANS = "-apple-system, BlinkMacSystemFont, 'Inter Variable', Inter, 'Segoe UI', Helvetica, Arial, sans-serif"
+const PELE_RUN_MONO =
+  "ui-monospace, SFMono-Regular, 'Cascadia Code', 'IBM Plex Mono', 'Roboto Mono', 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Monaco, Consolas, monospace"
 
 /**
  * Canvas style for a playground preview pane: the diagram palette plus the
@@ -115,14 +116,26 @@ export function canvasStyle(mode: Skin): CSSProperties {
   }
 }
 
-/** Preview-theme switch for both playgrounds: a two-item segmented control. */
-export function SkinToggle({ skin, onChange }: { skin: Skin; onChange: (skin: Skin) => void }) {
+/**
+ * Preview-theme switch for both playgrounds: a two-item button group. The
+ * container class picks the look (`tabs` on /playground, `segmented` in the
+ * landing demo); both style their `> button` children.
+ */
+export function SkinToggle({
+  skin,
+  onChange,
+  className = 'tabs',
+}: {
+  skin: Skin
+  onChange: (skin: Skin) => void
+  className?: string
+}) {
   return (
-    <div className="tabs" role="group" aria-label="Preview theme">
-      <button type="button" className="tab" aria-pressed={skin === 'light'} onClick={() => onChange('light')}>
+    <div className={className} role="group" aria-label="Preview theme">
+      <button type="button" aria-pressed={skin === 'light'} onClick={() => onChange('light')}>
         Light
       </button>
-      <button type="button" className="tab" aria-pressed={skin === 'dark'} onClick={() => onChange('dark')}>
+      <button type="button" aria-pressed={skin === 'dark'} onClick={() => onChange('dark')}>
         Dark
       </button>
     </div>

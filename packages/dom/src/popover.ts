@@ -186,54 +186,57 @@ export class Popover {
   }
 }
 
+/* Colours come from the --mw-c-* tokens resolved on .mw-canvas (see BASE_CSS
+   in view.ts): public overrides, then the diagram's --pele-* theme, then
+   pele.run's light Flexoki palette. */
 export const POPOVER_CSS = `
 .mw-popover.mw-popover-below { transform: translate(-50%, 0); }
 .mw-popover {
   position: absolute; z-index: 20; transform: translate(-50%, -100%);
   display: flex; align-items: center; gap: 2px; padding: 4px;
-  background: var(--mw-chrome-bg, #0a0a0a); border: 1px solid var(--mw-chrome-border, #333);
-  border-radius: 8px; box-shadow: 0 0 0 1px rgba(0,0,0,0.4), 0 8px 30px rgba(0,0,0,0.45);
-  font: 13px/1 -apple-system, "Geist", "Inter", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  background: var(--mw-c-bg); border: 1px solid var(--mw-c-border);
+  border-radius: 8px; box-shadow: 0 8px 24px rgba(16, 15, 15, 0.18);
+  font: 13px/1 var(--mw-c-font);
 }
 .mw-popover-btn {
   border: none; background: none; border-radius: 6px; cursor: pointer;
   height: 28px; min-width: 28px; padding: 0 6px;
   display: inline-flex; align-items: center; justify-content: center; gap: 3px;
-  color: var(--mw-chrome-dim, #a1a1a1); line-height: 1;
+  color: var(--mw-c-dim); line-height: 1;
   transition: background 0.12s, color 0.12s;
 }
 .mw-popover-btn svg { width: 15px; height: 15px; flex: none; }
 .mw-popover-btn.text { font-size: 11.5px; font-weight: 500; letter-spacing: 0.01em; }
 .mw-popover-btn .mw-caret { display: inline-flex; opacity: 0.55; margin-left: -1px; }
 .mw-popover-btn .mw-caret svg { width: 9px; height: 9px; }
-.mw-popover-btn:hover { background: var(--mw-chrome-hover, #1f1f1f); color: var(--mw-chrome-fg, #ededed); }
-.mw-popover-btn.active { background: var(--mw-accent, #0070f3); color: #fff; }
-.mw-popover-btn.danger:hover { background: rgba(255, 68, 68, 0.12); color: #ff4444; }
+.mw-popover-btn:hover { background: var(--mw-c-hover); color: var(--mw-c-fg); }
+.mw-popover-btn.active { background: var(--mw-c-accent); color: #fffcf0; }
+.mw-popover-btn.danger:hover { background: color-mix(in srgb, var(--mw-c-danger) 14%, transparent); color: var(--mw-c-danger); }
 .mw-popover-panel {
   position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
-  background: var(--mw-chrome-bg, #0a0a0a); border: 1px solid var(--mw-chrome-border, #333);
-  border-radius: 8px; box-shadow: 0 0 0 1px rgba(0,0,0,0.4), 0 8px 30px rgba(0,0,0,0.45);
+  background: var(--mw-c-bg); border: 1px solid var(--mw-c-border);
+  border-radius: 8px; box-shadow: 0 8px 24px rgba(16, 15, 15, 0.18);
   padding: 4px; min-width: 0;
 }
 .mw-popover-panel.below { bottom: auto; top: calc(100% + 6px); }
 .mw-popover-panel-title {
   font-size: 9.5px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.07em;
-  color: var(--mw-chrome-dim, #666); padding: 2px 4px 4px; white-space: nowrap;
+  color: var(--mw-c-dim); padding: 2px 4px 4px; white-space: nowrap;
 }
 .mw-popover-section-title {
   font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em;
-  color: var(--mw-chrome-dim, #666); padding: 6px 5px 4px; white-space: nowrap;
+  color: var(--mw-c-dim); padding: 6px 5px 4px; white-space: nowrap;
 }
 .mw-popover-grid { display: grid; gap: 2px; }
 .mw-popover-cell {
   border: 1px solid transparent; background: none; border-radius: 6px; padding: 7px 8px;
-  cursor: pointer; font-size: 12px; color: var(--mw-chrome-dim, #a1a1a1); white-space: nowrap;
+  cursor: pointer; font-size: 12px; color: var(--mw-c-dim); white-space: nowrap;
   transition: background 0.12s, color 0.12s;
 }
-.mw-popover-cell:hover { background: var(--mw-chrome-hover, #1f1f1f); color: var(--mw-chrome-fg, #ededed); }
+.mw-popover-cell:hover { background: var(--mw-c-hover); color: var(--mw-c-fg); }
 .mw-popover-cell.selected {
-  border-color: var(--mw-accent, #0070f3); color: var(--mw-chrome-fg, #ededed);
-  background: color-mix(in srgb, var(--mw-accent, #0070f3) 12%, transparent);
+  border-color: var(--mw-c-accent); color: var(--mw-c-fg);
+  background: color-mix(in srgb, var(--mw-c-accent) 12%, transparent);
 }
 .mw-popover-cell.swatch { padding: 5px; display: flex; align-items: center; justify-content: center; }
 .mw-popover-cell.svg { padding: 4px 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
@@ -242,33 +245,33 @@ export const POPOVER_CSS = `
 .mw-popover-cell.labeled { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 6px; }
 .mw-popover-cell.labeled svg { width: 18px; height: 18px; }
 .mw-popover-cell .mw-cell-label { font-size: 9.5px; color: inherit; opacity: 0.8; }
-.mw-swatch-dot { width: 15px; height: 15px; border-radius: 99px; display: block; border: 1px solid rgba(255,255,255,0.18); }
+.mw-swatch-dot { width: 15px; height: 15px; border-radius: 99px; display: block; border: 1px solid color-mix(in srgb, var(--mw-c-fg) 20%, transparent); }
 .mw-swatch-dot.none {
-  background: linear-gradient(to top left, transparent 45%, #ff4444 46%, #ff4444 54%, transparent 55%);
-  border: 1px solid var(--mw-chrome-dim, #666);
+  background: linear-gradient(to top left, transparent 45%, var(--mw-c-danger) 46%, var(--mw-c-danger) 54%, transparent 55%);
+  border: 1px solid var(--mw-c-dim);
 }
 .mw-lifeline-plus {
   position: absolute; z-index: 15; transform: translate(-50%, -50%);
   width: 18px; height: 18px; border-radius: 99px; border: none; cursor: pointer;
-  background: var(--mw-accent, #0070f3); color: #fff; font-size: 13px; line-height: 1;
+  background: var(--mw-c-accent); color: #fffcf0; font-size: 13px; line-height: 1;
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  box-shadow: 0 2px 8px rgba(16, 15, 15, 0.3);
   transition: transform 0.12s;
 }
 .mw-lifeline-plus:hover { transform: translate(-50%, -50%) scale(1.15); }
 .mw-plus-menu {
   position: absolute; z-index: 21; transform: translate(-50%, 4px);
-  background: var(--mw-chrome-bg, #0a0a0a); border: 1px solid var(--mw-chrome-border, #333);
-  border-radius: 8px; box-shadow: 0 0 0 1px rgba(0,0,0,0.4), 0 8px 30px rgba(0,0,0,0.45); padding: 4px;
+  background: var(--mw-c-bg); border: 1px solid var(--mw-c-border);
+  border-radius: 8px; box-shadow: 0 8px 24px rgba(16, 15, 15, 0.18); padding: 4px;
   display: flex; flex-direction: column; min-width: 150px;
-  font: 13px/1.2 -apple-system, "Geist", "Inter", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  font: 13px/1.2 var(--mw-c-font);
 }
 .mw-plus-menu button {
   border: none; background: none; text-align: left; border-radius: 6px; padding: 7px 10px;
-  cursor: pointer; color: var(--mw-chrome-dim, #a1a1a1); font-size: 12.5px;
+  cursor: pointer; color: var(--mw-c-dim); font-size: 12.5px;
   transition: background 0.12s, color 0.12s;
 }
-.mw-plus-menu button:hover { background: var(--mw-chrome-hover, #1f1f1f); color: var(--mw-chrome-fg, #ededed); }
+.mw-plus-menu button:hover { background: var(--mw-c-hover); color: var(--mw-c-fg); }
 @media (pointer: coarse) {
   .mw-popover { padding: 5px; gap: 3px; }
   .mw-popover-btn { height: 38px; min-width: 38px; padding: 0 9px; }

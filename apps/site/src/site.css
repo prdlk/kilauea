@@ -16,7 +16,6 @@
   --primary-hover: #e4e4e7;
   --primary-foreground: #18181b;
   --ring: #71717a;
-  --accent: #2bb39a;
   --font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', monospace;
   --container: 1180px;
@@ -87,7 +86,7 @@ textarea {
   flex: none;
 }
 .btn:focus-visible,
-.tab:focus-visible,
+.tabs > button:focus-visible,
 .menu-item:focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
@@ -147,9 +146,9 @@ textarea {
   height: 14px;
 }
 
-/* ---- Tabs / segmented control ---------------------------------------------
-   One look for the preset picker (tablist, aria-selected) and the preview-theme
-   switch (button group, aria-pressed). */
+/* ---- Tabs ------------------------------------------------------------------
+   Button group in shadcn's tabs look: /playground's preview-theme switch
+   (aria-pressed). */
 .tabs {
   display: inline-flex;
   align-items: center;
@@ -158,7 +157,7 @@ textarea {
   background: var(--muted);
   border-radius: 8px;
 }
-.tab {
+.tabs > button {
   height: 26px;
   padding: 0 10px;
   border: 0;
@@ -172,11 +171,11 @@ textarea {
     background-color 0.15s,
     color 0.15s;
 }
-.tab:hover {
+.tabs > button:hover {
   color: var(--foreground);
 }
-.tab[aria-selected='true'],
-.tab[aria-pressed='true'] {
+.tabs > button[aria-selected='true'],
+.tabs > button[aria-pressed='true'] {
   background: var(--background);
   color: var(--foreground);
   box-shadow: 0 0 0 1px var(--border);
@@ -325,13 +324,19 @@ textarea {
    loads, which have to look identical. A bare `.mw-canvas svg` would also match
    the icons inside the popover, which would pin each one to inset 0 and stack
    them into an unreadable pile. */
+/* pele.run's dark theme, except --pele-bg, which stays the page background so
+   the edge label's knock-out box disappears into the page. The chrome (edit
+   popover) follows these too — see the --mw-c-* tokens in @kilauea/dom. */
 .hero-masthead {
   --pele-bg: var(--background);
-  --pele-fg: var(--foreground);
-  --pele-muted: var(--muted-foreground);
-  --pele-line: var(--subtle-foreground);
-  --pele-surface: var(--background);
-  --pele-border: var(--border-strong);
+  --pele-fg: #cecdc3;
+  --pele-muted: #878580;
+  --pele-line: #cecdc3;
+  --pele-surface: #1c1b1a;
+  --pele-surface-alt: #282726;
+  --pele-border: #403e3c;
+  --pele-accent: #4385be;
+  --pele-critical: #d14d41;
   --pele-font: var(--font-sans);
 }
 /* The host has to be pinned to the card as well as the svg. Left to size itself
@@ -712,16 +717,356 @@ textarea {
   color: var(--subtle-foreground);
 }
 
-/* ---- Playground -----------------------------------------------------------
-   Shared by the inline demo and /playground. The chrome (frame, toolbar) is
-   always dark; the two panes follow the preview-theme switch through the
-   --pane-* properties set by [data-skin] on the grid. */
-.pg-frame {
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--background);
-  overflow: hidden;
+/* ---- Landing demo ("Take it for a spin") -----------------------------------
+   Styled after pele.run's "How it works" example: its Flexoki-dark panel,
+   hairline split, muted labels, pill segmented controls and status line. The
+   preview is pele's own SVG at natural size, centred, as pele.run shows it —
+   no pan/zoom, no dot grid. Every colour is a --spin-* variable, so the light
+   preview block (.spin-light) only has to swap the variables. */
+.spin {
+  --spin-ink: #100f0f;
+  --spin-panel: #1c1b1a;
+  --spin-line: #282726;
+  --spin-line-hover: #343331;
+  --spin-line-active: #403e3c;
+  --spin-paper: #cecdc3;
+  --spin-bright: #f2f0e5;
+  --spin-muted: #878580;
+  --spin-green: #879a39;
+  --spin-accent: #4385be;
+  --spin-sans: -apple-system, BlinkMacSystemFont, 'Inter Variable', Inter, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --spin-mono: ui-monospace, SFMono-Regular, 'Cascadia Code', 'IBM Plex Mono', 'Roboto Mono', 'DejaVu Sans Mono',
+    'Liberation Mono', Menlo, Monaco, Consolas, monospace;
+  font-family: var(--spin-sans);
+  color: var(--spin-paper);
 }
+.spin-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.segmented {
+  display: inline-flex;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-radius: 999px;
+  background: var(--spin-panel);
+  font-size: 14px;
+}
+.segmented::-webkit-scrollbar {
+  display: none;
+}
+.segmented > button {
+  flex: none;
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--spin-muted);
+  font: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background-color 0.2s,
+    color 0.15s;
+}
+.segmented > button:hover,
+.segmented > button[aria-selected='true'],
+.segmented > button[aria-pressed='true'] {
+  color: var(--spin-paper);
+}
+.segmented > button[aria-selected='true'],
+.segmented > button[aria-pressed='true'] {
+  background: var(--spin-line);
+}
+.segmented > button:focus-visible,
+.spin-icon-btn:focus-visible,
+.spin-link:focus-visible {
+  outline: 2px solid var(--spin-paper);
+  outline-offset: 2px;
+}
+.spin-panel {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  min-height: 420px;
+  border-radius: 12px;
+  background: var(--spin-panel);
+}
+.spin-block {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 12px 20px 24px;
+}
+.spin-block + .spin-block {
+  border-left: 1px solid var(--spin-line);
+}
+.spin-preview {
+  padding-bottom: 12px;
+  border-radius: 0 12px 12px 0;
+}
+.spin-light {
+  --spin-panel: #fffcf0;
+  --spin-line: #f2f0e5;
+  --spin-line-hover: #e6e4d9;
+  --spin-line-active: #cecdc3;
+  --spin-paper: #100f0f;
+  --spin-bright: #100f0f;
+  --spin-muted: #6f6e69;
+  --spin-accent: #205ea6;
+  background: var(--spin-panel);
+  color: var(--spin-paper);
+}
+.spin-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 28px;
+  margin-right: -10px;
+  font-size: 14px;
+  color: var(--spin-muted);
+}
+.spin-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+}
+.spin-icon-btn {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--spin-muted);
+  cursor: pointer;
+}
+.spin-icon-btn svg {
+  width: 15px;
+  height: 15px;
+}
+.spin-icon-btn:hover {
+  background: var(--spin-line);
+  color: var(--spin-paper);
+}
+.spin-icon-btn[data-copied] {
+  color: var(--spin-green);
+}
+.spin-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-block: -3px;
+  padding: 6px 12px 6px 8px;
+  border-radius: 999px;
+  font-size: 14px;
+  white-space: nowrap;
+  color: var(--spin-paper);
+  transition: color 0.15s;
+}
+.spin-link svg {
+  width: 14px;
+  height: 14px;
+  color: var(--spin-muted);
+  transition: color 0.15s;
+}
+.spin-link:hover {
+  color: var(--spin-bright);
+}
+.spin-link:hover svg {
+  color: var(--spin-paper);
+}
+
+/* Source: the real @kilauea/codemirror binding in pele.run's code type —
+   no gutter, no active line, Flexoki syntax colours. The editor sizes to its
+   content so the "Edit here" callout sits right under the last line; tall
+   presets scroll inside it instead of pushing the callout away. */
+.spin-source .demo-cm {
+  flex: 0 1 auto;
+  margin-top: 18px;
+}
+.spin-source .demo-cm .cm-editor {
+  height: auto;
+  max-height: 460px;
+  font-family: var(--spin-mono);
+  font-size: 14px;
+}
+.spin-source .demo-cm .cm-scroller {
+  padding: 0;
+  line-height: 1.72;
+}
+.spin-source .demo-cm .cm-gutters {
+  display: none;
+}
+.spin-source .demo-cm .cm-content {
+  padding: 0;
+  caret-color: var(--spin-paper);
+  color: var(--spin-paper);
+}
+.spin-source .demo-cm .cm-line {
+  padding: 0;
+}
+.spin-source .demo-cm .cm-activeLine {
+  background: transparent;
+}
+.spin-source .demo-cm .cm-selectionBackground,
+.spin-source .demo-cm .cm-editor ::selection {
+  background: #fffcf026;
+}
+/* syntax colours come from .demo-pane-dark, shared with /playground */
+
+/* Preview: pele.run's figure palette. The canvas stays in flow (unlike the
+   pan/zoom canvases, which fill their pane absolutely), so the panel grows to
+   the diagram, and it does not clip, so the edit popover can rise above it. */
+.spin-figure {
+  --pele-bg: var(--spin-panel);
+  --pele-fg: var(--spin-paper);
+  --pele-muted: var(--spin-muted);
+  --pele-line: var(--spin-paper);
+  --pele-surface: var(--spin-line);
+  --pele-surface-alt: var(--spin-line-hover);
+  --pele-border: var(--spin-line-active);
+  --pele-accent: var(--spin-accent);
+  --pele-font: var(--spin-sans);
+  --pele-font-mono: var(--spin-mono);
+  /* auto basis: the diagram's height counts toward the panel's row height */
+  flex: 1 0 auto;
+  display: grid;
+  min-height: 120px;
+  margin-top: 18px;
+}
+/* The edit popover takes its colours from the --pele-* theme above (see the
+   --mw-c-* tokens in @kilauea/dom), so it is dark here and light on .spin-light. */
+.spin-canvas.mw-canvas {
+  overflow: visible;
+}
+.spin-canvas.mw-canvas .mw-svg-host {
+  align-items: center;
+  padding: 8px;
+}
+.spin-status {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: calc(1lh + 12px);
+  margin-top: auto;
+  padding-top: 12px;
+  font-size: 12px;
+  color: var(--spin-muted);
+  overflow-wrap: anywhere;
+}
+.spin-status-error {
+  color: var(--spin-paper);
+}
+/* pele.run's error treatment: the message lives in the status line and the
+   last good diagram dims, so the canvas's own error badge would say it twice. */
+.spin-canvas .mw-error-badge {
+  display: none !important;
+}
+.spin-preview[data-error] .spin-canvas .mw-svg-host > svg {
+  opacity: 0.4;
+}
+.spin-status-time {
+  flex: none;
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}
+.spin-hint-short {
+  display: none;
+}
+
+/* Hand-drawn "Edit here" nudges, each in its block's flow pointing at that
+   block's content. A 1fr / auto / 1fr grid centres the arrow on the block while
+   the label hangs off to one side without pulling it off-centre — so the tip
+   lands on the middle of the content, not wherever the label's width happens to
+   put it. Both are pointer-events: none, so neither eats an editor click. */
+.spin-callout {
+  display: grid;
+  flex: none;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: end;
+  color: var(--spin-muted);
+  pointer-events: none;
+}
+.spin-callout-arrow {
+  grid-column: 2;
+  width: 34px;
+  height: 46px;
+}
+.spin-callout-text {
+  font-family: 'Caveat', cursive;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  margin-bottom: 7px;
+}
+.spin-callout-source {
+  padding-top: 6px;
+}
+.spin-callout-source .spin-callout-text {
+  grid-column: 3;
+  justify-self: start;
+  margin-left: 3px;
+  transform: rotate(-4deg);
+}
+.spin-callout-preview .spin-callout-text {
+  grid-column: 1;
+  justify-self: end;
+  margin-right: 3px;
+  transform: rotate(-3deg);
+}
+
+@media (max-width: 760px) {
+  .spin-panel {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+  }
+  .spin-block + .spin-block {
+    border-left: 0;
+    border-top: 1px solid var(--spin-line);
+  }
+  .spin-preview {
+    border-radius: 0 0 12px 12px;
+  }
+  .spin-source .demo-cm .cm-editor {
+    max-height: 240px;
+  }
+  .spin-link-prefix,
+  .spin-hint-long {
+    display: none;
+  }
+  .spin-hint-short {
+    display: inline;
+  }
+  .spin-callout-text {
+    font-size: 20px;
+    margin-bottom: 5px;
+  }
+  .spin-callout-arrow {
+    width: 27px;
+    height: 36px;
+  }
+}
+@media (max-width: 480px) {
+  .spin-block {
+    padding-inline: 16px;
+  }
+  .spin-label {
+    margin-right: -6px;
+  }
+}
+
+/* ---- /playground ----------------------------------------------------------
+   The chrome (toolbar) is always dark; the two panes follow the preview-theme
+   switch through the --pane-* properties set by [data-skin] on the grid. */
 .pg-page {
   /* svh (not dvh) so the canvas doesn't jump when mobile browsers hide or
      reveal the URL bar mid-scroll. svh always reports the SHORT viewport (URL
@@ -739,9 +1084,6 @@ textarea {
   padding: 10px 12px;
   border-bottom: 1px solid var(--border);
 }
-.pg-presets {
-  flex-wrap: wrap;
-}
 .pg-controls {
   margin-left: auto;
   display: flex;
@@ -753,26 +1095,25 @@ textarea {
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.15fr);
 }
-.pg-grid-inline {
-  height: 480px;
-}
 .pg-grid-full {
   flex: 1;
   min-height: 0;
 }
+/* Panes take pele.run's own dark and light backgrounds so the canvas, its pane
+   and the theme passed to pele (themeVars in playground-shared.tsx) agree. */
 .pg-grid[data-skin='dark'] {
-  --pane-bg: var(--background);
-  --pane-fg: var(--foreground);
-  --pane-muted: var(--subtle-foreground);
-  --pane-border: var(--border);
-  --pane-dot: #1f1f23;
+  --pane-bg: #100f0f;
+  --pane-fg: #cecdc3;
+  --pane-muted: #878580;
+  --pane-border: #282726;
+  --pane-dot: #1c1b1a;
 }
 .pg-grid[data-skin='light'] {
-  --pane-bg: #ffffff;
-  --pane-fg: #09090b;
-  --pane-muted: #71717a;
-  --pane-border: #e4e4e7;
-  --pane-dot: #e4e4e7;
+  --pane-bg: #fffcf0;
+  --pane-fg: #100f0f;
+  --pane-muted: #6f6e69;
+  --pane-border: #e6e4d9;
+  --pane-dot: #e6e4d9;
 }
 .pg-pane {
   display: flex;
@@ -827,17 +1168,11 @@ textarea {
   min-height: 0;
 }
 
-/* The live demo embeds the real editor. The package injects
+/* The /playground and hero canvases. The package injects
    `.mw-canvas { position: relative }` after this sheet, so the fill-the-pane
-   positioning must out-rank it. The --mw-chrome-* tokens put the zoom buttons
-   and edit popover on the site's zinc palette. */
+   positioning must out-rank it. Zoom buttons and the edit popover follow the
+   canvas's --pele-* theme on their own. */
 .site-demo-canvas.mw-canvas {
-  --mw-accent: var(--accent);
-  --mw-chrome-bg: #09090b;
-  --mw-chrome-border: #27272a;
-  --mw-chrome-fg: #fafafa;
-  --mw-chrome-dim: #a1a1aa;
-  --mw-chrome-hover: #27272a;
   position: absolute;
   inset: 0;
 }
@@ -917,47 +1252,46 @@ textarea {
 .demo-cm .tok-meta {
   color: #8a9b96;
 }
-/* dark pane: the site's syntax palette */
+/* dark pane: pele.run's code palette (Flexoki), used by the landing demo and
+   /playground's dark skin */
 .demo-pane-dark .demo-cm .cm-content {
-  caret-color: var(--foreground);
-  color: var(--syn-punct);
+  caret-color: #cecdc3;
+  color: #cecdc3;
 }
 .demo-pane-dark .demo-cm .cm-gutters {
-  color: #52525b;
+  color: #575653;
 }
 .demo-pane-dark .demo-cm .cm-activeLine {
-  background: rgba(255, 255, 255, 0.03);
+  background: transparent;
 }
 .demo-pane-dark .demo-cm .cm-activeLineGutter {
-  color: var(--muted-foreground);
+  color: #878580;
 }
 .demo-pane-dark .demo-cm .cm-selectionBackground,
 .demo-pane-dark .demo-cm .cm-editor ::selection {
-  background: #3f3f46;
+  background: #fffcf026;
 }
-.demo-pane-dark .demo-cm .tok-heading {
-  color: var(--syn-ident);
-}
+.demo-pane-dark .demo-cm .tok-heading,
 .demo-pane-dark .demo-cm .tok-keyword {
-  color: var(--syn-keyword);
-}
-.demo-pane-dark .demo-cm .tok-operator {
-  color: var(--syn-string);
+  color: #a0af54;
+  font-weight: 400;
 }
 .demo-pane-dark .demo-cm .tok-string {
-  color: var(--syn-string);
-}
-.demo-pane-dark .demo-cm .tok-comment {
-  color: var(--syn-comment);
+  color: #5abdac;
 }
 .demo-pane-dark .demo-cm .tok-number {
-  color: var(--syn-ident);
+  color: #dfb431;
 }
+.demo-pane-dark .demo-cm .tok-operator,
 .demo-pane-dark .demo-cm .tok-bracket {
-  color: var(--subtle-foreground);
+  color: #9f9d96;
+}
+.demo-pane-dark .demo-cm .tok-comment {
+  color: #6f6e69;
+  font-style: normal;
 }
 .demo-pane-dark .demo-cm .tok-meta {
-  color: var(--subtle-foreground);
+  color: #e47da8;
 }
 
 /* Mobile: hide the middle nav links + the "Leave a star!" hint so the
@@ -975,96 +1309,16 @@ textarea {
   }
 }
 
-/* Hand-drawn "Edit here" nudges inside the inline playground, each pointing at
-   its own pane's content rather than at the chrome above it. Scoped to the
-   inline demo (.pg-inline-pane) — /playground shares .pg-code-pane/.demo-cm and
-   is deliberately left alone. */
-/* A 1fr / auto / 1fr grid centres the arrow on the container while the label
-   hangs off to one side without pulling it off-centre — so the tip lands on the
-   middle of the content, not wherever the label's width happens to put it. */
-.pg-callout {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: end;
-  color: var(--pane-muted);
-  pointer-events: none;
-}
-.pg-callout-arrow {
-  grid-column: 2;
-  width: 34px;
-  height: 46px;
-}
-.pg-callout-text {
-  font-family: 'Caveat', cursive;
-  font-size: 22px;
-  font-weight: 600;
-  line-height: 1;
-  white-space: nowrap;
-  margin-bottom: 7px;
-}
-
-/* Source: sits in the code pane's flow right under the last line. Letting the
-   editor size to its content (rather than filling the pane) is what keeps the
-   arrow tucked under short presets like flowchart instead of stranding it at
-   the pane floor; flex-shrink then pulls it back up for tall presets like
-   classDiagram, which scroll internally rather than pushing the callout out of
-   view. The filler eats the leftover space so the pane's background still
-   reaches the bottom. */
-.pg-inline-pane .demo-cm {
-  flex: 0 1 auto;
-}
-.pg-inline-pane .demo-cm .cm-editor {
-  height: auto;
-  max-height: 100%;
-}
-.pg-callout-filler {
-  flex: 1 1 0;
-  min-height: 0;
-}
-.pg-callout-source {
-  flex: none;
-  /* the left inset is CodeMirror's line-number gutter: excluding it makes the
-     grid centre on the code text column rather than on the pane */
-  padding: 2px 0 10px 36px;
-}
-.pg-callout-source .pg-callout-text {
-  grid-column: 3;
-  justify-self: start;
-  margin-left: 3px;
-  transform: rotate(-4deg);
-}
-
-/* Preview: spans the canvas so the grid can centre the arrow under the diagram
-   the canvas keeps centred. Nothing is painted right of the arrow (the label
-   hangs to its left), so this still clears the corner zoom controls. */
-.pg-callout-preview {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 8px;
-  z-index: 1;
-}
-.pg-callout-preview .pg-callout-text {
-  grid-column: 1;
-  justify-self: end;
-  margin-right: 3px;
-  transform: rotate(-3deg);
-}
-
-/* Playground on narrow screens: the side-by-side panes squeeze into unusable
+/* /playground on narrow screens: the side-by-side panes squeeze into unusable
    slivers, so stack them — code on top, canvas below — and turn the wrapping
-   toolbar rows into horizontally scrollable strips. */
+   toolbar row into a horizontally scrollable strip. */
 @media (max-width: 720px) {
-  #demo .container {
-    padding: 0 12px;
-  }
   .pg-toolbar {
     flex-direction: column;
     align-items: stretch;
     flex-wrap: nowrap;
     gap: 8px;
   }
-  .pg-presets,
   .pg-controls {
     flex-wrap: nowrap;
     overflow-x: auto;
@@ -1072,28 +1326,15 @@ textarea {
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
   }
-  .pg-presets {
-    align-self: flex-start;
-    max-width: 100%;
-  }
-  .pg-presets::-webkit-scrollbar,
   .pg-controls::-webkit-scrollbar {
     display: none;
   }
-  .pg-presets button,
   .pg-controls > * {
     flex: none;
   }
   .pg-grid {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: 190px minmax(0, 1fr);
-  }
-  .pg-grid-inline {
-    /* svh, not dvh — see the .pg-page height note. */
-    height: min(620px, 80svh);
-    /* the inline demo's code row also carries the "Edit here" callout, so it
-       gets that height back on top of the shared 190px of visible code */
-    grid-template-rows: 236px minmax(0, 1fr);
   }
   .pg-code-pane {
     border-right: none;
@@ -1105,26 +1346,9 @@ textarea {
   .pg-hint-short {
     display: inline;
   }
-  /* Primary actions must never hide at the far end of the scrollable
-     controls strip: Expand (inline demo) and Share (/playground) come first. */
-  .pg-expand-btn,
+  /* The primary action must never hide at the far end of the scrollable
+     controls strip, so Share comes first. */
   .pg-share-btn {
     order: -1;
-  }
-  /* Stacked layout: the callouts stay anchored to their panes, so only the
-     scale changes (the code row's extra height is set above). */
-  .pg-callout-text {
-    font-size: 20px;
-    margin-bottom: 5px;
-  }
-  .pg-callout-arrow {
-    width: 27px;
-    height: 36px;
-  }
-  .pg-callout-source {
-    padding: 0 0 8px 32px;
-  }
-  .pg-callout-preview {
-    bottom: 6px;
   }
 }

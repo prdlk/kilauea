@@ -3,7 +3,6 @@ import { PeleCanvas, usePeleEditor } from '@kilauea/react'
 import { track } from './analytics'
 import { CheckIcon, ChevronDownIcon, CopyIcon, LinkIcon } from './icons'
 import {
-  ACCENT,
   CodeMirrorPane,
   Logo,
   PRESETS,
@@ -178,7 +177,7 @@ export default function PlaygroundPage() {
             <span className="pg-hint pg-hint-short">tap to select · double-tap to edit · pinch to zoom</span>
           </div>
           <div className="pg-canvas-wrap">
-            <PeleCanvas editor={editor} accentColor={ACCENT} panZoom className="site-demo-canvas" style={canvasStyle(skin)} />
+            <PeleCanvas editor={editor} panZoom className="site-demo-canvas" style={canvasStyle(skin)} />
           </div>
         </div>
       </div>

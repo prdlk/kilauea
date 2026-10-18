@@ -18,7 +18,7 @@ Implementation of the CodeMirror 6 binding: the `PeleCodeMirror` class and a Str
 - Public API: `PeleCodeMirror(host, editor, extraExtensions = [])` and `peleLanguage()`. Only these are exported from `index.ts`.
 - Constructor order matters: the `EditorView` is built first with an `updateListener` that calls `this.binding.notifyTextChange()` on `docChanged`, else `notifyCaretMove(selection.main.head)` on `selectionSet`; `this.binding` is assigned afterwards via `bindTextPane` adapter (`getText`, `applyEdits`, `setText`, `setHighlights`, `revealPosition`).
 - `applyEdits` dispatches all edits in one transaction (`from/to/insert`) since core pre-sorts and clamps against the current text.
-- Highlights: the `highlightField` maps decorations through `tr.changes` and on `setHighlights` drops spans with `end > newDoc.length`; mark class is `mw-cm-entity`, themed with CSS var `--mw-accent` (default `#6366f1`) via `color-mix`.
+- Highlights: the `highlightField` maps decorations through `tr.changes` and on `setHighlights` drops spans with `end > newDoc.length`; mark class is `mw-cm-entity`, themed with `--mw-accent`, then `--pele-accent`, then pele.run's `#205ea6`, via `color-mix`.
 - Keymap: `Mod-z` / `Mod-Shift-z` call `binding.undo/redo` (engine history, not CM history) and are placed before `defaultKeymap`. No CM \`history()\` extension is installed; do not add one (it would create a second undo stack).
 - `revealPosition` deliberately sets `scrollDOM.scrollTop` manually rather than `EditorView.scrollIntoView`, which would scroll ancestors/the page. Keep that.
 - `extraExtensions` is typed `unknown[]` and spread with a cast, to avoid exposing duplicate `@codemirror/state` types.
