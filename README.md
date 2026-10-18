@@ -7,7 +7,7 @@
 Visimer brings "what you see is what you get" editability to Mermaid diagrams. Rename labels, change shapes, add new nodes, etc. by live editing the rendered diagram.
 
 [![MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
-[![Mermaid 11](https://img.shields.io/badge/mermaid-v11-ff3670.svg)](https://mermaid.js.org)
+[![Renders with pele](https://img.shields.io/badge/renderer-pele-ff3670.svg)](https://github.com/obsidianmd/pele)
 [![Types](https://img.shields.io/badge/types-included-3178c6.svg)](#packages)
 
 ![A node label is double-clicked and retyped on the canvas; the matching line of Mermaid source rewrites live as it is typed](./assets/hero-loop.webp)
@@ -29,11 +29,10 @@ Read the [launch post](https://openknowledge.ai/blog/edit-mermaid-diagrams-visua
 ## Quick start
 
 ```bash
-npm i @visimer/core @visimer/dom mermaid
+npm i @visimer/core @visimer/dom
 ```
 
 ```ts
-import mermaid from 'mermaid'
 import { MermaidWysiwygEditor } from '@visimer/core'
 import { MermaidCanvasView } from '@visimer/dom'
 
@@ -44,8 +43,6 @@ const editor = new MermaidWysiwygEditor({
 new MermaidCanvasView({
   editor,
   container: document.querySelector('#canvas')!,
-  mermaid,
-  mermaidConfig: { theme: 'dark' },
 })
 
 editor.on('change', ({ code }) => console.log(code)) // always-current source
@@ -56,6 +53,22 @@ Try everything locally:
 ```bash
 pnpm install && pnpm dev   # playground at http://localhost:5173
 ```
+
+## Theming
+
+Rendering is themed by CSS variables, set on the canvas container or any ancestor. Colors apply live with no re-render:
+
+```css
+#canvas {
+  --pele-bg: #0f1115;
+  --pele-fg: #e6e6e6;
+  --pele-accent: #6366f1;
+}
+```
+
+Available variables: `--pele-bg`, `--pele-fg`, `--pele-muted`, `--pele-line`, `--pele-surface`, `--pele-surface-alt`, `--pele-border`, `--pele-accent`, `--pele-critical`, `--pele-error`, `--pele-font`, `--pele-font-mono`, `--pele-title-weight`, `--pele-heading-weight`, `--pele-bold-weight`, `--pele-radius`, and series colors `--pele-series-1` … `--pele-series-8`. Defaults are a light palette. Colors set in the source (`style`, `classDef`, `linkStyle`) are kept.
+
+Fonts are measured when the diagram renders: after changing `--pele-font`, call `view.refresh()`. Other pele options (`fontSize`, `padding`, `maxWidth`, `links`, `icons`, …) go in `renderOptions` / `view.setRenderOptions(...)`. Mermaid's `%%{init}%%` themes and `theme`/`securityLevel` configs do not apply.
 
 ## Try with Open Knowledge
 
@@ -73,7 +86,7 @@ pnpm install && pnpm dev   # playground at http://localhost:5173
 
 ## Diagram support
 
-**22 of 23 Mermaid diagram types are editable.**
+**22 of 33 Mermaid diagram types are editable; the other 11 render view-only.**
 
 | Type | View | Item editing | Structural editing |
 |---|:---:|:---:|:---:|
@@ -99,16 +112,26 @@ pnpm install && pnpm dev   # playground at http://localhost:5173
 | [C4](https://mermaid.js.org/syntax/c4.html) | ✅ | ✅ | ❌ |
 | [architecture](https://mermaid.js.org/syntax/architecture.html) | ✅ | ✅ | ❌ |
 | [block](https://mermaid.js.org/syntax/block.html) | ✅ | ✅ | ❌ |
-| [zenuml](https://mermaid.js.org/syntax/zenuml.html) | ✅ | ❌ | ❌ |
+| [swimlane](https://mermaid.js.org/syntax/swimlane.html) | ✅ | ❌ | ❌ |
+| [agentflow](https://mermaid.js.org/syntax/agentflow.html) | ✅ | ❌ | ❌ |
+| [railroad](https://mermaid.js.org/syntax/railroad.html) | ✅ | ❌ | ❌ |
+| [treeView](https://mermaid.js.org/syntax/treeView.html) | ✅ | ❌ | ❌ |
+| [cynefin](https://mermaid.js.org/syntax/cynefin.html) | ✅ | ❌ | ❌ |
+| [wardley](https://mermaid.js.org/syntax/wardley.html) | ✅ | ❌ | ❌ |
+| [eventmodeling](https://mermaid.js.org/syntax/eventmodeling.html) | ✅ | ❌ | ❌ |
+| [usecase](https://mermaid.js.org/syntax/usecase.html) | ✅ | ❌ | ❌ |
+| [venn](https://mermaid.js.org/syntax/venn.html) | ✅ | ❌ | ❌ |
+| [ishikawa](https://mermaid.js.org/syntax/ishikawa.html) | ✅ | ❌ | ❌ |
+| [info](https://mermaid.js.org/syntax/info.html) | ✅ | ❌ | ❌ |
 
-**Item editing** is select, edit in place, add, and delete; **structural editing** adds connect, reorder, and restyle. Every type round-trips losslessly and syncs selection between code and canvas, including view-only zenuml (an external plugin).
+**Item editing** is select, edit in place, add, and delete; **structural editing** adds connect, reorder, and restyle. Every type round-trips losslessly and syncs selection between code and canvas, including the view-only types. The last eleven rows are rendered by pele but have no semantic editing;
 
 ## Packages
 
 | Package | Purpose |
 |---|---|
 | `@visimer/core` | Headless engine: lossless CST, semantic graphs, ops → minimal text edits, unified history. Zero DOM deps |
-| `@visimer/dom` | Interactive canvas: renders through your `mermaid` instance, correlates SVG ⇄ graph, all gestures |
+| `@visimer/dom` | Interactive canvas: renders through pele, correlates SVG ⇄ graph, all gestures |
 | `@visimer/codemirror` | CodeMirror 6 pane: two-way sync, entity decorations, mermaid syntax highlighting, shared undo |
 | `@visimer/monaco` | Monaco binding for an editor instance you own; zero monaco dependency of its own |
 | `@visimer/react` | React bindings: `<MermaidWysiwyg code onCodeChange />` drop-in component plus `useMermaidEditor` hook |
@@ -120,14 +143,14 @@ in unless you install it (editor libraries are peer dependencies or absent entir
 Some other editor? Implement the adapter, it's about forty lines.
 
 ## Architecture
-- Leverages the native Mermaid.js renderer for visualizing the Mermaid diagram true to how it’s intended. We just overlay/add point-edit functionality on top.
-- We map the rendered SVG elements back to a Concrete Syntax Tree (CST) representation, which we can then use to edit only the parts of the Mermaid source that need updating (without affecting the rest of the file).
+- Rendering is done by [pele](https://github.com/obsidianmd/pele), a zero-dependency, synchronous Mermaid renderer themed by CSS variables. We overlay point-edit functionality on top.
+- We map the rendered SVG elements back (correlators key off pele's `data-id` attributes) to a Concrete Syntax Tree (CST) representation, which we can then use to edit only the parts of the Mermaid source that need updating (without affecting the rest of the file).
 
 ## Design
 
 ```mermaid
 flowchart TD
-  SRC["Your Mermaid source"] --> MR["Mermaid.js renderer (unmodified)"]
+  SRC["Your Mermaid source"] --> MR["pele renderer (synchronous)"]
   MR --> SVG["Rendered SVG"]
   SVG --> COR["Correlator: SVG element → CST span"]
   COR --> OV["Point-edit overlay"]

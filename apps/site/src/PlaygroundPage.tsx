@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
-import mermaid from 'mermaid'
 import { MermaidCanvas, useMermaidEditor } from '@visimer/react'
 import { track } from './analytics'
 import {
@@ -10,7 +9,7 @@ import {
   codeFromHash,
   encodeCode,
   mono,
-  themeConfig,
+  themeVars,
   useCanvasControlTracking,
 } from './playground-shared'
 
@@ -323,12 +322,11 @@ export default function PlaygroundPage() {
           <div style={{ position: 'relative', flex: 1, minHeight: 0 }}>
             <MermaidCanvas
               editor={editor}
-              mermaid={mermaid}
-              mermaidConfig={themeConfig(skin)}
               accentColor="#0E7C6B"
               panZoom
               className="site-demo-canvas"
               style={{
+                ...themeVars(skin),
                 backgroundColor: previewBg,
                 backgroundImage: dark
                   ? 'radial-gradient(#231f19 1px, transparent 1px)'

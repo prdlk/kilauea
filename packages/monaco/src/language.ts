@@ -17,7 +17,7 @@ export const mermaidMonarchTokens = {
       [/%%.*$/, 'comment'],
       [/"[^"]*"/, 'string'],
       [
-        /^\s*(flowchart|graph|sequenceDiagram|classDiagram-v2|classDiagram|stateDiagram-v2|stateDiagram|erDiagram|pie|gantt|journey|timeline|quadrantChart|requirementDiagram|gitGraph|C4Context|C4Container|C4Component|C4Dynamic|C4Deployment|mindmap|kanban|packet-beta|packet|sankey-beta|radar-beta|treemap-beta|xychart-beta|block-beta|architecture-beta|zenuml)\b/,
+        /^\s*(flowchart|graph|sequenceDiagram|classDiagram-v2|classDiagram|stateDiagram-v2|stateDiagram|erDiagram|pie|gantt|journey|timeline|quadrantChart|requirementDiagram|gitGraph|C4Context|C4Container|C4Component|C4Dynamic|C4Deployment|mindmap|kanban|packet-beta|packet|sankey-beta|sankey|radar-beta|treemap-beta|treemap|xychart-beta|xychart|block-beta|block|architecture-beta|swimlane-beta|agentflow-beta|railroad-ebnf-beta|railroad-abnf-beta|railroad-peg-beta|railroad-beta|treeView-beta|cynefin-beta|wardley-beta|eventmodeling|usecase-beta|venn-beta|ishikawa-beta|ishikawa|info)\b/,
         'keyword',
       ],
       [

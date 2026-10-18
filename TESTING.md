@@ -13,8 +13,9 @@ test exercises the seam.
 | `bindTextPane` editor contract | The adapter contract any code editor integration implements | `packages/core/test/textpane.test.ts` drives the binding through an in-memory pane that implements exactly the shipped adapter interface: both sync directions, caret selection, reveal, drift resync, dispose | B |
 | CodeMirror binding | `@visimer/codemirror` against a real CodeMirror 6 `EditorView` | `packages/codemirror/test/binding.test.ts` (jsdom): engine ops → view, view edits → engine, decorations in the DOM, caret → entity selection, engine-authoritative undo, teardown | A |
 | Monaco binding | `@visimer/monaco` against the structural editor interface it binds | `packages/monaco/test/binding.test.ts`: fake implementing exactly the bound surface (both sync directions, decorations, caret reasons, undo keys, dispose), plus a compile-time conformance check that real `monaco-editor` types satisfy the interface | B |
-| Canvas render loop (what makes `@visimer/dom` re-render) | The triggers and the guards on them: source changes, config changes, and the webfont-settled re-measure that keeps labels from being clipped on a cold load | `packages/dom/test/fonts.test.ts` drives a real `MermaidCanvasView` over a fake mermaid and a stubbed `FontFaceSet`: re-renders once when fonts land late, never when they were already there, never after `destroy()`, never where the document exposes no font set | B |
-| SVG correlation (dom package ↔ Mermaid's rendered DOM) | Third-party dependency seam: correlators key off Mermaid's internal SVG structure, which can shift between Mermaid releases | None automated. Verified manually in the playground across all 23 diagram types | uncovered |
+| Canvas render loop (what makes `@visimer/dom` re-render) | The triggers and the guards on them: source changes, option changes, and the webfont-settled re-measure that keeps labels from being clipped on a cold load | `packages/dom/test/fonts.test.ts` drives a real `MermaidCanvasView` over the real pele (with `render` wrapped in a spy) and a stubbed `FontFaceSet`: re-renders once when fonts land late, never when they were already there, never after `destroy()`, never where the document exposes no font set | B |
+| SVG correlation (dom package ↔ pele's rendered DOM) | Third-party dependency seam: correlators key off pele's `data-id` attributes and `pele-*` classes, which can shift between pele releases | `packages/dom/test/correlate.test.ts` renders every editable sample (`apps/js-playground/src/samples.ts`) through the real pele in jsdom and asserts every graph entity is tagged `data-mw-entity` | A |
+| Label-editing session | The overlay editor: live commit while typing, render held until the session ends, Escape revert, Shift+Enter line breaks, unlabeled-edge editing | `packages/dom/test/edit.test.ts` drives a real `MermaidCanvasView` over the real pele in jsdom | A |
 | Canvas interaction layer (popovers, drag, in-place editing) | `@visimer/dom` gestures compiled to engine ops | None automated. Verified manually in the playground | uncovered |
 | React bindings | `@visimer/react` hooks/components over core events | None automated. Thin subscription layer; exercised manually via the playground | uncovered |
 
@@ -22,23 +23,22 @@ test exercises the seam.
 
 What the current suite cannot catch:
 
-- **A Mermaid upgrade that shifts the rendered SVG structure.** This is the
-  highest-risk seam. Correlators fail soft (elements degrade to view-only),
-  so the failure is silent feature loss, not a crash. Closing it needs a
-  real-browser rung (vitest browser mode or Playwright) that renders real
-  Mermaid per diagram type and asserts entities were tagged; jsdom cannot
-  provide it because Mermaid layout requires real text measurement.
+- **A pele upgrade that shifts the rendered SVG structure.** Correlators fail
+  soft (elements degrade to view-only), so the failure would be silent feature
+  loss, not a crash. `correlate.test.ts` now catches it: pele renders in jsdom
+  because it is synchronous and falls back to its built-in width table when
+  there is no canvas 2d context.
 - **Pointer-gesture regressions** (drag-to-connect thresholds, double-click
-  vs drag arbitration, popover anchoring). Same real-browser rung.
-- **Anything that depends on real text metrics.** The font-settled re-measure
-  is pinned at the contract level (does the view re-render, and only when it
-  should), not at the pixel level: jsdom cannot tell us whether a label
-  actually fits its box. Catching a *wrongly sized* label, rather than a
-  missing re-render, needs the same real-browser rung.
+  vs drag arbitration, popover anchoring). These need a real-browser rung
+  (vitest browser mode or Playwright).
+- **Pixel-level text fit.** The font-settled re-measure is pinned at the
+  contract level (does the view re-render, and only when it should). jsdom
+  uses pele's width table, so it cannot tell whether a label fits its box in
+  a real font.
 - **React render-loop regressions** (stale subscriptions, effect ordering).
   Would need @testing-library/react coverage.
 
-The playground doubles as the manual harness for all three: every editable
+The playground doubles as the manual harness for the remaining gaps: every editable
 type has a sample, and the toolbar/popovers exercise the gesture surface.
 
 ## Running

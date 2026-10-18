@@ -219,18 +219,6 @@ export const SAMPLES: Sample[] = [
 `,
   },
   {
-    typeId: 'zenuml',
-    title: 'ZenUML (plugin)',
-    code: `zenuml
-  title Order Service
-  @Actor Client
-  @Boundary OrderController
-  Client->OrderController.post(payload) {
-    return ok
-  }
-`,
-  },
-  {
     typeId: 'sankey',
     title: 'Sankey',
     code: `sankey-beta

@@ -31,7 +31,7 @@ export default defineConfig({
   plugins: [react(), heroBoot()],
   optimizeDeps: {
     exclude: ['@visimer/core', '@visimer/dom', '@visimer/react', '@visimer/codemirror'],
-    include: ['mermaid', 'react', 'react-dom', '@codemirror/state', '@codemirror/view', '@codemirror/commands', '@codemirror/language', '@lezer/highlight'],
+    include: ['pele', 'react', 'react-dom', '@codemirror/state', '@codemirror/view', '@codemirror/commands', '@codemirror/language', '@lezer/highlight'],
   },
   server: {
     port: 5174,

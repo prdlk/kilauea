@@ -88,8 +88,8 @@ input[type="color"] { width: 26px; height: 22px; padding: 0; border: 1px solid v
 /* ---------- canvas ---------- */
 #canvas {
   flex: 1 1 auto; min-height: 0; background:
-    radial-gradient(circle at 1px 1px, #ffffff10 1px, transparent 0) 0 0 / 22px 22px,
-    var(--bg);
+    radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--pele-fg, #fff) 10%, transparent) 1px, transparent 0) 0 0 / 22px 22px,
+    var(--pele-bg, var(--bg));
   --mw-editor-bg: var(--bg3);
   --mw-editor-fg: var(--fg);
   --mw-chrome-bg: var(--bg3);
@@ -147,7 +147,7 @@ input[type="color"] { width: 26px; height: 22px; padding: 0; border: 1px solid v
 #codepane .cm-activeLineGutter { background: transparent; color: var(--fg); }
 #codepane .cm-selectionBackground, #codepane .cm-editor ::selection { background: #334155aa !important; }
 
-/* mermaid syntax highlighting (classHighlighter token classes) */
+/* Mermaid-syntax highlighting (classHighlighter token classes) */
 #codepane .tok-comment { color: #64748b; font-style: italic; }
 #codepane .tok-string { color: #fbbf24; }
 #codepane .tok-keyword { color: #c084fc; }

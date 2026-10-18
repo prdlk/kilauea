@@ -23,8 +23,6 @@ export interface DiagramTypeInfo {
   /** what this library can do with the type today */
   capability: Capability
   docsUrl: string
-  /** requires an external mermaid plugin to render */
-  requiresPlugin?: string
 }
 
 export type LineKind =
@@ -52,5 +50,5 @@ export interface Diagnostic {
   message: string
   span: Span | null
   severity: 'error' | 'warning'
-  source: 'core' | 'mermaid'
+  source: 'core' | 'renderer'
 }

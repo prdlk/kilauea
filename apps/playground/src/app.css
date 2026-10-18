@@ -100,7 +100,8 @@ select { appearance: none; padding-right: 26px; background-image: url("data:imag
 /* canvas */
 .canvas {
   flex: 1 1 auto; min-height: 0;
-  background-image: radial-gradient(circle at 1px 1px, oklch(0.24 0 0) 1px, transparent 0);
+  background-color: var(--pele-bg, var(--bg));
+  background-image: radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--pele-fg, #fff) 12%, transparent) 1px, transparent 0);
   background-size: 24px 24px;
   --mw-accent: var(--blue);
   --mw-editor-bg: var(--panel-2);
@@ -113,12 +114,7 @@ select { appearance: none; padding-right: 26px; background-image: url("data:imag
 }
 .canvas:focus { outline: none; }
 
-/* mermaid svg polish (rx/ry as CSS works in Chromium/WebKit) */
-.canvas svg .node rect:not(.mw-noround), .canvas svg rect.actor { rx: 6px; ry: 6px; }
-.canvas svg .cluster rect { rx: 8px; ry: 8px; }
-.canvas svg .edgeLabel foreignObject { overflow: visible; }
-.canvas svg span.edgeLabel:not(:empty) { border-radius: 4px; padding: 1px 6px; margin: -1px -6px; display: inline-block; }
-.canvas svg span.edgeLabel:empty { background: transparent !important; }
+/* the diagram is themed via --pele-* variables set inline on .canvas (palette select) */
 
 /* code panel */
 .codepanel {

@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import mermaid from 'mermaid'
 import {
   DIAGRAM_TYPES,
   PARTICIPANT_TYPES,
@@ -13,117 +12,93 @@ import { MermaidCodeMirror } from '@visimer/codemirror'
 import { MonacoPane } from './MonacoPane'
 import { SAMPLES } from '../../js-playground/src/samples'
 
-let zenumlReady: Promise<boolean> | null = null
-function ensureZenuml(): Promise<boolean> {
-  zenumlReady ??= import('@mermaid-js/mermaid-zenuml')
-    .then(async (m) => (await mermaid.registerExternalDiagrams([m.default]), true))
-    .catch(() => false)
-  return zenumlReady
+const FONT = '"Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif'
+const FONT_MONO = '"JetBrains Mono Variable", "JetBrains Mono", ui-monospace, Menlo, monospace'
+
+const SERIES_VIBRANT = ['#3784ff', '#a78bfa', '#4fae72', '#d9a13c', '#d97757', '#69a3ff', '#f0716b', '#8fb8ff']
+
+function series(colors: string[]): Record<string, string> {
+  return Object.fromEntries(colors.map((c, i) => [`--pele-series-${i + 1}`, c]))
 }
 
-/** the playground's dark mermaid theme, built on mermaid's `base` theme */
-const INK_THEME = {
-  darkMode: true,
-  background: '#000000',
-  fontFamily: '"Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif',
-  fontSize: '14px',
-  // core nodes and edges
-  primaryColor: '#111111',
-  primaryTextColor: '#ededed',
-  primaryBorderColor: '#3f3f3f',
-  secondaryColor: '#1a1a1a',
-  secondaryBorderColor: '#333333',
-  secondaryTextColor: '#ededed',
-  tertiaryColor: '#0a0a0a',
-  tertiaryBorderColor: '#262626',
-  tertiaryTextColor: '#a1a1a1',
-  mainBkg: '#111111',
-  nodeBorder: '#3f3f3f',
-  nodeTextColor: '#ededed',
-  lineColor: '#8f8f8f',
-  textColor: '#ededed',
-  titleColor: '#ededed',
-  clusterBkg: '#0a0a0a',
-  clusterBorder: '#333333',
-  edgeLabelBackground: '#1a1a1a',
-  // sequence
-  actorBkg: '#111111',
-  actorBorder: '#3f3f3f',
-  actorTextColor: '#ededed',
-  actorLineColor: '#333333',
-  signalColor: '#8f8f8f',
-  signalTextColor: '#a1a1a1',
-  labelBoxBkgColor: '#111111',
-  labelBoxBorderColor: '#3f3f3f',
-  labelTextColor: '#ededed',
-  loopTextColor: '#a1a1a1',
-  noteBkgColor: '#1a1a1a',
-  noteBorderColor: '#3f3f3f',
-  noteTextColor: '#ededed',
-  activationBkgColor: '#1f1f1f',
-  activationBorderColor: '#454545',
-  sequenceNumberColor: '#ffffff',
-   // pie and categorical scales
-  pie1: '#3784ff',
-  pie2: '#a78bfa',
-  pie3: '#4fae72',
-  pie4: '#d9a13c',
-  pie5: '#d97757',
-  pie6: '#69a3ff',
-  pie7: '#f0716b',
-  pie8: '#8fb8ff',
-  pieTitleTextColor: '#ededed',
-  pieSectionTextColor: '#ffffff',
-  pieLegendTextColor: '#a1a1a1',
-  pieStrokeColor: '#000000',
-  pieOuterStrokeColor: '#000000',
-  cScale0: '#3784ff',
-  cScale1: '#a78bfa',
-  cScale2: '#4fae72',
-  cScale3: '#d9a13c',
-  cScale4: '#d97757',
-  cScale5: '#69a3ff',
-  cScale6: '#f0716b',
-  cScale7: '#8fb8ff',
-  // gantt
-  sectionBkgColor: '#0a0a0a',
-  sectionBkgColor2: '#111111',
-  altSectionBkgColor: '#000000',
-  gridColor: '#262626',
-  todayLineColor: '#d97757',
-  taskBkgColor: '#3784ff',
-  taskBorderColor: '#3784ff',
-  taskTextColor: '#ffffff',
-  taskTextLightColor: '#ffffff',
-  taskTextOutsideColor: '#ededed',
-  activeTaskBkgColor: '#a78bfa',
-  activeTaskBorderColor: '#a78bfa',
-  doneTaskBkgColor: '#333333',
-  doneTaskBorderColor: '#454545',
-  critBkgColor: '#d97757',
-  critBorderColor: '#d97757',
-  excludeBkgColor: '#111111',
-  // er / class
-  attributeBackgroundColorOdd: '#0a0a0a',
-  attributeBackgroundColorEven: '#111111',
-  classText: '#ededed',
-  // gitgraph
-  git0: '#3784ff',
-  git1: '#a78bfa',
-  git2: '#4fae72',
-  git3: '#d9a13c',
-  git4: '#d97757',
-  git5: '#69a3ff',
-  git6: '#f0716b',
-  git7: '#8fb8ff',
-  commitLabelColor: '#ededed',
-  commitLabelBackground: '#111111',
-}
-
-function themeConfig(theme: string) {
-  return theme === 'ink'
-    ? { theme: 'base', themeVariables: INK_THEME }
-    : { theme, themeVariables: {} }
+/** pele CSS-variable palettes; applied as inline style on the canvas host (live, no re-render) */
+const PALETTES: Record<string, Record<string, string>> = {
+  // the playground's default: black bg, zinc surfaces, blue-ish accent
+  ink: {
+    '--pele-bg': '#000000',
+    '--pele-fg': '#ededed',
+    '--pele-muted': '#a1a1a1',
+    '--pele-line': '#8f8f8f',
+    '--pele-surface': '#111111',
+    '--pele-surface-alt': '#1a1a1a',
+    '--pele-border': '#3f3f3f',
+    '--pele-accent': '#69a3ff',
+    '--pele-critical': '#d97757',
+    '--pele-error': '#f0716b',
+    '--pele-font': FONT,
+    '--pele-font-mono': FONT_MONO,
+    ...series(SERIES_VIBRANT),
+  },
+  dark: {
+    '--pele-bg': '#1e1e1e',
+    '--pele-fg': '#e6e6e6',
+    '--pele-muted': '#a6a6a6',
+    '--pele-line': '#9a9a9a',
+    '--pele-surface': '#2b2b2b',
+    '--pele-surface-alt': '#363636',
+    '--pele-border': '#555555',
+    '--pele-accent': '#8b7cf6',
+    '--pele-critical': '#e5694f',
+    '--pele-error': '#f0716b',
+    '--pele-font': FONT,
+    '--pele-font-mono': FONT_MONO,
+    ...series(['#8b7cf6', '#4fb3d9', '#5fb878', '#e0b24a', '#e5694f', '#c678dd', '#56c2b6', '#e07a9b']),
+  },
+  light: {
+    '--pele-bg': '#ffffff',
+    '--pele-fg': '#1f1f1f',
+    '--pele-muted': '#6b6b6b',
+    '--pele-line': '#6e6e6e',
+    '--pele-surface': '#f4f4f5',
+    '--pele-surface-alt': '#e9e9ec',
+    '--pele-border': '#c9c9d0',
+    '--pele-accent': '#2563eb',
+    '--pele-critical': '#d9480f',
+    '--pele-error': '#d92d20',
+    '--pele-font': FONT,
+    '--pele-font-mono': FONT_MONO,
+    ...series(['#2563eb', '#7c3aed', '#16a34a', '#d97706', '#dc2626', '#0891b2', '#db2777', '#4b5563']),
+  },
+  forest: {
+    '--pele-bg': '#f3f7f1',
+    '--pele-fg': '#1d2b1f',
+    '--pele-muted': '#5d7360',
+    '--pele-line': '#4f6b52',
+    '--pele-surface': '#dcead7',
+    '--pele-surface-alt': '#c8dcc2',
+    '--pele-border': '#8fb08a',
+    '--pele-accent': '#2e7d32',
+    '--pele-critical': '#c0562b',
+    '--pele-error': '#b3261e',
+    '--pele-font': FONT,
+    '--pele-font-mono': FONT_MONO,
+    ...series(['#2e7d32', '#6a9f3c', '#00897b', '#c9a227', '#c0562b', '#5c8a97', '#8d6e63', '#7b8f3a']),
+  },
+  neutral: {
+    '--pele-bg': '#fafafa',
+    '--pele-fg': '#262626',
+    '--pele-muted': '#737373',
+    '--pele-line': '#737373',
+    '--pele-surface': '#f0f0f0',
+    '--pele-surface-alt': '#e5e5e5',
+    '--pele-border': '#bdbdbd',
+    '--pele-accent': '#404040',
+    '--pele-critical': '#b45309',
+    '--pele-error': '#b91c1c',
+    '--pele-font': FONT,
+    '--pele-font-mono': FONT_MONO,
+    ...series(['#404040', '#737373', '#a3a3a3', '#525252', '#8a8a8a', '#2b2b2b', '#b0b0b0', '#666666']),
+  },
 }
 
 const SHAPES: Array<{ id: ShapeId; label: string }> = [
@@ -141,14 +116,8 @@ export default function App() {
   const [sampleIndex, setSampleIndex] = useState(0)
   const [theme, setTheme] = useState('ink')
   const [readOnly, setReadOnly] = useState(false)
-  const [zenumlOk, setZenumlOk] = useState(false)
 
   const sample = SAMPLES[sampleIndex]
-  useEffect(() => {
-    if (sample.typeId === 'zenuml') void ensureZenuml().then(setZenumlOk)
-  }, [sample])
-
-  const waitForZenuml = sample.typeId === 'zenuml' && !zenumlOk
 
   return (
     <div className="app">
@@ -160,8 +129,8 @@ export default function App() {
           <span className="sub">playground</span>
         </div>
         <div className="controls">
-          <select value={theme} onChange={(e) => setTheme(e.target.value)} title="Mermaid theme">
-            {['ink', 'dark', 'default', 'forest', 'neutral'].map((t) => (
+          <select value={theme} onChange={(e) => setTheme(e.target.value)} title="Diagram palette">
+            {Object.keys(PALETTES).map((t) => (
               <option key={t} value={t}>{t}</option>
             ))}
           </select>
@@ -189,7 +158,7 @@ export default function App() {
             <span><i className="dot render" /> render</span>
           </div>
         </aside>
-        {!waitForZenuml && <Workspace key={sampleIndex} code={sample.code} theme={theme} readOnly={readOnly} />}
+        <Workspace key={sampleIndex} code={sample.code} theme={theme} readOnly={readOnly} />
       </div>
     </div>
   )
@@ -202,7 +171,7 @@ function Workspace({ code, theme, readOnly }: { code: string; theme: string; rea
   const [status, setStatus] = useState<string | null>(null)
   const [pane, setPane] = useState<'codemirror' | 'monaco'>('codemirror')
 
-  // theme changes flow through the MermaidCanvas mermaidConfig prop
+  // theme changes flow through --pele-* CSS variables on the canvas (no re-render)
 
   // subscribe to the editor so toolbar state (undo/redo/selection) stays live
   useEditorCode(editor)
@@ -236,13 +205,11 @@ function Workspace({ code, theme, readOnly }: { code: string; theme: string; rea
         </div>
         <MermaidCanvas
           editor={editor}
-          mermaid={mermaid}
-          mermaidConfig={{ securityLevel: 'loose', ...themeConfig(theme) }}
           accentColor="#69a3ff"
           readOnly={readOnly}
           onReady={setView}
           className="canvas"
-          style={{ height: '100%' }}
+          style={{ ...PALETTES[theme], height: '100%' }}
         />
       </main>
       <section className="codepanel">
@@ -266,7 +233,7 @@ function Workspace({ code, theme, readOnly }: { code: string; theme: string; rea
         </div>
         {pane === 'monaco' ? <MonacoPane editor={editor} /> : <CodePane editor={editor} />}
         <div className="statusbar">
-          {status ? <span className="err">✕ {status}</span> : <span className="ok">✓ mermaid parse ok</span>}
+          {status ? <span className="err">✕ {status}</span> : <span className="ok">✓ renders</span>}
         </div>
       </section>
     </>

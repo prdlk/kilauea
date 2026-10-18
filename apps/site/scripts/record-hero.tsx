@@ -7,7 +7,7 @@
  * and an invisible double-click proves nothing. The previous asset was recorded without one, and there was
  * no script to re-record it. This is that script.
  *
- * Everything in frame is the real app: real Mermaid dagre layout, a real double-click, real keystrokes, the
+ * Everything in frame is the real app: real pele layout, a real double-click, real keystrokes, the
  * editor's own caret, and the app's own source-sync highlight. The ONLY painted element is the pointer,
  * because /playground paints none (/hero-loop does, but it is a different surface with different chrome).
  *
@@ -76,7 +76,7 @@ const browser = await chromium.launch()
 // asset is. Rendering into a 2400px viewport instead reflows the layout and shrinks everything.
 const page = await browser.newPage({ viewport: { width: 1200, height: 675 }, deviceScaleFactor: 2 })
 await page.goto(`${URL_BASE}/playground#code=${encodeCode(SRC)}`, { waitUntil: 'networkidle' })
-await page.waitForSelector('g.node', { timeout: 15_000 })
+await page.waitForSelector('g.pele-node', { timeout: 15_000 })
 await page.waitForTimeout(1200)
 
 await page.evaluate(
@@ -90,9 +90,9 @@ await page.evaluate(
   { arrow: ARROW_SVG, ibeam: IBEAM_SVG },
 )
 
-/** Node geometry straight off the rendered Mermaid SVG — never hand-placed. */
+/** Node geometry straight off the rendered diagram SVG — never hand-placed. */
 const target = await page.evaluate((label) => {
-  const n = [...document.querySelectorAll('g.node')].find((g) => (g.textContent ?? '').trim() === label)
+  const n = [...document.querySelectorAll('g.pele-node')].find((g) => (g.textContent ?? '').trim() === label)
   if (!n) return null
   const r = n.getBoundingClientRect()
   return { x: r.left + r.width / 2, y: r.top + r.height / 2 }

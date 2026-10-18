@@ -97,7 +97,9 @@ export const LINE_ITEM_CONFIGS: Record<string, LineTypeConfig> = {
     addTemplate: 'bar [10, 20, 30]',
   },
   architecture: {
-    match: (t) => firstBracketed(t),
+    // `service db(database)[Database]`: the icon parenthesis comes first, the
+    // rendered label is the bracketed part
+    match: (t) => /\[([^\]]+)\]/.exec(t)?.[1] ?? firstBracketed(t),
     addTemplate: 'service new1(server)[New Service]',
   },
   requirement: {

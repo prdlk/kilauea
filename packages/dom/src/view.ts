@@ -9,9 +9,9 @@ import {
   type FlowCurve,
   type MessageOp,
   type ParticipantType,
-  type SequenceGraph,
   type ShapeId,
 } from '@visimer/core'
+import { parse as peleParse, PeleError, render as peleRender, type RenderOptions } from 'pele'
 import {
   correlateClass,
   correlateEr,
@@ -77,7 +77,7 @@ function strokeSvg(line: EdgeLine): string {
   </svg>`
 }
 
-/** SVG preview of one of the mermaid curve shapes. */
+/** SVG preview of one of the flowchart curve shapes. */
 function curveSvg(curve: FlowCurve): string {
   const path = curve === 'linear'
     ? 'M4,14 L14,4 L28,14'
@@ -109,18 +109,27 @@ function readFlowCurve(code: string): FlowCurve {
   return (m?.[1] as FlowCurve | undefined) ?? 'basis'
 }
 
-/** Read the animation speed for an edge's linkStyle line (or 'none'). */
-function readEdgeAnimation(code: string, edgeOrder: number): EdgeAnimation {
+/** Animation duration (seconds) an edge's `linkStyle` line asks for, or null. */
+function readEdgeAnimationSeconds(code: string, edgeOrder: number): number | null {
   const re = new RegExp(`linkStyle\\s+${edgeOrder}\\b[^\\n]*animation-duration\\s*:\\s*([0-9.]+)s`, 'i')
   const m = re.exec(code)
-  if (!m) return 'none'
-  return Number(m[1]) <= 1 ? 'fast' : 'slow'
+  return m ? Number(m[1]) : null
+}
+
+/** Read the animation speed for an edge's linkStyle line (or 'none'). */
+function readEdgeAnimation(code: string, edgeOrder: number): EdgeAnimation {
+  const seconds = readEdgeAnimationSeconds(code, edgeOrder)
+  if (seconds === null) return 'none'
+  return seconds <= 1 ? 'fast' : 'slow'
 }
 
 /**
- * Inject the `@keyframes vsmr-flow` rule that the `linkStyle` animation emitter
- * references. Called once per render so a re-render replacing the SVG picks
- * the rule back up; idempotent within a single SVG.
+ * Inject the `@keyframes vsmr-flow` rule behind animated edges. Pele filters
+ * `animation-*` declarations out of `linkStyle`, so the view reads them back
+ * from the source and sets the animation on the matched path itself
+ * (`applyEdgeAnimations`); this rule is what that animation references.
+ * Called once per render so a re-render replacing the SVG picks the rule
+ * back up; idempotent within a single SVG.
  *
  * The offset per cycle MUST be an integer multiple of the visual dash period
  * (`stroke-dasharray: 8` → dash + gap = 16). Anything else and the pattern
@@ -138,10 +147,18 @@ function injectAnimationKeyframes(svg: SVGElement): void {
   svg.insertBefore(style, svg.firstChild)
 }
 
-export interface MermaidLike {
-  initialize(config: Record<string, unknown>): void
-  render(id: string, code: string): Promise<{ svg: string; bindFunctions?: (el: Element) => void }>
-  parse(code: string, options?: Record<string, unknown>): Promise<unknown>
+/** A diagram-level parse or render failure, as published to diagnostics. */
+function rendererDiagnostic(err: unknown, editor: MermaidWysiwygEditor): Diagnostic {
+  const raw = err instanceof Error ? err.message : String(err)
+  const message = raw.split('\n')[0]
+  let span: Diagnostic['span'] = null
+  if (err instanceof PeleError && err.line > 0) {
+    // pele reports end-of-input errors one past the last line
+    const lines = editor.result.lines
+    const line = lines[Math.min(err.line, lines.length) - 1]
+    if (line) span = { start: line.start, end: line.end }
+  }
+  return { message, span, severity: 'error', source: 'renderer' }
 }
 
 export type Tool = 'select' | 'connect'
@@ -155,9 +172,13 @@ export interface ViewHooks {
 export interface ViewOptions {
   editor: MermaidWysiwygEditor
   container: HTMLElement
-  mermaid: MermaidLike
-  /** merged into mermaid.initialize; e.g. { theme: 'dark' } */
-  mermaidConfig?: Record<string, unknown>
+  /**
+   * Pele render options. `fontFamily` / `fontFamilyMono` default to the
+   * container's `--pele-font` / `--pele-font-mono` custom properties, then
+   * to its computed font. Colors come from the `--pele-*` CSS variables on
+   * the container (see the pele theming docs), not from render options.
+   */
+  renderOptions?: RenderOptions
   debounceMs?: number
   readOnly?: boolean
   /**
@@ -200,15 +221,11 @@ const BASE_CSS = `
 .mw-canvas.mw-readonly [data-mw-entity] { cursor: default; }
 .mw-canvas.mw-tool-connect [data-mw-entity^="node:"] { cursor: crosshair; }
 .mw-canvas [data-mw-entity]:hover { filter: drop-shadow(0 0 3px var(--mw-accent, #6366f1)); }
-/* The transparent hit overlay eats the hover on visible edge paths — restore
- * the drop-shadow on the sibling visible path when the overlay is hovered.
- * Overlay is placed BEFORE the visible path (insertBefore), so `+` matches. */
-.mw-canvas [data-mw-hit-overlay]:hover + [data-mw-entity] { filter: drop-shadow(0 0 3px var(--mw-accent, #6366f1)); }
 .mw-canvas .mw-selected { filter: drop-shadow(0 0 2px var(--mw-accent, #6366f1)) drop-shadow(0 0 5px var(--mw-accent, #6366f1)) !important; }
 .mw-canvas .mw-ghost-edge { stroke: var(--mw-accent, #6366f1); stroke-width: 2; stroke-dasharray: 6 4; fill: none; pointer-events: none; }
 .mw-canvas .mw-connect-source { filter: drop-shadow(0 0 5px var(--mw-accent, #6366f1)) !important; }
 .mw-inplace-editor {
-  position: absolute; z-index: 10; white-space: pre; outline: none;
+  position: absolute; z-index: 10; white-space: pre; outline: none; cursor: text; min-width: 8px;
   padding: 1px 3px; margin: -1px -3px; border-radius: 3px;
   caret-color: var(--mw-accent, #6366f1);
   box-shadow: 0 1.5px 0 0 var(--mw-accent, #6366f1);
@@ -225,10 +242,6 @@ const BASE_CSS = `
   background: var(--mw-accent, #6366f1); border-radius: 2px; pointer-events: none;
   box-shadow: 0 0 6px var(--mw-accent, #6366f1);
 }
-.mw-canvas [contenteditable="true"] {
-  outline: none; cursor: text; white-space: pre-wrap; min-width: 8px;
-  caret-color: var(--mw-accent, #6366f1);
-}
 @media (pointer: coarse) {
   .mw-zoom-controls { gap: 6px; right: 12px; bottom: 12px; }
   .mw-zoom-btn { width: 38px; height: 38px; border-radius: 9px; }
@@ -237,100 +250,19 @@ const BASE_CSS = `
 `
 
 let styleInjected = false
-/** global counter so concurrent views never collide on mermaid's DOM ids */
-let renderIdCounter = 0
-
-/**
- * Read the in-place editor's label back to the string form the mermaid source
- * carries. `textContent` alone drops `<br>` DOM elements to nothing, so a
- * source label like `"3. Layout<br/>dagre computes coordinates"` round-trips
- * to `"3. Layoutdagre computes coordinates"` on a no-op blur — the browser's
- * innerHTML preserves the break, and normalising the two forms mermaid emits
- * (`<br>` on Chromium, occasional `<br/>` on serializers) to the canonical
- * source form `<br/>` keeps the strict equality check in the caller
- * meaningful. Trims outer whitespace to match the prior `.textContent.trim()`
- * contract. Kept small and reversible — any richer HTML the user paste-injects
- * flows through untouched (mermaid accepts a small allowlist of inline tags
- * inside labels; the parser rejects anything it doesn't know).
- */
-function readLabelHtml(label: HTMLElement): string {
-  return (label.innerHTML ?? '')
-    .replace(/<br\s*\/?>/gi, '<br/>')
-    // Chromium's contenteditable substitutes `&nbsp;` for a trailing (or
-    // adjacent) space so the character stays visible. As raw HTML that's
-    // the six-character sequence `&nbsp;` — the `&` matches NEEDS_QUOTE,
-    // so an intermediate typing state ("WYSIWYG editor" + SPACE →
-    // "WYSIWYG editor&nbsp;") gets wrapped in quotes on the live commit
-    // and `renameNode`'s `ref.quoted` branch then preserves the quotes
-    // forever, even after the trailing space is followed by more
-    // characters. Canonicalising the entity to a real space lets the
-    // trim below strip it so the label reads cleanly and the source
-    // rewriter never sees the transient `&`.
-    .replace(/&nbsp;/gi, ' ')
-    .trim()
-}
-
-function readLabelSnapshot(label: HTMLElement): string {
-  return (label.innerHTML ?? '').replace(/<br\s*\/?>/gi, '<br/>')
-}
-
-interface LiveEdit {
-  value: string
-  nodes: Node[]
-  caret: number
-}
-
-/**
- * Absolute caret offset within `root`, counted across all of its text nodes.
- * `Selection.anchorOffset` alone is relative to the anchor node — a label that
- * the browser split into several text nodes (or that contains `<br>`) would
- * restore the caret into the wrong word.
- */
-function caretOffsetWithin(root: HTMLElement): number {
-  const sel = window.getSelection()
-  if (!sel?.anchorNode || !root.contains(sel.anchorNode)) return -1
-  const range = document.createRange()
-  range.selectNodeContents(root)
-  range.setEnd(sel.anchorNode, sel.anchorOffset)
-  return range.toString().length
-}
-
-/** place a collapsed caret at an absolute text offset within `root` */
-function placeCaretAt(root: HTMLElement, offset: number) {
-  const sel = window.getSelection()
-  if (!sel) return
-  const range = document.createRange()
-  let remaining = Math.max(0, offset)
-  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT)
-  let node = walker.nextNode() as Text | null
-  while (node) {
-    const len = node.textContent?.length ?? 0
-    if (remaining <= len) {
-      range.setStart(node, remaining)
-      range.collapse(true)
-      sel.removeAllRanges()
-      sel.addRange(range)
-      return
-    }
-    remaining -= len
-    node = walker.nextNode() as Text | null
-  }
-  range.selectNodeContents(root)
-  range.collapse(false)
-  sel.removeAllRanges()
-  sel.addRange(range)
-}
+/** per-view counter so accessibility ids never collide between canvases */
+let viewCounter = 0
 
 /**
  * Interactive canvas bound to a MermaidWysiwygEditor.
- * Renders through mermaid itself (full fidelity) and overlays interaction:
- * click-select, drag-to-connect, double-click inline label editing.
+ * Renders through pele and overlays interaction: click-select,
+ * drag-to-connect, double-click label editing.
  */
 export class MermaidCanvasView {
   readonly editor: MermaidWysiwygEditor
   readonly container: HTMLElement
-  private mermaid: MermaidLike
-  private mermaidConfig: Record<string, unknown>
+  private renderOptions: RenderOptions
+  private readonly idPrefix: string
   private svgHost: HTMLElement
   private overlayHost: HTMLElement
   private errorBadge: HTMLElement
@@ -343,15 +275,6 @@ export class MermaidCanvasView {
   private svg: SVGSVGElement | null = null
   /** tracks external transforms on the svg (host pan/zoom toolbars) */
   private svgTransformObserver: MutationObserver | null = null
-  /**
-   * Re-runs sequence correlation (not `bindSvg`, which would double-register
-   * every pointer/click handler) once a hidden-mount SVG becomes visible.
-   * Sequence correlation matches lifelines by geometry, and
-   * `getBoundingClientRect` returns all zeros for a `display:none` ancestor,
-   * so the initial pass skips lifeline correlation and this observer picks
-   * it up on reveal.
-   */
-  private visibilityRetryObserver: IntersectionObserver | null = null
   private popoverFollowRaf = 0
   /** our own pan/zoom writes must not trip the external-transform observer */
   private applyingOwnTransform = false
@@ -382,23 +305,22 @@ export class MermaidCanvasView {
   private inlineInput: HTMLElement | null = null
   private inlineHidden: { el: HTMLElement | SVGElement; prevVisibility: string } | null = null
   private pendingEditEntity: string | null = null
-  private inPlaceSession: {
+  /**
+   * The open label-editing session. While it lasts, renders are held
+   * (`renderHeldByEdit`) so the SVG under the overlay never changes; live
+   * commits keep the code surfaces in sync and the canvas catches up when the
+   * session ends.
+   */
+  private editSession: {
     entityId: string
-    labelSelector: string
     original: string
-    originalNodes: Node[]
-    openedOn: HTMLElement
     lastCommitted: string
-    caretOffset: number
     commitValue: (v: string) => void
     liveTimer: ReturnType<typeof setTimeout> | null
-    /** the label element the session is currently attached to */
-    label: HTMLElement | null
-    /** finish the session from outside the attach closure (commit or revert) */
-    finish: ((commit: boolean) => void) | null
+    finish: (commit: boolean) => void
   } | null = null
   private lastError: string | null = null
-  /** a render was requested while an in-place edit was typing; applied on finish */
+  /** a render was requested while a label edit was typing; applied on finish */
   private renderHeldByEdit = false
   // pan/zoom state (only used when options.panZoom is set)
   private panZoomEnabled: boolean
@@ -410,8 +332,6 @@ export class MermaidCanvasView {
   private svgSize: { width: number; height: number } | null = null
   private panSession: { pointerId: number; x: number; y: number; tx: number; ty: number; moved: boolean } | null = null
   private zoomControls: HTMLElement | null = null
-  /** per-instance staleness counter; a shared one would drop renders across instances */
-  private renderSeq = 0
   /** a font-settled re-measure is already armed; don't stack a second one */
   private awaitingFonts = false
   private destroyed = false
@@ -419,13 +339,13 @@ export class MermaidCanvasView {
   constructor(options: ViewOptions) {
     this.editor = options.editor
     this.container = options.container
-    this.mermaid = options.mermaid
+    this.renderOptions = options.renderOptions ?? {}
+    this.idPrefix = `mw${++viewCounter}-`
     this.readOnly = options.readOnly ?? false
     this.panZoomEnabled = options.panZoom ?? false
     this.debounceMs = options.debounceMs ?? 200
     this.defaultEdge = options.defaultEdge ?? {}
     this.hooks = options.hooks ?? {}
-    this.mermaidConfig = { startOnLoad: false, ...options.mermaidConfig }
 
     if (!styleInjected) {
       const style = document.createElement('style')
@@ -449,8 +369,6 @@ export class MermaidCanvasView {
     this.container.append(this.svgHost, this.overlayHost, this.errorBadge)
     this.popover = new Popover(this.overlayHost)
 
-    this.mermaid.initialize(this.mermaidConfig)
-
     this.disposers.push(
       this.editor.on('change', () => this.scheduleRender()),
       this.editor.on('selectionChange', () => this.applySelectionStyles()),
@@ -466,8 +384,7 @@ export class MermaidCanvasView {
     const docPointerDown = (e: PointerEvent) => {
       const target = e.target as Node | null
       if (!target || this.container.contains(target)) return
-      this.inPlaceSession?.finish?.(true)
-      // the overlay editor commits itself via its own blur handler
+      // the label editor commits itself via its own blur handler
       this.clearLifelineUi()
       this.popover.hide()
       if (this.editor.selection.length) this.editor.clearSelection('canvas')
@@ -479,7 +396,7 @@ export class MermaidCanvasView {
 
     if (this.panZoomEnabled) this.setupPanZoom()
 
-    void this.render()
+    this.render()
   }
 
   on<K extends keyof ViewEventMap>(event: K, fn: (payload: ViewEventMap[K]) => void): () => void {
@@ -510,7 +427,7 @@ export class MermaidCanvasView {
   setReadOnly(readOnly: boolean) {
     this.readOnly = readOnly
     this.container.classList.toggle('mw-readonly', readOnly)
-    this.closeInlineEditor(false)
+    this.finishEdit(true)
     this.cancelConnect()
     this.clearLifelineUi()
     this.updatePopover()
@@ -525,12 +442,20 @@ export class MermaidCanvasView {
     this.container.style.setProperty('--mw-accent', color)
   }
 
-  /** Re-initialize mermaid with new config (e.g. theme) and re-render. */
-  setMermaidConfig(config: Record<string, unknown>) {
-    this.mermaidConfig = { ...this.mermaidConfig, ...config }
-    this.mermaid.initialize(this.mermaidConfig)
+  /** Replace the pele render options (fonts, limits, link policy, …) and re-render. */
+  setRenderOptions(options: RenderOptions) {
+    this.renderOptions = options
     this.lastRenderedCode = ''
-    void this.render()
+    this.render()
+  }
+
+  /**
+   * Re-render with the current source, e.g. after the container's `--pele-*`
+   * font variables changed. Color variables need no re-render.
+   */
+  refresh() {
+    this.lastRenderedCode = ''
+    this.render()
   }
 
   /** Add a node and immediately open its inline label editor. */
@@ -542,8 +467,23 @@ export class MermaidCanvasView {
   }
 
   private scheduleRender() {
-    if (this.renderTimer) clearTimeout(this.renderTimer)
-    this.renderTimer = setTimeout(() => void this.render(), this.debounceMs)
+    clearTimeout(this.renderTimer ?? undefined)
+    this.renderTimer = setTimeout(() => this.render(), this.debounceMs)
+  }
+
+  /**
+   * The options every render passes to pele: the caller's, plus a unique id
+   * prefix and the fonts the container is actually styled with (pele measures
+   * labels with the font it is told about, so the two must agree).
+   */
+  private effectiveRenderOptions(): RenderOptions {
+    const cs = getComputedStyle(this.container)
+    return {
+      fontFamily: cs.getPropertyValue('--pele-font').trim() || cs.fontFamily || undefined,
+      fontFamilyMono: cs.getPropertyValue('--pele-font-mono').trim() || undefined,
+      ...this.renderOptions,
+      idPrefix: this.renderOptions.idPrefix ?? this.idPrefix,
+    }
   }
 
   // ----- pan / zoom -----
@@ -585,7 +525,7 @@ export class MermaidCanvasView {
       }
       if (e.button !== 0) return
       if (this.tool === 'connect' || e.altKey) return
-      if (this.inlineInput || this.inPlaceSession) return
+      if (this.inlineInput) return
       const target = e.target as Element | null
       if (!target || !this.svgHost.contains(target)) return
       // background only — entity presses belong to select/drag gestures
@@ -770,11 +710,11 @@ export class MermaidCanvasView {
     else this.fitView()
   }
 
-  async render(): Promise<void> {
+  render(): void {
     // typing in place must feel like a plain textbox: never swap the SVG out
     // from under an active session. Live commits keep the code surfaces in
     // sync; the canvas catches up the moment the session ends.
-    if (this.inPlaceSession) {
+    if (this.editSession) {
       this.renderHeldByEdit = true
       return
     }
@@ -791,84 +731,48 @@ export class MermaidCanvasView {
       }
       return
     }
-    const seq = ++this.renderSeq
-    const id = `mw-render-${++renderIdCounter}`
+    let svg: string
     try {
-      // mermaid.initialize writes a module-global config, so with more than one
-      // canvas on a page the last one to mount owns it and every other canvas
-      // renders with the wrong theme and layout. Re-assert ours here rather than
-      // trusting whatever was initialized in the constructor.
-      this.mermaid.initialize(this.mermaidConfig)
-      const { svg } = await this.mermaid.render(id, code)
-      if (seq !== this.renderSeq) return // stale
-      // an in-place edit may have kept typing since the live commit this render
-      // came from — snapshot the label's real text and caret before the swap
-      // destroys them, then reinject below so no keystroke is lost
-      // a session may have OPENED while the render was in flight — re-read it
-      // through the accessor so the early-return narrowing above doesn't apply
-      let liveEdit: LiveEdit | null = null
-      const midFlightSession = this.activeInPlaceSession()
-      const editingLabel = midFlightSession?.label
-      if (midFlightSession && editingLabel?.isConnected) {
-        liveEdit = {
-          value: readLabelSnapshot(editingLabel),
-          nodes: [...editingLabel.childNodes],
-          caret: caretOffsetWithin(editingLabel),
-        }
-        // a pending live-commit timer closes over the label we are about to
-        // detach; the reinjection below reschedules it against the new one
-        if (midFlightSession.liveTimer) {
-          clearTimeout(midFlightSession.liveTimer)
-          midFlightSession.liveTimer = null
-        }
-      }
-      this.lastRenderedCode = code
-      this.lastError = null
-      this.errorBadge.style.display = 'none'
-      this.svgHost.innerHTML = svg
-      this.svg = this.svgHost.querySelector('svg')
-      if (this.svg) {
-        if (this.panZoomEnabled) this.prepareSvgForPanZoom()
-        else this.svg.style.maxWidth = '100%'
-        injectAnimationKeyframes(this.svg)
-        this.bindSvg()
-      }
-      this.editor.setDiagnostics([])
-      this.emit('render', { ok: true })
-      this.remeasureWhenFontsSettle()
-      if (this.activeInPlaceSession()) {
-        this.resumeInPlaceSession(liveEdit)
-      } else if (this.pendingEditEntity) {
-        const entity = this.pendingEditEntity
-        this.pendingEditEntity = null
-        if (this.editor.entityExists(entity)) this.editEntityLabel(entity)
-      }
+      svg = peleRender(code, this.effectiveRenderOptions()).svg
     } catch (err) {
-      if (seq !== this.renderSeq) return
-      // mermaid can leave a temp error element behind
-      document.getElementById(`d${id}`)?.remove()
-      document.getElementById(id)?.remove()
-      const message = err instanceof Error ? err.message.split('\n')[0] : String(err)
-      this.lastError = message
-      this.errorBadge.textContent = `render error: ${message}`
+      const diag = rendererDiagnostic(err, this.editor)
+      this.lastError = diag.message
+      this.errorBadge.textContent = `render error: ${diag.message}`
       this.errorBadge.style.display = 'block'
-      const diag: Diagnostic = { message, span: null, severity: 'error', source: 'mermaid' }
       this.editor.setDiagnostics([diag])
-      this.emit('render', { ok: false, error: message })
+      this.emit('render', { ok: false, error: diag.message })
+      return
+    }
+    this.lastRenderedCode = code
+    this.lastError = null
+    this.errorBadge.style.display = 'none'
+    this.svgHost.innerHTML = svg
+    this.svg = this.svgHost.querySelector('svg')
+    if (this.svg) {
+      if (this.panZoomEnabled) this.prepareSvgForPanZoom()
+      injectAnimationKeyframes(this.svg)
+      this.bindSvg()
+    }
+    this.editor.setDiagnostics([])
+    this.emit('render', { ok: true })
+    this.remeasureWhenFontsSettle()
+    if (this.pendingEditEntity) {
+      const entity = this.pendingEditEntity
+      this.pendingEditEntity = null
+      if (this.editor.entityExists(entity)) this.editEntityLabel(entity)
     }
   }
 
   /**
-   * Mermaid measures label text against the fonts the document can use at the
-   * moment it renders, then bakes those measurements into fixed-width
-   * `foreignObject` boxes. A webfont that lands afterwards — the normal case
-   * on a first visit, where `font-display: swap` deliberately paints fallback
-   * text first — is wider than the box measured for the fallback, so every
-   * label ends up clipped a few pixels short for the rest of the session.
-   * Nothing in mermaid or in the browser re-measures on its own.
+   * Pele measures label text with the fonts the document can use at the
+   * moment it renders and sizes every shape from those widths. A webfont that
+   * lands afterwards — the normal case on a first visit, where
+   * `font-display: swap` deliberately paints fallback text first — is wider
+   * than the fallback it measured, so every label overflows its shape for
+   * the rest of the session. Nothing re-measures on its own.
    *
    * So once the document's fonts have settled, render again. Asking *after*
-   * the render matters: mermaid's own measuring pass is usually what first
+   * the render matters: pele's own measuring pass is usually what first
    * requests the webfont, so the pending load is only visible by then.
    *
    * This cannot loop. It arms only while fonts are still loading, and by the
@@ -887,7 +791,7 @@ export class MermaidCanvasView {
       // the code has not changed, so render() would short-circuit on
       // lastRenderedCode — clear it to force the re-measure through
       this.lastRenderedCode = ''
-      void this.render()
+      this.render()
     }
     // `ready` is spec'd never to reject, but a partial polyfill could. Either
     // way the measurements are as final as they are going to get, so both
@@ -916,7 +820,7 @@ export class MermaidCanvasView {
                   : null
     this.seqCorrelation = sequence ? correlateSequence(svg, sequence) : null
     this.clearLifelineUi()
-    this.armVisibilityRetry(svg, sequence)
+    if (flowchart && this.correlation) this.applyEdgeAnimations(flowchart.edges, this.correlation)
 
     svg.addEventListener('click', (e) => this.onSvgClick(e))
     svg.addEventListener('dblclick', (e) => this.onSvgDblClick(e))
@@ -955,29 +859,18 @@ export class MermaidCanvasView {
     this.applySelectionStyles()
   }
 
-  private armVisibilityRetry(svg: SVGSVGElement, sequence: SequenceGraph | null): void {
-    this.visibilityRetryObserver?.disconnect()
-    this.visibilityRetryObserver = null
-    if (!sequence) return
-    // Key retry off the correlation result: an empty lifelines map is the
-    // hidden-mount case (the same predicate the guard in correlate.ts
-    // enforces). Avoids re-checking bbox with inverted polarity in two
-    // files.
-    if (this.seqCorrelation && this.seqCorrelation.lifelines.size > 0) return
-    if (typeof IntersectionObserver === 'undefined') return
-    this.visibilityRetryObserver = new IntersectionObserver((entries) => {
-      if (!entries.some((e) => e.intersectionRatio > 0)) return
-      // The intersection notification can fire while the SVG is still in a
-      // zero-width flex parent mid-transition; re-check before burning the
-      // one-shot so a permanently degraded state can't lock in.
-      if (svg.getBoundingClientRect().width === 0) return
-      this.visibilityRetryObserver?.disconnect()
-      this.visibilityRetryObserver = null
-      // Re-run correlation only; bindSvg's addEventListener block would
-      // double-register every pointer/click handler.
-      if (this.svg === svg) this.seqCorrelation = correlateSequence(svg, sequence)
-    })
-    this.visibilityRetryObserver.observe(svg)
+  /**
+   * Pele drops `animation-*` declarations from `linkStyle`, so the dash
+   * animation the `setEdgeAnimation` op writes has to be re-applied here on
+   * the matched line path (the `stroke-dasharray` it also writes survives).
+   */
+  private applyEdgeAnimations(edges: Array<{ entityId: string; order: number }>, correlation: Correlation) {
+    for (const edge of edges) {
+      const seconds = readEdgeAnimationSeconds(this.editor.code, edge.order)
+      const path = correlation.edges.get(edge.entityId) as SVGElement | undefined
+      if (seconds === null || !path?.style) continue
+      path.style.animation = `vsmr-flow ${seconds}s linear infinite`
+    }
   }
 
   private entityFromEvent(e: Event): string | null {
@@ -1018,7 +911,7 @@ export class MermaidCanvasView {
     }
     // while an in-place editor is open, clicks must not re-select or steal
     // focus — blurring the editor already commits the edit
-    if (this.inlineInput || this.inPlaceSession) return
+    if (this.inlineInput) return
     const hit = this.entityHitFromEvent(e)
     if (hit) {
       // two quick taps on the same entity are a double-click: route through
@@ -1081,10 +974,9 @@ export class MermaidCanvasView {
       if (member) {
         e.preventDefault()
         this.popover.hide()
-        this.editInPlace(
+        this.openOverlayEditor(
           `member:${clsId}:${lineIndex}`,
           memberEl,
-          '.nodeLabel',
           member.text,
           (v) => this.editor.dispatch({ type: 'cl.setMemberText', id: clsId, memberLine: lineIndex, text: v }, 'canvas'),
           { live: false },
@@ -1102,7 +994,7 @@ export class MermaidCanvasView {
       if (attr) {
         e.preventDefault()
         this.popover.hide()
-        this.openOverlayEditor(attrEl, attr.text, (v) =>
+        this.openOverlayEditor(`attr:${entityId}:${attrLine}`, attrEl, attr.text, (v) =>
           this.editor.dispatch({ type: 'er.setAttributeText', id: entityId, attrLine, text: v }, 'canvas'),
         )
         return
@@ -1263,13 +1155,10 @@ export class MermaidCanvasView {
   editEntityLabel(entityId: string, anchorHint?: Element | null) {
     if (this.readOnly) return
     const { flowchart, sequence } = this.editor.result
-    this.closeInlineEditor(false)
-    // moving to a different entity must settle the open session first — its
-    // deferred blur handler would see a replaced session and bail, stranding
-    // the old label contenteditable with uncommitted text
-    if (this.inPlaceSession && this.inPlaceSession.entityId !== entityId) {
-      this.inPlaceSession.finish?.(true)
-    }
+    // moving to a different entity settles the open session first (commit);
+    // the overlay's own blur handler would otherwise see a replaced session
+    // and bail, stranding uncommitted text
+    this.finishEdit(true)
     this.popover.hide()
 
     // only honor a hint that actually belongs to this entity
@@ -1285,24 +1174,20 @@ export class MermaidCanvasView {
       current = node.label
       anchor = this.correlation?.nodes.get(entityId) ?? null
       commitValue = (v) => this.editor.dispatch({ type: 'renameNode', id: node.id, label: v }, 'canvas')
-      // natural in-node editing when mermaid rendered an HTML label
-      if (anchor && this.editInPlace(entityId, anchor, '.nodeLabel', current, commitValue)) return
     } else if (flowchart && entityId.startsWith('edge:')) {
       const edge = flowchart.edges.find((ed) => ed.entityId === entityId)
       if (!edge) return
       current = edge.label ?? ''
       commitValue = (v) => this.editor.dispatch({ type: 'setEdgeLabel', edgeId: entityId, label: v }, 'canvas')
       anchor = this.edgeAnchor(entityId, Boolean(edge.label))
-      if (edge.label && anchor && this.editInPlace(entityId, anchor, '.edgeLabel', current, commitValue)) return
     } else if (flowchart && entityId.startsWith('subgraph:')) {
       const sg = flowchart.subgraphs.find((s) => s.entityId === entityId)
       if (!sg) return
       current = sg.title ?? sg.id
       anchor =
-        this.correlation?.nodes.get(entityId)?.querySelector('.cluster-label') ??
+        this.correlation?.nodes.get(entityId)?.querySelector('.pele-cluster-label') ??
         hint ??
         this.correlation?.nodes.get(entityId) ??
-        this.svg?.querySelector(`#${CSS.escape(sg.id)}`) ??
         null
       commitValue = (v) => this.editor.dispatch({ type: 'renameSubgraph', id: sg.id, title: v }, 'canvas')
     } else if (this.editor.result.state && entityId.startsWith('state:')) {
@@ -1311,14 +1196,12 @@ export class MermaidCanvasView {
       current = s.label
       anchor = this.correlation?.nodes.get(entityId) ?? null
       commitValue = (v) => this.editor.dispatch({ type: 'st.setStateLabel', id: s.id, label: v }, 'canvas')
-      if (anchor && this.editInPlace(entityId, anchor, '.nodeLabel', current, commitValue)) return
     } else if (this.editor.result.state && entityId.startsWith('trans:')) {
       const t = this.editor.result.state.transitions.find((tr) => tr.entityId === entityId)
       if (!t) return
       current = t.label ?? ''
       anchor = this.edgeAnchor(entityId, Boolean(t.label))
       commitValue = (v) => this.editor.dispatch({ type: 'st.setTransitionLabel', transId: entityId, label: v }, 'canvas')
-      if (t.label && anchor && this.editInPlace(entityId, anchor, '.edgeLabel', current, commitValue)) return
     } else if (this.editor.result.classGraph && entityId.startsWith('class:')) {
       const c = this.editor.result.classGraph.classById.get(entityId.slice(6))
       if (!c) return
@@ -1379,236 +1262,57 @@ export class MermaidCanvasView {
       commitValue = (v) => this.editor.dispatch({ type: 'seq.setEventText', eventId: entityId, text: v }, 'canvas')
     }
     if (!anchor) return
-    this.openOverlayEditor(anchor, current, commitValue)
+    this.openOverlayEditor(entityId, anchor, current, commitValue)
   }
 
   /**
-   * Edit the label directly inside the node: mermaid's HTML labels
-   * (foreignObject spans) become contenteditable, so text is edited in place.
-   * While typing, changes are live-committed (debounced) so the node grows to
-   * fit — the session survives the re-render and re-attaches with the caret
-   * restored.
+   * The visual text node inside a target: editing must sit on the glyphs. A
+   * hit on a bare shape (a participant box `<rect>`) has no text descendants;
+   * the glyphs are a sibling inside the same group, so widen to the parent.
    */
-  private editInPlace(
-    entityId: string,
-    anchor: Element,
-    labelSelector: string,
-    current: string,
-    commitValue: (value: string) => void,
-    opts: { live?: boolean } = {},
-  ): boolean {
-    const label = anchor.matches?.(labelSelector)
-      ? ((anchor.querySelector<HTMLElement>('p') ?? anchor) as HTMLElement)
-      : (anchor.querySelector<HTMLElement>(`${labelSelector} p`) ?? anchor.querySelector<HTMLElement>(labelSelector))
-    if (!label || !(label instanceof HTMLElement)) return false
-
-    const resuming = this.inPlaceSession?.entityId === entityId
-    if (resuming && this.inPlaceSession!.label === label && label.isConnected) {
-      // the session is already attached to this exact element (e.g. a second
-      // double-click mid-session) — re-adding listeners would duplicate every
-      // commit and let stale closures race the live ones
-      label.focus()
-      return true
-    }
-    if (!resuming) {
-      this.inPlaceSession = {
-        entityId,
-        labelSelector,
-        original: current,
-        originalNodes: [...label.childNodes].map((node) => node.cloneNode(true)),
-        openedOn: label,
-        lastCommitted: current,
-        caretOffset: -1,
-        commitValue,
-        liveTimer: null,
-        label: null,
-        finish: null,
-      }
-    }
-    const session = this.inPlaceSession!
-    session.label = label
-
-    label.setAttribute('contenteditable', 'true')
-    // the box can't grow while renders are held — keep the text on one line
-    // and let it spill past the shape instead of wrapping into the clip
-    const clipHost = label.closest('foreignObject') as SVGElement | null
-    const prevWhiteSpace = label.style.whiteSpace
-    const prevClipOverflow = clipHost?.style.overflow ?? ''
-    label.style.whiteSpace = 'nowrap'
-    if (clipHost) clipHost.style.overflow = 'visible'
-    label.focus()
-    if (resuming && session.caretOffset >= 0) {
-      placeCaretAt(label, session.caretOffset)
-    } else {
-      const selection = window.getSelection()
-      const range = document.createRange()
-      range.selectNodeContents(label)
-      selection?.removeAllRanges()
-      selection?.addRange(range)
-    }
-
-    const rememberCaret = () => {
-      const offset = caretOffsetWithin(label)
-      if (offset >= 0) session.caretOffset = offset
-    }
-
-    const liveCommit = () => {
-      if (this.inPlaceSession !== session) return
-      const value = readLabelHtml(label)
-      if (!value || value === session.lastCommitted) return
-      rememberCaret()
-      session.lastCommitted = value
-      session.commitValue(value)
-    }
-
-    const finish = (commit: boolean) => {
-      if (this.inPlaceSession !== session) return
-      this.inPlaceSession = null
-      if (session.liveTimer) clearTimeout(session.liveTimer)
-      label.removeAttribute('contenteditable')
-      label.style.whiteSpace = prevWhiteSpace
-      if (clipHost) clipHost.style.overflow = prevClipOverflow
-      label.removeEventListener('keydown', onKey)
-      label.removeEventListener('blur', onBlur)
-      label.removeEventListener('input', onInput)
-      const value = readLabelHtml(label)
-      if (commit) {
-        if (value && value !== session.lastCommitted) session.commitValue(value)
-        else if (!value) label.textContent = session.lastCommitted
-      } else {
-        // Escape: revert everything, including live-committed intermediate
-        // states. Restore the label DOM directly too — when the reverted code
-        // equals the last rendered code, render() short-circuits and would
-        // leave the typed text on screen.
-        // STOP: never parse session.original as HTML; it is unsanitized diagram source.
-        label.replaceChildren(...session.originalNodes)
-        if (session.lastCommitted !== session.original) session.commitValue(session.original)
-        if (label !== session.openedOn) {
-          this.lastRenderedCode = ''
-          this.scheduleRender()
-        }
-      }
-      // apply any canvas render held back while the session was typing
-      if (this.renderHeldByEdit) {
-        this.renderHeldByEdit = false
-        this.scheduleRender()
-      }
-      this.updatePopover()
-    }
-
-    const onInput = () => {
-      if (opts.live === false) return
-      if (session.liveTimer) clearTimeout(session.liveTimer)
-      session.liveTimer = setTimeout(liveCommit, 450)
-    }
-    const onKey = (e: KeyboardEvent) => {
-      e.stopPropagation()
-      if (e.key === 'Enter') {
-        e.preventDefault()
-        finish(true)
-      } else if (e.key === 'Escape') {
-        finish(false)
-      }
-    }
-    const onBlur = () => {
-      // a re-render removes the label mid-session — that is not a real blur
-      setTimeout(() => {
-        if (this.inPlaceSession === session && label.isConnected && document.activeElement !== label) {
-          finish(true)
-        }
-      }, 60)
-    }
-    session.finish = finish
-    label.addEventListener('keydown', onKey)
-    label.addEventListener('blur', onBlur)
-    label.addEventListener('input', onInput)
-    return true
-  }
-
-  /** non-narrowing accessor: render() re-reads the session after awaits */
-  private activeInPlaceSession() {
-    return this.inPlaceSession
-  }
-
-  /** re-attach a live in-place editing session after a render replaced the DOM */
-  private resumeInPlaceSession(liveEdit?: LiveEdit | null) {
-    const session = this.inPlaceSession
-    if (!session) return
-    if (!this.editor.entityExists(session.entityId)) {
-      this.inPlaceSession = null
-      return
-    }
-    const anchor =
-      (session.entityId.startsWith('edge:') ? this.correlation?.edgeLabels.get(session.entityId) : null) ??
-      this.entityElement(session.entityId)
-    if (!anchor) {
-      this.inPlaceSession = null
-      return
-    }
-    this.editInPlace(session.entityId, anchor, session.labelSelector, session.lastCommitted, session.commitValue)
-    // reinject what the user typed between the live commit and the swap — the
-    // freshly rendered label only carries the committed text
-    const label = this.inPlaceSession === session ? session.label : null
-    if (!label || !liveEdit) return
-    // Compare snapshot-form to snapshot-form so the equality gate reflects
-    // the actual DOM (readLabelHtml would drop `&nbsp;` on one side and
-    // always force a reinject).
-    if (
-      liveEdit.value &&
-      liveEdit.value !== session.lastCommitted &&
-      liveEdit.value !== readLabelSnapshot(label)
-    ) {
-      label.replaceChildren(...liveEdit.nodes)
-      // run the carried-over delta through the normal live-commit debounce
-      label.dispatchEvent(new Event('input'))
-    }
-    if (liveEdit.caret >= 0) placeCaretAt(label, liveEdit.caret)
-  }
-
-  /**
-   * Seamless in-place editing for targets that can't be contenteditable
-   * themselves (SVG text, slices, bars): a chrome-less editable div is placed
-   * exactly over the element with its typography copied, and the original is
-   * hidden for the duration — it reads as editing the diagram text directly.
-   */
-  /** the visual text node inside a target — editing must sit on the glyphs */
   private findTextTarget(anchor: Element, current: string): Element {
     const isLeafText = (el: Element) =>
-      (el.tagName === 'text' || el.tagName === 'SPAN' || el.tagName === 'P' || el.tagName === 'DIV' || el.tagName === 'tspan') &&
-      (el.children.length === 0 || el.tagName === 'text') &&
+      (el.tagName === 'text' || (el.tagName === 'tspan' && el.children.length === 0)) &&
       (el.textContent?.trim().length ?? 0) > 0
     if (isLeafText(anchor)) return anchor
-    let leaves = [...anchor.querySelectorAll<Element>('text, tspan, span, p, div')].filter(isLeafText)
+    let leaves = [...anchor.querySelectorAll<Element>('text, tspan')].filter(isLeafText)
     if (!leaves.length && anchor.parentElement) {
-      // a hit on a bare shape (e.g. a participant box <rect>) has no text
-      // descendants — the glyphs are a SIBLING inside the same group. Without
-      // this widening the shape itself gets hidden and the editor floats over
-      // the still-visible label, double-rendering it.
-      leaves = [...anchor.parentElement.querySelectorAll<Element>('text, tspan, span, p, div')].filter(isLeafText)
+      leaves = [...anchor.parentElement.querySelectorAll<Element>('text, tspan')].filter(isLeafText)
     }
     return (
       leaves.find((el) => el.textContent?.trim() === current.trim()) ??
-      leaves.find((el) => current.trim().startsWith(el.textContent?.trim() ?? ' ')) ??
+      leaves.find((el) => current.trim().startsWith(el.textContent?.trim() ?? '')) ??
       leaves[0] ??
       anchor
     )
   }
 
-  private openOverlayEditor(anchor: Element, current: string, commitValue: (value: string) => void) {
+  /**
+   * Label editing: a chrome-less contenteditable div is placed exactly over
+   * the SVG text with its typography copied, and the original is hidden for
+   * the duration, so it reads as editing the diagram text directly. While
+   * typing, the value is live-committed (debounced) to the editor so code
+   * panes follow along; the canvas itself holds its render until the session
+   * ends (see `render`). Enter commits, Shift+Enter inserts a line break
+   * (`<br/>` in the source), Escape reverts everything including live
+   * commits.
+   */
+  private openOverlayEditor(
+    entityId: string,
+    anchor: Element,
+    current: string,
+    commitValue: (value: string) => void,
+    opts: { live?: boolean } = {},
+  ) {
+    this.finishEdit(true)
     // A fresh edge whose label has never rendered comes in as its `<path>` —
     // no text descendants, no sibling label yet. Falling through to
-    // `findTextTarget` would widen to the parent edges group and return the
-    // FIRST text leaf in that container (some OTHER edge's label), and the
-    // overlay would park over that unrelated label. Detect the empty-path
-    // case and anchor at the arrow's midpoint instead; there's no existing
-    // label to hide.
+    // `findTextTarget` would widen to the edge group and return another
+    // edge's label. Anchor at the arrow's midpoint instead; there is no
+    // existing label to hide. `correlation.edges` only ever holds the bare
+    // line `<path>` (see `correlate.ts`), so the instanceof check suffices.
     let box: { left: number; top: number; width: number; height: number }
     let hideTarget: Element | null
-    // `correlation.edges` only ever holds bare `<path>` elements (see
-    // `correlate.ts` — it querySelects `.edgePaths > path` and siblings),
-    // and Mermaid `<path>` never carries element children. The
-    // `instanceof SVGPathElement` guard alone identifies the fresh-edge
-    // case cleanly.
     if (typeof SVGPathElement !== 'undefined' && anchor instanceof SVGPathElement) {
       box = this.pathMidpointRect(anchor)
       hideTarget = null
@@ -1617,17 +1321,15 @@ export class MermaidCanvasView {
       box = this.hostRect(anchor)
       hideTarget = anchor
     }
-    // SVG glyph paint often lives on an inner <tspan> while the outer <text>
-    // carries a background-matching fill (mermaid sequence actor boxes do
-    // this) — read typography and color from the innermost carrier so the
-    // editor's text doesn't render background-on-background.
+    // glyph paint can live on an inner <tspan>; read typography and color
+    // from the innermost carrier
     const paintSource = anchor.querySelector('tspan') ?? anchor
     const cs = window.getComputedStyle(paintSource)
     const div = document.createElement('div')
     div.className = 'mw-inplace-editor'
     div.contentEditable = 'true'
     div.spellcheck = false
-    div.textContent = current
+    div.textContent = current.replace(/<br\s*\/?>/gi, '\n')
     // grow from the text's center so it stays visually anchored while typing
     div.style.left = `${box.left + box.width / 2}px`
     div.style.top = `${box.top}px`
@@ -1637,23 +1339,20 @@ export class MermaidCanvasView {
     div.style.lineHeight = `${Math.max(box.height, 12)}px`
     div.style.fontStyle = cs.fontStyle
     div.style.fontWeight = cs.fontWeight
-    // computed font-size ignores the pan/zoom transform; the overlay must
-    // match the scaled glyphs it covers
-    const zoom = this.panZoomEnabled ? this.zoomScale : 1
+    // computed font-size ignores both the pan/zoom transform and the CSS
+    // `max-width: 100%` fit; the overlay must match the scaled glyphs it covers
+    const zoom = this.svgScreenScale()
     const basePx = Number.parseFloat(cs.fontSize)
     div.style.fontSize = Number.isFinite(basePx) ? `${basePx * zoom}px` : cs.fontSize
     div.style.fontFamily = cs.fontFamily
-    // svg text is colored via fill; html labels via color
-    const fill = cs.fill && cs.fill !== 'none' && paintSource instanceof SVGElement ? cs.fill : cs.color
-    div.style.color = fill || 'inherit'
+    div.style.color = (cs.fill && cs.fill !== 'none' ? cs.fill : cs.color) || 'inherit'
     this.overlayHost.appendChild(div)
     this.inlineInput = div
 
     // hide the original so the editor reads as the element itself — but skip
-    // when there IS no existing label (the fresh-edge path branch above), so
-    // we don't spuriously hide the invisible path itself.
+    // when there IS no existing label (the fresh-edge path branch above)
     if (hideTarget) {
-      const target = hideTarget as HTMLElement | SVGElement
+      const target = hideTarget as SVGElement
       const prevVisibility = target.style?.visibility ?? ''
       if (target.style) target.style.visibility = 'hidden'
       this.inlineHidden = { el: target, prevVisibility }
@@ -1666,30 +1365,77 @@ export class MermaidCanvasView {
     selection?.removeAllRanges()
     selection?.addRange(range)
 
-    const commit = () => {
-      const value = (div.textContent ?? '').trim()
-      const hidden = this.inlineHidden?.el ?? null
-      this.closeInlineEditor(false)
-      if (value === current) return
-      // closeInlineEditor just re-showed the original element, which still
-      // carries the pre-edit text; the re-render that draws the committed
-      // value arrives a few hundred ms later. Patch the visible text now so
-      // the gap doesn't flash the stale label (multi-tspan wrapping collapses
-      // to one line for that moment — the render restores it).
-      if (hidden) hidden.textContent = value
-      commitValue(value)
+    // contenteditable line breaks arrive as <div>/<br> children; innerText
+    // flattens them to newlines (jsdom has no innerText — fall back)
+    const read = () =>
+      ((div as HTMLElement & { innerText?: string }).innerText ?? div.textContent ?? '')
+        .replace(/\r?\n/g, '<br/>')
+        .replace(/(<br\/>)+$/, '')
+        .trim()
+
+    const session = {
+      entityId,
+      original: current,
+      lastCommitted: current,
+      commitValue,
+      liveTimer: null as ReturnType<typeof setTimeout> | null,
+      finish: (commit: boolean) => {
+        if (this.editSession !== session) return
+        this.editSession = null
+        clearTimeout(session.liveTimer ?? undefined)
+        const value = read()
+        const hidden = this.inlineHidden?.el ?? null
+        this.closeInlineEditor(false)
+        if (commit) {
+          if (value && value !== session.lastCommitted) {
+            // the re-shown original still carries the pre-edit text and the
+            // committed render is a debounce away; patch it so the gap
+            // doesn't flash the stale label
+            if (hidden) hidden.textContent = value.replace(/<br\/>/g, ' ')
+            session.commitValue(value)
+          }
+        } else if (session.lastCommitted !== session.original) {
+          session.commitValue(session.original)
+        }
+        if (this.renderHeldByEdit) {
+          this.renderHeldByEdit = false
+          this.scheduleRender()
+        }
+        this.updatePopover()
+      },
     }
+    this.editSession = session
+
+    const liveCommit = () => {
+      if (this.editSession !== session) return
+      const value = read()
+      if (!value || value === session.lastCommitted) return
+      session.lastCommitted = value
+      session.commitValue(value)
+    }
+    div.addEventListener('input', () => {
+      if (opts.live === false) return
+      clearTimeout(session.liveTimer ?? undefined)
+      session.liveTimer = setTimeout(liveCommit, 450)
+    })
     div.addEventListener('keydown', (e) => {
       e.stopPropagation()
-      if (e.key === 'Enter') {
+      if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault()
-        commit()
+        session.finish(true)
+      } else if (e.key === 'Escape') {
+        session.finish(false)
       }
-      if (e.key === 'Escape') this.closeInlineEditor(false)
     })
-    div.addEventListener('blur', commit)
+    div.addEventListener('blur', () => session.finish(true))
   }
 
+  /** Settle the open label-editing session, if any (commit or revert). */
+  private finishEdit(commit: boolean) {
+    this.editSession?.finish(commit)
+  }
+
+  /** Tear the overlay editor down without touching the editor document. */
   private closeInlineEditor(refocus: boolean) {
     if (this.inlineHidden) {
       if (this.inlineHidden.el.style) this.inlineHidden.el.style.visibility = this.inlineHidden.prevVisibility
@@ -1782,7 +1528,7 @@ export class MermaidCanvasView {
    * `.edgeLabel` bbox to reuse and `getBoundingClientRect()` on the path
    * itself returns the entire bounding box of the arrow (typically several
    * hundred pixels wide), which would park the overlay somewhere unrelated
-   * to where Mermaid will place the committed label. `getPointAtLength`
+   * to where the renderer will place the committed label. `getPointAtLength`
    * gives an on-path coordinate.
    *
    * `left` returned here IS the midpoint x (consumed as
@@ -1814,7 +1560,7 @@ export class MermaidCanvasView {
     const len = path.getTotalLength()
     const local = path.getPointAtLength(len / 2)
     const screen = new DOMPoint(local.x, local.y).matrixTransform(ctm)
-    const zoom = this.panZoomEnabled ? this.zoomScale : 1
+    const zoom = this.svgScreenScale()
     const height = 20 * zoom
     return {
       left: screen.x - host.left + this.container.scrollLeft,
@@ -1826,7 +1572,7 @@ export class MermaidCanvasView {
 
   private updatePopover() {
     this.popover.hide()
-    if (this.readOnly || this.inlineInput || this.inPlaceSession) return
+    if (this.readOnly || this.inlineInput) return
     const sel = this.editor.selection
     if (sel.length !== 1 || !this.svg) return
     const id = sel[0]
@@ -2202,7 +1948,7 @@ export class MermaidCanvasView {
             if (!anchor) return
             this.popover.hide()
             const current = `${r.stmt.sourceCard ?? ''}:${r.stmt.targetCard ?? ''}`
-            this.openOverlayEditor(anchor, current, (v) => {
+            this.openOverlayEditor(`card:${id}`, anchor, current, (v) => {
               const [src = '', tgt = ''] = v.split(':')
               this.editor.dispatch({ type: 'cl.setCardinality', relId: id, side: 'source', value: src.trim() || null }, 'canvas')
               const again = this.editor.result.classGraph?.relations.find(
@@ -2281,7 +2027,7 @@ export class MermaidCanvasView {
             const anchor = this.entityElement(id)
             if (anchor) {
               this.popover.hide()
-              this.openOverlayEditor(anchor, s.label, (v) =>
+              this.openOverlayEditor(`label:${id}`, anchor, s.label, (v) =>
                 this.editor.dispatch({ type: 'pie.setLabel', sliceId: id, label: v }, 'canvas'),
               )
             }
@@ -2303,7 +2049,7 @@ export class MermaidCanvasView {
             const anchor = this.entityElement(id)
             if (anchor) {
               this.popover.hide()
-              this.openOverlayEditor(anchor, t.meta, (v) =>
+              this.openOverlayEditor(`meta:${id}`, anchor, t.meta, (v) =>
                 this.editor.dispatch({ type: 'gantt.setTaskMeta', taskId: id, meta: v }, 'canvas'),
               )
             }
@@ -2703,6 +2449,17 @@ export class MermaidCanvasView {
     return { x: pt.x, y: pt.y }
   }
 
+  /**
+   * How many CSS pixels one SVG user unit covers on screen: the pan/zoom
+   * transform, the `max-width: 100%` fit and the viewBox scaling together.
+   * jsdom has no `getScreenCTM`; there the pan/zoom scale is all we know.
+   */
+  private svgScreenScale(): number {
+    const ctm = typeof this.svg?.getScreenCTM === 'function' ? this.svg.getScreenCTM() : null
+    if (ctm && ctm.a > 0) return ctm.a
+    return this.panZoomEnabled ? this.zoomScale : 1
+  }
+
   private entityCenter(entityId: string): { x: number; y: number } | null {
     const el = this.entityElement(entityId)
     if (!el) return null
@@ -2710,28 +2467,25 @@ export class MermaidCanvasView {
     return this.clientToSvg(rect.left + rect.width / 2, rect.top + rect.height / 2)
   }
 
-  /** Validate code through mermaid.parse and publish diagnostics (does not render). */
-  async validate(): Promise<boolean> {
+  /** Validate code through pele's parser and publish diagnostics (does not render). */
+  validate(): boolean {
     try {
-      await this.mermaid.parse(this.editor.code)
+      peleParse(this.editor.code, this.renderOptions)
       return true
     } catch (err) {
-      const message = err instanceof Error ? err.message.split('\n')[0] : String(err)
-      this.editor.setDiagnostics([{ message, span: null, severity: 'error', source: 'mermaid' }])
+      this.editor.setDiagnostics([rendererDiagnostic(err, this.editor)])
       return false
     }
   }
 
   destroy() {
     this.destroyed = true
-    if (this.renderTimer) clearTimeout(this.renderTimer)
-    if (this.lifelineClearTimer) clearTimeout(this.lifelineClearTimer)
-    if (this.inPlaceSession?.liveTimer) clearTimeout(this.inPlaceSession.liveTimer)
-    this.inPlaceSession = null
+    clearTimeout(this.renderTimer ?? undefined)
+    clearTimeout(this.lifelineClearTimer ?? undefined)
+    clearTimeout(this.editSession?.liveTimer ?? undefined)
+    this.editSession = null
     this.svgTransformObserver?.disconnect()
     this.svgTransformObserver = null
-    this.visibilityRetryObserver?.disconnect()
-    this.visibilityRetryObserver = null
     this.disposers.forEach((d) => d())
     this.plusDragCleanup?.()
     this.closeInlineEditor(false)

@@ -1,14 +1,12 @@
 import { useEffect, useRef } from 'react'
-import mermaid from 'mermaid'
 import { MermaidCodeMirror } from '@visimer/codemirror'
 import { MermaidWysiwygEditor } from '@visimer/core'
 import { MermaidCanvasView } from '@visimer/dom'
 
 // Deterministic RAF-driven demo of visimer's click-to-edit + drag-to-connect
 // UX. Rather than driving the real inline-editor and connect gesture through
-// synthesized DOM events (which stall mermaid re-renders under wall-clock),
-// this fires the same editor ops the playground fires and paints a cursor +
-// ghost line on top for the drag visual. The end state (source + diagram)
+// synthesized DOM events, this fires the same editor ops the playground fires
+// and paints a cursor + ghost line on top for the drag visual. The end state (source + diagram)
 // is identical to what a real user drives.
 
 const CYCLE_MS = 10500
@@ -38,56 +36,18 @@ export default function HeroLoopPage() {
     const ghost = ghostRef.current
     if (!canvas || !codePane || !cursor || !ghost) return
 
-    // wrappingWidth is 200 by default — narrow enough that any single-line
-    // hero label past ~14 chars trips mermaid's `display: table; white-
-    // space: break-spaces; width: 200px` wrap-safe layout and reserves a
-    // phantom second line of height even when the SVG expands to fit the
-    // text on one visual line. Bump it so hero labels stay one line tall.
-    mermaid.initialize({
-      startOnLoad: false,
-      theme: 'base',
-      flowchart: { wrappingWidth: 800 },
-      themeVariables: {
-        fontFamily: '"Inter", sans-serif',
-        primaryColor: '#EAF3F0',
-        primaryBorderColor: '#0E7C6B',
-        primaryTextColor: '#1C1A17',
-        lineColor: '#8A9B96',
-        secondaryColor: '#F5E9C9',
-        secondaryBorderColor: '#C9A227',
-      },
-    })
-
     const editor = new MermaidWysiwygEditor({ code: INITIAL })
     const view = new MermaidCanvasView({
       editor,
       container: canvas,
-      mermaid,
       panZoom: false,
       accentColor: '#0E7C6B',
       debounceMs: 0,
-      mermaidConfig: {
-        theme: 'base',
-        // MermaidCanvasView calls `mermaid.initialize(mermaidConfig)` on
-        // every render, so the bump above must be repeated here or the
-        // very first re-render (after an edit) clobbers wrappingWidth
-        // back to the 200 default and the ghost-newline returns.
-        flowchart: { wrappingWidth: 800 },
-        themeVariables: {
-          fontFamily: '"Inter", sans-serif',
-          primaryColor: '#EAF3F0',
-          primaryBorderColor: '#0E7C6B',
-          primaryTextColor: '#1C1A17',
-          lineColor: '#8A9B96',
-          secondaryColor: '#F5E9C9',
-          secondaryBorderColor: '#C9A227',
-        },
-      },
     })
     const cm = new MermaidCodeMirror(codePane, editor)
 
     const findNode = (id: 'A' | 'B' | 'C'): SVGGElement | null =>
-      canvas.querySelector(`.mw-svg-host svg g.node[id*="-${id}-"]`)
+      canvas.querySelector(`.mw-svg-host svg g.pele-node[data-id="${id}"]`)
 
     const nodeCenterInCanvas = (id: 'A' | 'B' | 'C'): { x: number; y: number } | null => {
       const n = findNode(id)
@@ -308,9 +268,9 @@ export default function HeroLoopPage() {
             diagram.mmd
           </span>
         </div>
-        {/* Vertically center the mermaid SVG (default is flex-start / top) so
+        {/* Vertically center the SVG (default is flex-start / top) so
              the tiny 3-node flowchart doesn't stick to the top edge. */}
-        <style>{`#hero-loop .mw-canvas .mw-svg-host { align-items: center; }`}</style>
+        <style>{`#hero-loop .mw-canvas { --pele-surface: #EAF3F0; --pele-border: #0E7C6B; --pele-line: #8A9B96; --pele-font: 'Inter', sans-serif; } #hero-loop .mw-canvas .mw-svg-host { align-items: center; }`}</style>
         <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
           <div
             ref={codePaneRef}

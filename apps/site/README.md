@@ -2,7 +2,9 @@
 
 The public showcase for [`@visimer`](../..). A live playground that renders
 Mermaid diagrams and lets you edit them by clicking nodes, dragging to connect,
-and rewriting labels in place. Deployed as a Vite static build.
+and rewriting labels in place. Diagrams are drawn by
+[pele](https://github.com/obsidianmd/pele) and themed with `--pele-*` CSS
+variables. Deployed as a Vite static build.
 
 ## Local dev
 

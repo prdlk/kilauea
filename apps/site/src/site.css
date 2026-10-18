@@ -43,24 +43,30 @@ textarea {
 
    Three things this needs that an ordinary canvas does not:
 
-   1. Display scale. Mermaid ignores the fontSize theme variable for HTML
-      labels (they render at 16px) and the canvas fit caps at 2x, so neither can
-      drive headline size. The SVG's own viewBox does it: width and height at
-      100% with the default preserveAspectRatio scales glyphs, rule weights and
-      hit regions together, with no CSS transform to keep in sync.
-   2. Label slack. Mermaid measures labels in a detached node at its own weight,
-      so this heavier face needs slightly more width than the box it was given.
-      Node padding in the mermaid config supplies it; the overflow rules here
-      only stop a glyph being sliced if a future string outgrows that padding.
+   1. Display scale. The canvas fit caps at 2x, so it cannot drive headline
+      size. The SVG's own viewBox does it: width and height at 100% with the
+      default preserveAspectRatio scales glyphs, rule weights and hit regions
+      together, with no CSS transform to keep in sync.
+   2. Theme. The diagram is coloured through pele's custom properties, set once
+      on the masthead so the live canvas and the build-time stand-in inherit the
+      same palette.
    3. Room for the popover. The edit toolbar is a child of the canvas, so a
       clipped hero would cut it in half on the first double-click.
 
    Every rule is scoped to `.hero-masthead :is(.mw-svg-host, .hero-placeholder)
-   > svg` — the live diagram and the static stand-in that holds its place, which
-   have to be styled identically or the crossfade between them stops being
-   invisible. A new rule for one of them belongs on both. A bare `.mw-canvas svg`
-   would also match the icons inside the popover, which would pin each one to
-   inset 0 and stack them into an unreadable pile. */
+   > svg` — the live diagram and the static stand-in painted before the bundle
+   loads, which have to look identical. A bare `.mw-canvas svg` would also match
+   the icons inside the popover, which would pin each one to inset 0 and stack
+   them into an unreadable pile. */
+.hero-masthead {
+  --pele-bg: #f7f4ed;
+  --pele-fg: #1c1a17;
+  --pele-muted: #544f47;
+  --pele-line: #0e7c6b;
+  --pele-surface: #eaf3f0;
+  --pele-border: #0e7c6b;
+  --pele-font: 'Inter', sans-serif;
+}
 /* The host has to be pinned to the card as well as the svg. Left to size itself
    it takes the diagram's natural height, and since the svg is positioned against
    the host rather than the card, the diagram then paints straight out of the
@@ -69,6 +75,8 @@ textarea {
   position: absolute;
   inset: 0;
 }
+/* pele ships an intrinsic width/height, an inline max-width and height:auto; the
+   headline fits the band by viewBox instead. */
 .hero-masthead :is(.mw-svg-host, .hero-placeholder) > svg {
   position: absolute;
   inset: 0;
@@ -76,50 +84,17 @@ textarea {
   height: 100% !important;
   max-width: none !important;
   transform: none !important;
+  overflow: visible;
 }
-.hero-masthead :is(.mw-svg-host, .hero-placeholder) > svg .nodeLabel,
-.hero-masthead :is(.mw-svg-host, .hero-placeholder) > svg .nodeLabel p {
-  font-family: 'Inter', sans-serif !important;
-  font-weight: 700 !important;
-  letter-spacing: -0.035em !important;
-  color: #1c1a17 !important;
-  fill: #1c1a17 !important;
+.hero-masthead :is(.mw-svg-host, .hero-placeholder) > svg .pele-node text {
+  font-weight: 700;
+  letter-spacing: -0.035em;
 }
-.hero-masthead :is(.mw-svg-host, .hero-placeholder) > svg foreignObject {
-  overflow: visible !important;
+.hero-masthead :is(.mw-svg-host, .hero-placeholder) > svg .pele-node rect {
+  stroke-width: 1px;
 }
-.hero-masthead :is(.mw-svg-host, .hero-placeholder) > svg .nodeLabel,
-.hero-masthead :is(.mw-svg-host, .hero-placeholder) > svg .nodeLabel p,
-.hero-masthead :is(.mw-svg-host, .hero-placeholder) > svg .nodeLabel div {
-  overflow: visible !important;
-  white-space: nowrap !important;
-  max-width: none !important;
-}
-.hero-masthead :is(.mw-svg-host, .hero-placeholder) > svg .edgePath path,
-.hero-masthead :is(.mw-svg-host, .hero-placeholder) > svg .flowchart-link {
-  stroke: #0e7c6b !important;
-  stroke-width: 2px !important;
-}
-.hero-masthead :is(.mw-svg-host, .hero-placeholder) > svg marker path,
-.hero-masthead :is(.mw-svg-host, .hero-placeholder) > svg .marker {
-  fill: #0e7c6b !important;
-  stroke: #0e7c6b !important;
-}
-/* The edge label needs an opaque backing so the connector does not strike
-   through the word, but mermaid takes that colour from the theme's secondary
-   (the gold tint) and ignores edgeLabelBackground here, which reads as a
-   highlighter chip. It matches the page instead, since the hero canvas sits
-   directly on the site background with no card of its own. */
-.hero-masthead :is(.mw-svg-host, .hero-placeholder) > svg .edgeLabel,
-.hero-masthead :is(.mw-svg-host, .hero-placeholder) > svg .edgeLabel span,
-.hero-masthead :is(.mw-svg-host, .hero-placeholder) > svg .edgeLabel p {
-  background: #f7f4ed !important;
-  background-color: #f7f4ed !important;
-  color: #544f47 !important;
-  fill: #544f47 !important;
-}
-.hero-masthead :is(.mw-svg-host, .hero-placeholder) > svg .edgeLabel rect {
-  fill: #f7f4ed !important;
+.hero-masthead :is(.mw-svg-host, .hero-placeholder) > svg .pele-edge path {
+  stroke-width: 2px;
 }
 /* Zoom chrome in the corner of an h1 gives away that it is a widget, and a
    headline should not pan. */
@@ -238,42 +213,18 @@ textarea {
 }
 
 /* ---- Hero stand-in ------------------------------------------------------
-   Holds the headline's place while mermaid is still on its way. Position,
-   colour and typography all come from the `.hero-masthead ... > svg` rules
-   above, which name the stand-in alongside the live canvas host precisely so
-   the two cannot be styled differently. Only the declarations mermaid ships
-   inside its own generated SVG need restating here. */
+   The pele-rendered headline inlined into index.html (see src/hero-diagram.ts).
+   Position and typography come from the `.hero-masthead ... > svg` rules above;
+   React replaces the whole layer on mount. */
 .hero-placeholder-layer {
   position: absolute;
   inset: 0;
-  /* decorative, and the live canvas underneath owns every gesture */
+  /* decorative, and the live canvas replaces it on mount */
   pointer-events: none;
 }
-.hero-placeholder > svg .node rect {
-  fill: #eaf3f0;
-  stroke: #0e7c6b;
-  stroke-width: 1px;
-}
-.hero-placeholder > svg .flowchart-link {
-  fill: none;
-}
-.hero-placeholder > svg .hero-ph-label {
-  display: table-cell;
-  white-space: nowrap;
-  line-height: 1.5;
-  text-align: center;
-  font-size: 16px;
-}
-.hero-placeholder > svg .hero-ph-label p {
-  margin: 0;
-}
-/* Only the served document carries both orientations — it cannot know the
-   window width, so the breakpoint picks one, at the same threshold
-   HERO_STACK_MAX_WIDTH encodes. The mounted app renders a single stand-in
-   chosen from the source the editor actually got (heroPlaceholderFor), so these
-   two rules do not reach it: a media query keeps tracking the window, while the
-   diagram's orientation is fixed at mount, and letting both drive one crossfade
-   is how a settle turns into a jump. */
+/* The served document carries both orientations — it cannot know the window
+   width, so the breakpoint picks one, at the same threshold
+   HERO_STACK_MAX_WIDTH encodes. */
 .hero-placeholder-td {
   display: none;
 }
@@ -283,30 +234,6 @@ textarea {
   }
   .hero-placeholder-td {
     display: block;
-  }
-}
-
-/* The handover. Both layers are fitted into the same box by the same viewBox and
-   preserveAspectRatio, so this is a crossfade between two near-identical
-   pictures rather than a swap — it reads as the headline settling, and covers
-   whatever sub-pixel drift is left between hand-drawn and rendered. */
-.hero-masthead .mw-canvas,
-.hero-placeholder-layer {
-  transition: opacity 220ms ease;
-}
-.hero-masthead .mw-canvas {
-  opacity: 0;
-}
-.hero-masthead.is-rendered .mw-canvas {
-  opacity: 1;
-}
-.hero-masthead.is-rendered .hero-placeholder-layer {
-  opacity: 0;
-}
-@media (prefers-reduced-motion: reduce) {
-  .hero-masthead .mw-canvas,
-  .hero-placeholder-layer {
-    transition: none;
   }
 }
 

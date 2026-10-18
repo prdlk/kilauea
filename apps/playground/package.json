@@ -14,13 +14,11 @@
     "@codemirror/state": "^6.4.1",
     "@codemirror/view": "^6.34.1",
     "@lezer/highlight": "^1.2.1",
-    "@mermaid-js/mermaid-zenuml": "^0.2.0",
     "@visimer/codemirror": "workspace:*",
     "@visimer/core": "workspace:*",
     "@visimer/dom": "workspace:*",
     "@visimer/monaco": "workspace:*",
     "@visimer/react": "workspace:*",
-    "mermaid": "^11.16.1",
     "monaco-editor": "^0.55.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"

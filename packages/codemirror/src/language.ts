@@ -3,7 +3,7 @@ import { classHighlighter } from '@lezer/highlight'
 import type { Extension } from '@codemirror/state'
 
 const HEADERS =
-  /^(flowchart|graph|sequenceDiagram|classDiagram(-v2)?|stateDiagram(-v2)?|erDiagram|journey|gantt|pie|quadrantChart|requirementDiagram|gitGraph|C4Context|C4Container|C4Component|C4Dynamic|C4Deployment|mindmap|timeline|zenuml|sankey-beta|xychart-beta|block-beta|packet-beta|kanban|architecture-beta|radar-beta|treemap-beta)\b/
+  /^(flowchart|graph|sequenceDiagram|classDiagram(-v2)?|stateDiagram(-v2)?|erDiagram|journey|gantt|pie|quadrantChart|requirementDiagram|gitGraph|C4Context|C4Container|C4Component|C4Dynamic|C4Deployment|mindmap|timeline|sankey(-beta)?|xychart(-beta)?|block(-beta)?|packet(-beta)?|kanban|architecture-beta|radar-beta|treemap(-beta)?|swimlane-beta|agentflow-beta|railroad(-ebnf|-abnf|-peg)?-beta|treeView-beta|cynefin-beta|wardley-beta|eventmodeling|usecase-beta|venn-beta|ishikawa(-beta)?|info)\b/
 
 const KEYWORDS =
   /^(participant|actor|note|loop|alt|else|opt|par|and|critical|option|break|rect|box|activate|deactivate|autonumber|over|left|right|of|end|section|title|direction|subgraph|state|class|classDef|linkStyle|style|click|namespace|dateFormat|axisFormat|excludes|includes|todayMarker|tickInterval|weekday|commit|branch|checkout|merge|cherry-pick|showData|accTitle|accDescr|columns|x-axis|y-axis|bar|line|axis|curve|max|min|for|as)\b/

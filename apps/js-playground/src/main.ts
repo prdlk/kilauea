@@ -1,4 +1,3 @@
-import mermaid from 'mermaid'
 import {
   MermaidWysiwygEditor,
   DIAGRAM_TYPES,
@@ -25,21 +24,86 @@ const themeSel = $('#theme') as unknown as HTMLSelectElement
 const accentInput = $('#accent') as unknown as HTMLInputElement
 const readonlyChk = $('#readonly') as unknown as HTMLInputElement
 
-// ZenUML needs an external mermaid plugin — register it lazily and remember the outcome.
-let zenumlReady: Promise<boolean> | null = null
-function ensureZenuml(): Promise<boolean> {
-  if (!zenumlReady) {
-    zenumlReady = import('@mermaid-js/mermaid-zenuml')
-      .then(async (m) => {
-        await mermaid.registerExternalDiagrams([m.default])
-        return true
-      })
-      .catch((err) => {
-        console.warn('zenuml plugin failed to load', err)
-        return false
-      })
-  }
-  return zenumlReady
+const FONT = '"Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif'
+const FONT_MONO = '"JetBrains Mono Variable", "JetBrains Mono", ui-monospace, Menlo, monospace'
+
+function series(colors: string[]): Record<string, string> {
+  return Object.fromEntries(colors.map((c, i) => [`--pele-series-${i + 1}`, c]))
+}
+
+/** pele CSS-variable palettes, applied to the canvas element by `applyPalette` (live, no re-render) */
+const PALETTES: Record<string, Record<string, string>> = {
+  ink: {
+    '--pele-bg': '#000000',
+    '--pele-fg': '#ededed',
+    '--pele-muted': '#a1a1a1',
+    '--pele-line': '#8f8f8f',
+    '--pele-surface': '#111111',
+    '--pele-surface-alt': '#1a1a1a',
+    '--pele-border': '#3f3f3f',
+    '--pele-accent': '#69a3ff',
+    '--pele-critical': '#d97757',
+    '--pele-error': '#f0716b',
+    ...series(['#3784ff', '#a78bfa', '#4fae72', '#d9a13c', '#d97757', '#69a3ff', '#f0716b', '#8fb8ff']),
+  },
+  dark: {
+    '--pele-bg': '#0b1020',
+    '--pele-fg': '#e2e8f0',
+    '--pele-muted': '#94a3b8',
+    '--pele-line': '#7c89a8',
+    '--pele-surface': '#111731',
+    '--pele-surface-alt': '#1a2142',
+    '--pele-border': '#3a4670',
+    '--pele-accent': '#818cf8',
+    '--pele-critical': '#f59e0b',
+    '--pele-error': '#f87171',
+    ...series(['#818cf8', '#38bdf8', '#34d399', '#fbbf24', '#fb7185', '#c084fc', '#22d3ee', '#f472b6']),
+  },
+  light: {
+    '--pele-bg': '#ffffff',
+    '--pele-fg': '#1f1f1f',
+    '--pele-muted': '#6b6b6b',
+    '--pele-line': '#6e6e6e',
+    '--pele-surface': '#f4f4f5',
+    '--pele-surface-alt': '#e9e9ec',
+    '--pele-border': '#c9c9d0',
+    '--pele-accent': '#2563eb',
+    '--pele-critical': '#d9480f',
+    '--pele-error': '#d92d20',
+    ...series(['#2563eb', '#7c3aed', '#16a34a', '#d97706', '#dc2626', '#0891b2', '#db2777', '#4b5563']),
+  },
+  forest: {
+    '--pele-bg': '#f3f7f1',
+    '--pele-fg': '#1d2b1f',
+    '--pele-muted': '#5d7360',
+    '--pele-line': '#4f6b52',
+    '--pele-surface': '#dcead7',
+    '--pele-surface-alt': '#c8dcc2',
+    '--pele-border': '#8fb08a',
+    '--pele-accent': '#2e7d32',
+    '--pele-critical': '#c0562b',
+    '--pele-error': '#b3261e',
+    ...series(['#2e7d32', '#6a9f3c', '#00897b', '#c9a227', '#c0562b', '#5c8a97', '#8d6e63', '#7b8f3a']),
+  },
+  neutral: {
+    '--pele-bg': '#fafafa',
+    '--pele-fg': '#262626',
+    '--pele-muted': '#737373',
+    '--pele-line': '#737373',
+    '--pele-surface': '#f0f0f0',
+    '--pele-surface-alt': '#e5e5e5',
+    '--pele-border': '#bdbdbd',
+    '--pele-accent': '#404040',
+    '--pele-critical': '#b45309',
+    '--pele-error': '#b91c1c',
+    ...series(['#404040', '#737373', '#a3a3a3', '#525252', '#8a8a8a', '#2b2b2b', '#b0b0b0', '#666666']),
+  },
+}
+
+function applyPalette(name: string) {
+  canvasEl.style.setProperty('--pele-font', FONT)
+  canvasEl.style.setProperty('--pele-font-mono', FONT_MONO)
+  for (const [k, v] of Object.entries(PALETTES[name] ?? PALETTES.dark)) canvasEl.style.setProperty(k, v)
 }
 
 let editor: MermaidWysiwygEditor
@@ -328,7 +392,7 @@ function updateStatus() {
   } else if (diags.length) {
     statusbarEl.innerHTML = `<span class="err">✕ ${escapeHtml(diags[0].message)}</span>`
   } else {
-    statusbarEl.innerHTML = `<span class="ok">✓ mermaid parse ok</span>`
+    statusbarEl.innerHTML = `<span class="ok">✓ renders</span>`
   }
 }
 
@@ -345,7 +409,7 @@ function buildSidebar(activeIndex: number) {
     const b = document.createElement('button')
     b.className = 'side-item' + (i === activeIndex ? ' active' : '')
     b.innerHTML = `<i class="dot ${t?.capability ?? 'render'}"></i>${sample.title}`
-    b.title = t?.capability === 'edit' ? 'Full WYSIWYG editing' : 'Rendered via mermaid; code editing with live preview'
+    b.title = t?.capability === 'edit' ? 'Full WYSIWYG editing' : 'Rendered; code editing with live preview'
     b.addEventListener('click', () => loadSample(i))
     sidebarEl.appendChild(b)
   })
@@ -359,21 +423,18 @@ function buildSidebar(activeIndex: number) {
 
 let currentSample = 0
 
-async function loadSample(index: number) {
+function loadSample(index: number) {
   currentSample = index
   const sample = SAMPLES[index]
 
-  if (sample.typeId === 'zenuml') await ensureZenuml()
-
   view?.destroy()
   canvasEl.innerHTML = ''
+  applyPalette(themeSel.value)
 
   editor = new MermaidWysiwygEditor({ code: sample.code })
   view = new MermaidCanvasView({
     editor,
     container: canvasEl,
-    mermaid,
-    mermaidConfig: { theme: themeSel.value, securityLevel: 'loose' },
     accentColor: accentInput.value,
     readOnly: readonlyChk.checked,
   })
@@ -381,7 +442,8 @@ async function loadSample(index: number) {
   editor.on('change', () => {
     buildToolbar()
     buildInspector()
-    void view.validate().then(updateStatus)
+    view.validate()
+    updateStatus()
   })
 
   editor.on('selectionChange', () => {
@@ -400,10 +462,11 @@ async function loadSample(index: number) {
   buildSidebar(index)
   buildToolbar()
   buildInspector()
-  void view.validate().then(updateStatus)
+  view.validate()
+  updateStatus()
 }
 
-themeSel.addEventListener('change', () => view.setMermaidConfig({ theme: themeSel.value }))
+themeSel.addEventListener('change', () => applyPalette(themeSel.value))
 accentInput.addEventListener('input', () => {
   view.setAccentColor(accentInput.value)
   document.documentElement.style.setProperty('--accent', accentInput.value)
@@ -413,4 +476,4 @@ readonlyChk.addEventListener('change', () => {
   buildToolbar()
 })
 
-void loadSample(0)
+loadSample(0)

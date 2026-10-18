@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
-import mermaid from 'mermaid'
 import { MermaidCanvas, useMermaidEditor } from '@visimer/react'
 import { track } from './analytics'
 import {
@@ -11,8 +10,6 @@ import {
   HERO_SOURCE_TD,
   HERO_STACK_MAX_WIDTH,
   HERO_SUBHEAD,
-  heroPlaceholderFor,
-  heroPlaceholderViewBox,
 } from './hero-diagram'
 import {
   CodeMirrorPane,
@@ -21,7 +18,7 @@ import {
   TYPE_LABELS,
   mono,
   playgroundUrl,
-  themeConfig,
+  themeVars,
   useCanvasControlTracking,
 } from './playground-shared'
 
@@ -38,40 +35,6 @@ function initialHeroSource(): string {
   if (typeof window === 'undefined') return HERO_SOURCE_LR
   return window.innerWidth <= HERO_STACK_MAX_WIDTH ? HERO_SOURCE_TD : HERO_SOURCE_LR
 }
-
-/**
- * Mermaid lays the headline out at display size, so this config carries the type
- * scale rather than CSS scaling a small render up. Node padding is deliberately
- * tight: the masthead fits to width, so every unit of padding is paid for in
- * headline size.
- */
-const heroConfig = {
-  theme: 'base',
-  // wrappingWidth defaults to 200: any single-line label past ~14 chars
-  // trips mermaid's `display: table; white-space: break-spaces; width:
-  // 200px` wrap-safe layout and reserves a phantom second line of
-  // height (the "newline under the first node text" bug: type " NEW
-  // TEXT" into "WYSIWYG editor" and the box grows by ~24 px). Bumping
-  // it lets typical hero labels stay on one line and one line high.
-  flowchart: { padding: 11, nodeSpacing: 44, rankSpacing: 44, useMaxWidth: false, wrappingWidth: 800 },
-  themeVariables: {
-    fontFamily: "'Inter', sans-serif",
-    primaryColor: '#EAF3F0',
-    primaryBorderColor: '#0E7C6B',
-    primaryTextColor: '#1C1A17',
-    lineColor: '#0E7C6B',
-    secondaryColor: '#F5E9C9',
-    secondaryBorderColor: '#C9A227',
-    tertiaryColor: '#FBF9F4',
-    tertiaryBorderColor: '#E6E0D4',
-    mainBkg: '#EAF3F0',
-    nodeBorder: '#0E7C6B',
-    textColor: '#1C1A17',
-    // No edgeLabelBackground: mermaid ignores it for flowchart edge labels and
-    // backs them with the secondary tint instead, so site.css sets it.
-  },
-}
-
 
 const FEATURES: Array<{ mark: string; title: string; body: string }> = [
   {
@@ -218,16 +181,6 @@ export default function App() {
   const { editor: heroEditor } = useMermaidEditor(heroInitial)
   const [heroSource, setHeroSource] = useState(heroInitial)
   useEffect(() => heroEditor.on('change', ({ code }) => setHeroSource(code.trim())), [heroEditor])
-
-  // The stand-in headline stays up until mermaid has actually put an SVG on the
-  // page, which is a good half-second after mount on a cold load: the renderer
-  // arrives over its own dynamic imports and then has to lay the diagram out.
-  // Gating on mount instead would reopen the hole this is here to close.
-  //
-  // A failed parse also resolves this — the canvas shows its own error badge for
-  // that, and a visitor who has typed the headline into an invalid state is
-  // better served seeing that badge than the original sentence sitting under it.
-  const [heroRendered, setHeroRendered] = useState(false)
 
   useCanvasControlTracking()
 
@@ -507,15 +460,15 @@ export default function App() {
               window, on the page's own background, with no border, fill or radius of
               its own. Only the diagram is drawn, so the band reads as open page.
 
-              It stays in flow rather than sitting behind the whole section. Mermaid
-              centres the diagram in its canvas, so a canvas spanning the section
+              It stays in flow rather than sitting behind the whole section. The canvas
+              centres the diagram in itself, so a canvas spanning the section
               would centre on the section's midpoint, which on a phone lands on top
               of the copy. Owning its own band keeps that under control. */}
           {/* The heading is the text; the canvas is its rendering. Keeping them as
               separate elements matters: with the canvas inside the h1, the heading
               exposed the sentence once as its own text and then again, out of
               order, from the diagram's own labels, and its textContent picked up
-              the whole stylesheet mermaid injects. The canvas is hidden from
+              The canvas is hidden from
               assistive tech because it duplicates the heading and its editing is
               pointer-only, so exposing it would add confusion without adding a
               capability.
@@ -526,22 +479,9 @@ export default function App() {
               outline for a change only the editing visitor made, to their own
               local copy. The live source is echoed in the hint line below instead. */}
           <h1 className="sr-only">{HERO_HEADLINE}</h1>
-          <div className={`hero-masthead${heroRendered ? ' is-rendered' : ''}`} aria-hidden>
-            {/* Same markup the served document already painted, minus the
-                media-query orientation pick: this one is fed the source the
-                editor actually got, so both halves of the crossfade follow one
-                decision. Rendering it again here rather than leaving the boot
-                copy in place keeps the band under React's control — the copy is
-                torn out with the rest of #root on mount, and this one crossfades
-                out on its own schedule. */}
-            <div
-              className="hero-placeholder-layer"
-              dangerouslySetInnerHTML={{ __html: heroPlaceholderFor(heroInitial) }}
-            />
+          <div className="hero-masthead" aria-hidden>
             <MermaidCanvas
               editor={heroEditor}
-              mermaid={mermaid}
-              mermaidConfig={heroConfig}
               accentColor="#0E7C6B"
               className="site-demo-canvas"
               // The binding defaults the host to min-height 240, which fights the
@@ -554,32 +494,6 @@ export default function App() {
               // nothing, since editing here is pointer-only.
               onReady={(view) => {
                 view.container.tabIndex = -1
-                // Only the first render is comparable to the stand-in; once the
-                // visitor edits the headline the diagram is legitimately a
-                // different shape.
-                let driftChecked = false
-                // The view kicks off its first render in its constructor and
-                // awaits mermaid before emitting, so this subscription is in
-                // place well before the event it is waiting for.
-                view.on('render', () => {
-                  setHeroRendered(true)
-                  // Nothing else notices when the stand-in's hand-measured
-                  // coordinates stop matching mermaid's output — reword the
-                  // hero, retune heroConfig or bump mermaid and the only symptom
-                  // is a stand-in that shifts as it fades, on a cold load, which
-                  // is invisible in normal development. The viewBox is the one
-                  // number the whole fit depends on, so compare it here.
-                  if (import.meta.env.DEV && !driftChecked) {
-                    driftChecked = true
-                    const rendered = view.container.querySelector('.mw-svg-host > svg')?.getAttribute('viewBox')
-                    const expected = heroPlaceholderViewBox(heroInitial)
-                    if (rendered && rendered !== expected) {
-                      console.warn(
-                        `[hero] stand-in viewBox is stale: mermaid rendered "${rendered}", hero-diagram.ts has "${expected}". Re-derive the coordinates in hero-diagram.ts.`,
-                      )
-                    }
-                  }
-                })
               }}
             />
           </div>
@@ -854,12 +768,11 @@ export default function App() {
                 <div style={{ position: 'relative', flex: 1, minHeight: 0 }}>
                   <MermaidCanvas
                     editor={editor}
-                    mermaid={mermaid}
-                    mermaidConfig={themeConfig(skin)}
                     accentColor="#0E7C6B"
                     panZoom
                     className="site-demo-canvas"
                     style={{
+                      ...themeVars(skin),
                       backgroundColor: previewBg,
                       backgroundImage: dark
                         ? 'radial-gradient(#231f19 1px, transparent 1px)'
@@ -948,17 +861,13 @@ export default function App() {
             <CodeCard title="React · @visimer/react">
               <span style={cmt}># npm i @visimer/react</span>
               {'\n'}
-              <span style={kw}>import</span> mermaid <span style={kw}>from</span> <span style={str}>'mermaid'</span>
-              {'\n'}
               <span style={kw}>import</span> {'{ MermaidWysiwyg }'} <span style={kw}>from</span>{' '}
               <span style={str}>'@visimer/react'</span>
               {'\n\n'}&lt;<span style={ident}>MermaidWysiwyg</span> <span style={str}>code</span>={'{diagram}'}{' '}
-              <span style={str}>onCodeChange</span>={'{setDiagram}'} <span style={str}>mermaid</span>={'{mermaid}'} /&gt;
+              <span style={str}>onCodeChange</span>={'{setDiagram}'} /&gt;
             </CodeCard>
             <CodeCard title="Vanilla · @visimer/core + @visimer/dom">
-              <span style={cmt}># npm i @visimer/core @visimer/dom mermaid</span>
-              {'\n'}
-              <span style={kw}>import</span> mermaid <span style={kw}>from</span> <span style={str}>'mermaid'</span>
+              <span style={cmt}># npm i @visimer/core @visimer/dom</span>
               {'\n'}
               <span style={kw}>import</span> {'{ MermaidWysiwygEditor }'} <span style={kw}>from</span>{' '}
               <span style={str}>'@visimer/core'</span>
@@ -971,7 +880,7 @@ export default function App() {
               {' }'})
               {'\n'}
               <span style={kw}>new</span> <span style={ident}>MermaidCanvasView</span>({'{ '}
-              <span style={str}>editor</span>, <span style={str}>container</span>, <span style={str}>mermaid</span>
+              <span style={str}>editor</span>, <span style={str}>container</span>
               {' }'})
             </CodeCard>
             <CodeCard title="CodeMirror pane · @visimer/codemirror">
@@ -1006,14 +915,16 @@ export default function App() {
               {'\n'}editor.<span style={ident}>undo</span>()
             </CodeCard>
             <CodeCard title="Theming · CSS variables">
-              <span style={cmt}># chrome follows your tokens; mermaid keeps its themes</span>
+              <span style={cmt}># chrome follows --mw-* tokens; diagrams follow --pele-*</span>
               {'\n'}.mw-canvas {'{'}
               {'\n'}  <span style={str}>--mw-accent</span>: <span style={ident}>#0E7C6B</span>;
               {'\n'}  <span style={str}>--mw-chrome-bg</span>: <span style={ident}>#1E1B16</span>;
               {'\n'}  <span style={str}>--mw-chrome-fg</span>: <span style={ident}>#EDE7DA</span>;
+              {'\n'}  <span style={str}>--pele-surface</span>: <span style={ident}>#EAF3F0</span>;
+              {'\n'}  <span style={str}>--pele-border</span>: <span style={ident}>#0E7C6B</span>;
               {'\n'}{'}'}
               {'\n'}
-              <span style={cmt}># or per-instance: accentColor · mermaidConfig={'{ theme: "dark" }'}</span>
+              <span style={cmt}># or per-instance: accentColor · renderOptions={'{ fontSize: 16 }'}</span>
             </CodeCard>
           </div>
         </section>

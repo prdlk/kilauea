@@ -2,12 +2,15 @@ import { describe, expect, it } from 'vitest'
 import { MermaidWysiwygEditor, LINE_ITEM_CONFIGS, DIAGRAM_TYPES } from '../src'
 
 describe('line-item types', () => {
-  it('covers every registered type that lacks a dedicated graph', () => {
-    const dedicated = new Set(['flowchart', 'sequence', 'state', 'class', 'er', 'pie', 'gantt', 'zenuml'])
+  it('covers every editable type that lacks a dedicated graph', () => {
+    const dedicated = new Set(['flowchart', 'sequence', 'state', 'class', 'er', 'pie', 'gantt'])
     for (const t of DIAGRAM_TYPES) {
       if (dedicated.has(t.id)) continue
+      if (t.capability === 'render') {
+        expect(LINE_ITEM_CONFIGS[t.id], t.id).toBeUndefined()
+        continue
+      }
       expect(LINE_ITEM_CONFIGS[t.id], t.id).toBeTruthy()
-      expect(t.capability, t.id).toBe('edit')
     }
   })
 
