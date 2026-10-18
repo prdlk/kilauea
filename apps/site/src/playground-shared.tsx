@@ -60,63 +60,93 @@ export const TYPE_LABELS: Record<string, string> = {
   gantt: 'Gantt',
 }
 
-export const mono = "'JetBrains Mono', monospace"
+export const mono = "'Geist Mono', ui-monospace, monospace"
+
+/** Selection/connect highlight on every site canvas; matches `--accent` in site.css. */
+export const ACCENT = '#2BB39A'
+
+export type Skin = 'light' | 'dark'
 
 /**
- * One pele palette per color mode — no user-facing theme picker. Light is the
- * site's paper palette (cream surfaces, teal borders, gold accents). Dark
- * transposes Open Knowledge's treatment — quiet node fills, muted connectors,
- * clusters as darker tiers — into the site's warm dark tones. pele reads these
- * custom properties live, so they go on the canvas `style` with no re-render.
+ * One pele palette per preview theme, both on shadcn's zinc scale: outlined
+ * nodes, quiet connectors, clusters as a half-step darker tier. pele reads
+ * these custom properties live, so they go on the canvas `style` with no
+ * re-render.
  */
-export function themeVars(mode: 'light' | 'dark'): CSSProperties {
+function themeVars(mode: Skin): CSSProperties {
   const vars: Record<string, string> =
     mode === 'dark'
       ? {
-          '--pele-bg': '#17140F',
-          '--pele-fg': '#EDE7DA',
-          '--pele-muted': '#A39D90',
-          '--pele-line': '#6B655A',
-          '--pele-surface': '#26221B',
-          '--pele-surface-alt': '#1E1A14',
-          '--pele-border': '#3A342A',
-          '--pele-accent': '#C9A227',
+          '--pele-bg': '#09090B',
+          '--pele-fg': '#FAFAFA',
+          '--pele-muted': '#A1A1AA',
+          '--pele-line': '#71717A',
+          '--pele-surface': '#18181B',
+          '--pele-surface-alt': '#111113',
+          '--pele-border': '#3F3F46',
+          '--pele-accent': ACCENT,
         }
       : {
           '--pele-bg': '#FFFFFF',
-          '--pele-fg': '#1C1A17',
-          '--pele-muted': '#6B6559',
-          '--pele-line': '#8A9B96',
-          '--pele-surface': '#EAF3F0',
-          '--pele-surface-alt': '#FBF9F4',
-          '--pele-border': '#0E7C6B',
-          '--pele-accent': '#C9A227',
-          '--pele-series-1': '#0E7C6B',
-          '--pele-series-2': '#C9A227',
+          '--pele-fg': '#09090B',
+          '--pele-muted': '#71717A',
+          '--pele-line': '#A1A1AA',
+          '--pele-surface': '#F4F4F5',
+          '--pele-surface-alt': '#FAFAFA',
+          '--pele-border': '#D4D4D8',
+          '--pele-accent': ACCENT,
         }
-  vars['--pele-font'] = '"Inter", sans-serif'
+  vars['--pele-font'] = "'Geist', ui-sans-serif, system-ui, sans-serif"
   vars['--pele-font-mono'] = mono
   return vars as CSSProperties
 }
 
+/**
+ * Canvas style for a playground preview pane: the diagram palette plus the
+ * pane's dot grid. Colours come from the `--pane-*` properties the grid's
+ * `data-skin` sets, so the canvas and its pane chrome cannot disagree.
+ */
+export function canvasStyle(mode: Skin): CSSProperties {
+  return {
+    ...themeVars(mode),
+    backgroundColor: 'var(--pane-bg)',
+    backgroundImage: 'radial-gradient(var(--pane-dot) 1px, transparent 1px)',
+    backgroundSize: '20px 20px',
+  }
+}
+
+/** Preview-theme switch for both playgrounds: a two-item segmented control. */
+export function SkinToggle({ skin, onChange }: { skin: Skin; onChange: (skin: Skin) => void }) {
+  return (
+    <div className="tabs" role="group" aria-label="Preview theme">
+      <button type="button" className="tab" aria-pressed={skin === 'light'} onClick={() => onChange('light')}>
+        Light
+      </button>
+      <button type="button" className="tab" aria-pressed={skin === 'dark'} onClick={() => onChange('dark')}>
+        Dark
+      </button>
+    </div>
+  )
+}
+
+/** Monochrome mark: inherits `color`, so it follows whatever text it sits in. */
 export function Logo({ size }: { size: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 26 26" fill="none" style={{ flex: 'none' }}>
-      <rect x="1" y="8.5" width="9" height="9" rx="2.4" fill="#0E7C6B" />
-      <rect x="16" y="1" width="9" height="9" rx="2.4" fill="#1C1A17" />
-      <rect x="16" y="16" width="9" height="9" rx="2.4" fill="#C9A227" />
+    <svg width={size} height={size} viewBox="0 0 26 26" fill="none" style={{ flex: 'none' }} aria-hidden>
+      <rect x="1" y="8.5" width="9" height="9" rx="2.4" fill="currentColor" />
+      <rect x="16" y="1" width="9" height="9" rx="2.4" fill="currentColor" />
+      <rect x="16.75" y="16.75" width="7.5" height="7.5" rx="1.9" stroke="currentColor" strokeWidth="1.5" />
       <path
         d="M10 12.2 H14 Q15 12.2 15 11.2 V6.8 Q15 5.8 16 5.8"
-        stroke="#1C1A17"
+        stroke="currentColor"
         strokeWidth="1.6"
-        fill="none"
         strokeLinecap="round"
       />
       <path
         d="M10 13.8 H14 Q15 13.8 15 14.8 V19.2 Q15 20.2 16 20.2"
-        stroke="#C9A227"
+        stroke="currentColor"
+        strokeOpacity="0.5"
         strokeWidth="1.6"
-        fill="none"
         strokeLinecap="round"
       />
     </svg>

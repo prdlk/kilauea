@@ -1,3 +1,34 @@
+/* ---- Tokens ---------------------------------------------------------------
+   shadcn/ui's zinc dark palette. Every surface, border and text colour on the
+   site reads from these; components below never carry their own hex values
+   except syntax colours, which are a palette of their own. */
+:root {
+  color-scheme: dark;
+  --background: #09090b;
+  --foreground: #fafafa;
+  --card: #0c0c0e;
+  --muted: #18181b;
+  --muted-foreground: #a1a1aa;
+  --subtle-foreground: #71717a;
+  --border: #27272a;
+  --border-strong: #3f3f46;
+  --primary: #fafafa;
+  --primary-hover: #e4e4e7;
+  --primary-foreground: #18181b;
+  --ring: #71717a;
+  --accent: #2bb39a;
+  --font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', monospace;
+  --container: 1180px;
+
+  /* Syntax colours, shared by the CodeMirror panes and the install snippets. */
+  --syn-keyword: #a1a1aa;
+  --syn-string: #8fd6c3;
+  --syn-ident: #ffc799;
+  --syn-comment: #71717a;
+  --syn-punct: #d4d4d8;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -6,34 +37,270 @@ html {
 }
 body {
   margin: 0;
-  background: #f7f4ed;
-  color: #1c1a17;
-  font-family: 'Inter', sans-serif;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 a {
-  color: #0e7c6b;
+  color: inherit;
   text-decoration: none;
 }
-a:hover {
-  color: #0a5c50;
-}
 ::selection {
-  background: #cbe7df;
-  color: #122a25;
+  background: #3f3f46;
+  color: var(--foreground);
 }
 textarea {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
 }
-@keyframes okfade {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
+
+.container {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ---- Button ---------------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font: 500 14px/1 var(--font-sans);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    color 0.15s,
+    border-color 0.15s;
+}
+.btn svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+.btn:focus-visible,
+.tab:focus-visible,
+.menu-item:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+.btn-primary {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+.btn-outline {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--foreground);
+}
+.btn-outline:hover {
+  background: var(--muted);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--muted-foreground);
+}
+.btn-ghost:hover {
+  background: var(--muted);
+  color: var(--foreground);
+}
+.btn-sm {
+  height: 32px;
+  padding: 0 12px;
+  font-size: 13px;
+  border-radius: 7px;
+}
+.btn-lg {
+  height: 40px;
+  padding: 0 20px;
+}
+.btn-xs {
+  height: 26px;
+  padding: 0 8px;
+  gap: 6px;
+  font-size: 12px;
+  border-radius: 6px;
+}
+.btn-xs svg {
+  width: 13px;
+  height: 13px;
+}
+.btn-icon {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 6px;
+}
+.btn-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ---- Tabs / segmented control ---------------------------------------------
+   One look for the preset picker (tablist, aria-selected) and the preview-theme
+   switch (button group, aria-pressed). */
+.tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  background: var(--muted);
+  border-radius: 8px;
+}
+.tab {
+  height: 26px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--muted-foreground);
+  font: 500 13px/1 var(--font-sans);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
+}
+.tab:hover {
+  color: var(--foreground);
+}
+.tab[aria-selected='true'],
+.tab[aria-pressed='true'] {
+  background: var(--background);
+  color: var(--foreground);
+  box-shadow: 0 0 0 1px var(--border);
+}
+
+/* ---- Dropdown menu --------------------------------------------------------- */
+.menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 30;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+}
+.menu-label {
+  padding: 6px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted-foreground);
+}
+.menu-item {
+  height: 32px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--foreground);
+  font: 400 14px/1 var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+}
+.menu-item:hover {
+  background: var(--muted);
+}
+
+/* ---- Header ---------------------------------------------------------------
+   The served first-paint copy has no navbar — that is the app's — so it opens
+   with a spacer the height of one instead, and the hero starts at the same
+   offset in both. Both read the height from the same custom property, and the
+   real header enforces it as a floor, so the two cannot silently disagree. */
+:root {
+  --site-header-h: 56px;
+}
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  min-height: var(--site-header-h);
+  background: rgba(9, 9, 11, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.boot-header {
+  height: var(--site-header-h);
+}
+.site-header-row {
+  /* the header's 1px bottom border is inside its border-box height */
+  min-height: calc(var(--site-header-h) - 1px);
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--foreground);
+}
+.brand-suffix {
+  font-weight: 400;
+  color: var(--muted-foreground);
+}
+.site-nav {
+  display: flex;
+  gap: 20px;
+  font-size: 14px;
+}
+.site-nav a {
+  color: var(--muted-foreground);
+  transition: color 0.15s;
+}
+.site-nav a:hover {
+  color: var(--foreground);
+}
+.site-header-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.star-wrap {
+  position: relative;
+}
+.star-count {
+  font-variant-numeric: tabular-nums;
+}
+.site-star-hint {
+  position: absolute;
+  top: calc(100% + 14px);
+  right: 2px;
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  color: var(--subtle-foreground);
+  pointer-events: none;
+  transition: opacity 120ms linear;
+}
+.site-star-hint span {
+  margin-top: 16px;
+  font-family: 'Caveat', cursive;
+  font-size: 21px;
+  font-weight: 600;
+  white-space: nowrap;
+  transform: rotate(-4deg);
 }
 
 /* ---- Hero masthead -------------------------------------------------------
@@ -59,13 +326,13 @@ textarea {
    the icons inside the popover, which would pin each one to inset 0 and stack
    them into an unreadable pile. */
 .hero-masthead {
-  --pele-bg: #f7f4ed;
-  --pele-fg: #1c1a17;
-  --pele-muted: #544f47;
-  --pele-line: #0e7c6b;
-  --pele-surface: #eaf3f0;
-  --pele-border: #0e7c6b;
-  --pele-font: 'Inter', sans-serif;
+  --pele-bg: var(--background);
+  --pele-fg: var(--foreground);
+  --pele-muted: var(--muted-foreground);
+  --pele-line: var(--subtle-foreground);
+  --pele-surface: var(--background);
+  --pele-border: var(--border-strong);
+  --pele-font: var(--font-sans);
 }
 /* The host has to be pinned to the card as well as the svg. Left to size itself
    it takes the diagram's natural height, and since the svg is positioned against
@@ -87,14 +354,14 @@ textarea {
   overflow: visible;
 }
 .hero-masthead :is(.mw-svg-host, .hero-placeholder) > svg .pele-node text {
-  font-weight: 700;
-  letter-spacing: -0.035em;
+  font-weight: 600;
+  letter-spacing: -0.04em;
 }
 .hero-masthead :is(.mw-svg-host, .hero-placeholder) > svg .pele-node rect {
   stroke-width: 1px;
 }
 .hero-masthead :is(.mw-svg-host, .hero-placeholder) > svg .pele-edge path {
-  stroke-width: 2px;
+  stroke-width: 1.5px;
 }
 /* Zoom chrome in the corner of an h1 gives away that it is a widget, and a
    headline should not pan. */
@@ -125,6 +392,10 @@ textarea {
   .hero-hint {
     font-size: 12px !important;
   }
+  .hero-hint code {
+    border: 0;
+    padding: 0;
+  }
 }
 
 /* ---- Hero layout --------------------------------------------------------
@@ -134,29 +405,22 @@ textarea {
    replacement invisible — when the two carried their own numbers, mounting
    moved the headline down the page in front of the visitor. */
 .hero-section {
-  max-width: 1180px;
+  max-width: var(--container);
   margin: 0 auto;
-  padding: 74px 26px 34px;
+  padding: 72px 24px 32px;
   text-align: center;
 }
 .hero-badge {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
-  font-size: 13px;
-  color: #6b6559;
-  border: 1px solid #e6e0d4;
-  background: #fcfaf5;
-  padding: 6px 13px;
+  gap: 8px;
+  height: 28px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
   border-radius: 999px;
-  letter-spacing: 0.01em;
-}
-.hero-badge-dot {
-  display: inline-block;
-  width: 7px;
-  height: 7px;
-  border-radius: 99px;
-  background: #0e7c6b;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted-foreground);
 }
 /* Full-bleed to the window while staying in the section's flow: the band is the
    hero, not a card inside it. */
@@ -176,40 +440,53 @@ textarea {
   flex-wrap: wrap;
   margin: 14px 0 0;
   font-size: 13px;
-  color: #8a857a;
+  color: var(--subtle-foreground);
 }
 .hero-hint-lead {
-  color: #0e7c6b;
-  font-weight: 600;
+  color: var(--foreground);
+  font-weight: 500;
+}
+.hero-hint code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted-foreground);
+  padding: 2px 6px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
 }
 .hero-sub {
-  max-width: 620px;
+  max-width: 560px;
   margin: 20px auto 0;
-  font-size: 18.5px;
+  font-size: 18px;
   line-height: 1.55;
-  color: #544f47;
+  color: var(--muted-foreground);
   text-wrap: pretty;
 }
-
-/* First-paint content, generated into index.html inside #root and replaced by
-   the app on mount. Vite emits the stylesheet as a real <link> and the bundle as
-   a deferred module, so this paints styled before any JavaScript runs.
-
-   The served copy has no navbar — that is the app's — so it opens with a spacer
-   the height of one instead, and the hero starts at the same offset in both.
-   Both read the height from the same custom property, and the real header
-   enforces it as a floor, so the two cannot silently disagree. It is a floor
-   rather than a fixed height because taller content should still grow the
-   header rather than be clipped by it; if that ever happens, this number is the
-   one to re-measure. */
-:root {
-  --site-header-h: 59px;
+.hero-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 28px;
 }
-.site-header {
-  min-height: var(--site-header-h);
+.install-cmd {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  height: 40px;
+  padding: 0 6px 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--foreground);
 }
-.boot-header {
-  height: var(--site-header-h);
+.install-cmd-prompt {
+  color: var(--subtle-foreground);
+  user-select: none;
 }
 
 /* ---- Hero stand-in ------------------------------------------------------
@@ -252,19 +529,321 @@ textarea {
   border: 0;
 }
 
-/* The live demo embeds the real editor; keep its canvas transparent so the
-   dotted preview background shows through, and center the rendered SVG the
-   way the design's preview pane does. */
-/* the package injects `.mw-canvas { position: relative }` after this sheet,
-   so the fill-the-pane positioning must out-rank it */
+/* ---- Sections -------------------------------------------------------------- */
+.section {
+  padding-top: 96px;
+}
+.section-head {
+  margin-bottom: 28px;
+}
+.section-title {
+  margin: 0;
+  font-size: clamp(26px, 3.2vw, 34px);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+.section-lead {
+  max-width: 560px;
+  margin: 10px 0 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--muted-foreground);
+  text-wrap: pretty;
+}
+.section-note {
+  margin: 14px 0 0;
+  font-size: 13px;
+  color: var(--subtle-foreground);
+}
+
+/* Features: one bordered block split by hairlines rather than four floating
+   cards. The 1px gap over a border-coloured background draws the dividers. */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.feature {
+  padding: 24px;
+  background: var(--background);
+}
+.feature-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--foreground);
+}
+.feature-icon svg {
+  width: 16px;
+  height: 16px;
+}
+.feature h3 {
+  margin: 16px 0 6px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.feature p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--muted-foreground);
+  text-wrap: pretty;
+}
+@media (max-width: 960px) {
+  .feature-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 560px) {
+  .feature-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Install snippets */
+.code-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+@media (max-width: 900px) {
+  .code-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.code-block {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+  overflow: hidden;
+}
+.code-block-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 40px;
+  padding: 0 6px 0 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+.code-block-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.code-block-head .btn {
+  margin-left: auto;
+}
+.code-block pre {
+  flex: 1;
+  margin: 0;
+  padding: 16px 14px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--syn-punct);
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.code-block pre::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.code-block pre::-webkit-scrollbar-track,
+.code-block pre::-webkit-scrollbar-corner {
+  background: transparent;
+}
+.code-block pre::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 99px;
+}
+.syn-kw {
+  color: var(--syn-keyword);
+}
+.syn-str {
+  color: var(--syn-string);
+}
+.syn-id {
+  color: var(--syn-ident);
+}
+.syn-cmt {
+  color: var(--syn-comment);
+}
+
+.site-footer {
+  margin-top: 96px;
+  border-top: 1px solid var(--border);
+}
+.site-footer-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+  padding-top: 28px;
+  padding-bottom: 28px;
+  font-size: 13px;
+  color: var(--muted-foreground);
+}
+.site-footer-links {
+  display: flex;
+  gap: 20px;
+}
+.site-footer-links a:hover {
+  color: var(--foreground);
+}
+.site-footer-meta {
+  margin-left: auto;
+  color: var(--subtle-foreground);
+}
+
+/* ---- Playground -----------------------------------------------------------
+   Shared by the inline demo and /playground. The chrome (frame, toolbar) is
+   always dark; the two panes follow the preview-theme switch through the
+   --pane-* properties set by [data-skin] on the grid. */
+.pg-frame {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--background);
+  overflow: hidden;
+}
+.pg-page {
+  /* svh (not dvh) so the canvas doesn't jump when mobile browsers hide or
+     reveal the URL bar mid-scroll. svh always reports the SHORT viewport (URL
+     bar visible) so the height stays constant. */
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+  background: var(--background);
+}
+.pg-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.pg-presets {
+  flex-wrap: wrap;
+}
+.pg-controls {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.pg-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.15fr);
+}
+.pg-grid-inline {
+  height: 480px;
+}
+.pg-grid-full {
+  flex: 1;
+  min-height: 0;
+}
+.pg-grid[data-skin='dark'] {
+  --pane-bg: var(--background);
+  --pane-fg: var(--foreground);
+  --pane-muted: var(--subtle-foreground);
+  --pane-border: var(--border);
+  --pane-dot: #1f1f23;
+}
+.pg-grid[data-skin='light'] {
+  --pane-bg: #ffffff;
+  --pane-fg: #09090b;
+  --pane-muted: #71717a;
+  --pane-border: #e4e4e7;
+  --pane-dot: #e4e4e7;
+}
+.pg-pane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--pane-bg);
+  color: var(--pane-fg);
+}
+.pg-code-pane {
+  border-right: 1px solid var(--pane-border);
+}
+.pg-pane-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+  height: 40px;
+  padding: 0 8px 0 14px;
+  border-bottom: 1px solid var(--pane-border);
+  font-size: 12px;
+}
+.pg-pane-title {
+  font-weight: 500;
+}
+.pg-filename {
+  font-family: var(--font-mono);
+}
+.pg-pane-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 2px;
+}
+.pg-pane .btn-ghost {
+  color: var(--pane-muted);
+}
+.pg-pane .btn-ghost:hover {
+  background: color-mix(in srgb, var(--pane-fg) 7%, transparent);
+  color: var(--pane-fg);
+}
+.pg-hint {
+  color: var(--pane-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pg-hint-short {
+  display: none;
+}
+.pg-canvas-wrap {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+/* The live demo embeds the real editor. The package injects
+   `.mw-canvas { position: relative }` after this sheet, so the fill-the-pane
+   positioning must out-rank it. The --mw-chrome-* tokens put the zoom buttons
+   and edit popover on the site's zinc palette. */
 .site-demo-canvas.mw-canvas {
-  --mw-accent: #0e7c6b;
+  --mw-accent: var(--accent);
+  --mw-chrome-bg: #09090b;
+  --mw-chrome-border: #27272a;
+  --mw-chrome-fg: #fafafa;
+  --mw-chrome-dim: #a1a1aa;
+  --mw-chrome-hover: #27272a;
   position: absolute;
   inset: 0;
 }
 
-/* Demo source pane — the real @kilauea/codemirror binding,
-   restyled to the site palette. Light and dark variants keyed off the shell. */
+/* Source pane — the real @kilauea/codemirror binding. The base rules are the
+   light theme (also used by /hero-loop); .demo-pane-dark overrides them. */
 .demo-cm {
   flex: 1;
   min-height: 0;
@@ -275,7 +854,7 @@ textarea {
   flex: 1;
   height: 100%;
   background: transparent;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 13px;
   outline: none;
 }
@@ -338,41 +917,47 @@ textarea {
 .demo-cm .tok-meta {
   color: #8a9b96;
 }
-/* dark pane variant */
+/* dark pane: the site's syntax palette */
 .demo-pane-dark .demo-cm .cm-content {
-  caret-color: #7fb3a8;
-  color: #ede7da;
+  caret-color: var(--foreground);
+  color: var(--syn-punct);
 }
 .demo-pane-dark .demo-cm .cm-gutters {
-  color: #7a7365;
+  color: #52525b;
 }
 .demo-pane-dark .demo-cm .cm-activeLine {
-  background: rgba(127, 179, 168, 0.07);
+  background: rgba(255, 255, 255, 0.03);
+}
+.demo-pane-dark .demo-cm .cm-activeLineGutter {
+  color: var(--muted-foreground);
 }
 .demo-pane-dark .demo-cm .cm-selectionBackground,
 .demo-pane-dark .demo-cm .cm-editor ::selection {
-  background: #2e4a44;
+  background: #3f3f46;
 }
 .demo-pane-dark .demo-cm .tok-heading {
-  color: #7fb3a8;
+  color: var(--syn-ident);
 }
 .demo-pane-dark .demo-cm .tok-keyword {
-  color: #9dbf8f;
+  color: var(--syn-keyword);
 }
 .demo-pane-dark .demo-cm .tok-operator {
-  color: #c9a227;
+  color: var(--syn-string);
 }
 .demo-pane-dark .demo-cm .tok-string {
-  color: #d9b95c;
+  color: var(--syn-string);
 }
 .demo-pane-dark .demo-cm .tok-comment {
-  color: #8c8578;
+  color: var(--syn-comment);
 }
 .demo-pane-dark .demo-cm .tok-number {
-  color: #c9c2b4;
+  color: var(--syn-ident);
 }
 .demo-pane-dark .demo-cm .tok-bracket {
-  color: #9c968a;
+  color: var(--subtle-foreground);
+}
+.demo-pane-dark .demo-cm .tok-meta {
+  color: var(--subtle-foreground);
 }
 
 /* Mobile: hide the middle nav links + the "Leave a star!" hint so the
@@ -380,11 +965,13 @@ textarea {
 @media (max-width: 640px) {
   .site-nav,
   .site-star-hint {
-    display: none !important;
+    display: none;
+  }
+  .container {
+    padding: 0 16px;
   }
   .site-header-row {
-    padding: 12px 16px !important;
-    gap: 10px !important;
+    gap: 10px;
   }
 }
 
@@ -399,7 +986,7 @@ textarea {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: end;
-  color: #c9713b;
+  color: var(--pane-muted);
   pointer-events: none;
 }
 .pg-callout-arrow {
@@ -409,10 +996,6 @@ textarea {
 }
 .pg-callout-text {
   font-family: 'Caveat', cursive;
-  /* 22px/600 keeps the label legible on every pane background: measured contrast
-     for #c9713b is >=3.4:1 on the light panes and >=4.8:1 on the dark ones. These
-     callouts are decorative (aria-hidden), so this is a visibility guideline, not
-     a WCAG SC 1.4.3 gate. */
   font-size: 22px;
   font-weight: 600;
   line-height: 1;
@@ -470,57 +1053,51 @@ textarea {
 
 /* Playground on narrow screens: the side-by-side panes squeeze into unusable
    slivers, so stack them — code on top, canvas below — and turn the wrapping
-   toolbar chip rows into horizontally scrollable strips. The playground's
-   layout styles are inline (per-skin colors), hence the !importants. */
-.pg-hint-short {
-  display: none;
-}
+   toolbar rows into horizontally scrollable strips. */
 @media (max-width: 720px) {
-  #demo {
-    padding-left: 12px !important;
-    padding-right: 12px !important;
+  #demo .container {
+    padding: 0 12px;
   }
   .pg-toolbar {
     flex-direction: column;
-    align-items: stretch !important;
-    flex-wrap: nowrap !important;
-    gap: 8px !important;
+    align-items: stretch;
+    flex-wrap: nowrap;
+    gap: 8px;
   }
   .pg-presets,
   .pg-controls {
-    flex-wrap: nowrap !important;
+    flex-wrap: nowrap;
     overflow-x: auto;
-    margin-left: 0 !important;
+    margin-left: 0;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
+  }
+  .pg-presets {
+    align-self: flex-start;
+    max-width: 100%;
   }
   .pg-presets::-webkit-scrollbar,
   .pg-controls::-webkit-scrollbar {
     display: none;
   }
   .pg-presets button,
-  .pg-controls button,
-  .pg-controls span {
+  .pg-controls > * {
     flex: none;
-    white-space: nowrap;
-  }
-  .pg-controls {
-    gap: 8px !important;
   }
   .pg-grid {
-    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-columns: minmax(0, 1fr);
     grid-template-rows: 190px minmax(0, 1fr);
   }
-  .pg-grid:not(.pg-grid-full) {
-    /* svh, not dvh — see PlaygroundPage height note. */
-    height: min(620px, 80svh) !important;
+  .pg-grid-inline {
+    /* svh, not dvh — see the .pg-page height note. */
+    height: min(620px, 80svh);
     /* the inline demo's code row also carries the "Edit here" callout, so it
        gets that height back on top of the shared 190px of visible code */
     grid-template-rows: 236px minmax(0, 1fr);
   }
   .pg-code-pane {
-    border-right: none !important;
-    border-bottom: 1px solid var(--pg-border, #e6e0d4);
+    border-right: none;
+    border-bottom: 1px solid var(--pane-border);
   }
   .pg-hint-long {
     display: none;
@@ -550,27 +1127,4 @@ textarea {
   .pg-callout-preview {
     bottom: 6px;
   }
-}
-
-/* CodeCard scrollbars: subtle, tinted to the card chrome (bg #1E1B16, border #2E2A22). */
-.code-card-scroll {
-  scrollbar-width: thin;
-  scrollbar-color: #2E2A22 transparent;
-}
-.code-card-scroll::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-.code-card-scroll::-webkit-scrollbar-track {
-  background: transparent;
-}
-.code-card-scroll::-webkit-scrollbar-thumb {
-  background: #2E2A22;
-  border-radius: 99px;
-}
-.code-card-scroll::-webkit-scrollbar-thumb:hover {
-  background: #3A362D;
-}
-.code-card-scroll::-webkit-scrollbar-corner {
-  background: transparent;
 }

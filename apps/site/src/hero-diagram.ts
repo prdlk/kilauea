@@ -68,7 +68,7 @@ function esc(value: string): string {
     .replace(/"/g, '&quot;')
 }
 
-const PLACEHOLDER_FONT = '"Inter", sans-serif'
+const PLACEHOLDER_FONT = '"Geist", ui-sans-serif, system-ui, sans-serif'
 
 /** pele's SVG for a hero source. `idPrefix` keeps ids unique when both
  *  orientations share one document. */
@@ -113,7 +113,6 @@ export function heroBootHtml(): string {
   <div class="boot-header"></div>
   <div class="hero-section">
     <div class="hero-badge">
-      <span class="hero-badge-dot"></span>
       Open source &middot; ${esc(HERO_LICENSE)} &middot; React &amp; vanilla
     </div>
     <h1 class="sr-only">${esc(HERO_HEADLINE)}</h1>

@@ -1,16 +1,19 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { PeleCanvas, usePeleEditor } from '@kilauea/react'
 import { track } from './analytics'
+import { CheckIcon, ChevronDownIcon, CopyIcon, LinkIcon } from './icons'
 import {
+  ACCENT,
   CodeMirrorPane,
   Logo,
   PRESETS,
+  SkinToggle,
   TYPE_LABELS,
+  canvasStyle,
   codeFromHash,
   encodeCode,
-  mono,
-  themeVars,
   useCanvasControlTracking,
+  type Skin,
 } from './playground-shared'
 
 /**
@@ -24,7 +27,7 @@ export default function PlaygroundPage() {
   const { editor } = usePeleEditor(initialCode)
   useCanvasControlTracking()
 
-  const [skin, setSkin] = useState<'light' | 'dark'>('light')
+  const [skin, setSkin] = useState<Skin>('dark')
   const [menuOpen, setMenuOpen] = useState(false)
   const [copied, setCopied] = useState(false)
   const [shareCopied, setShareCopied] = useState(false)
@@ -113,187 +116,52 @@ export default function PlaygroundPage() {
     window.setTimeout(() => setShareCopied(false), 1400)
   }
 
-  const dark = skin === 'dark'
-  const chromeBorder = dark ? '#2E2A22' : '#E6E0D4'
-  const paneBg = dark ? '#1E1B16' : '#FCFAF5'
-  const previewBg = dark ? '#17140F' : '#FFFFFF'
-  const paneText = dark ? '#EDE7DA' : '#1C1A17'
-
-  const chromeBtn: CSSProperties = {
-    border: `1px solid ${chromeBorder}`,
-    background: dark ? '#231F19' : '#FFFFFF',
-    color: dark ? '#C9C2B4' : '#544F47',
-    fontFamily: "'Inter', sans-serif",
-    fontSize: 11.5,
-    fontWeight: 600,
-    padding: '5px 11px',
-    borderRadius: 8,
-    cursor: 'pointer',
-  }
-  const ghostBtn: CSSProperties = {
-    border: `1px solid ${chromeBorder}`,
-    background: 'transparent',
-    color: dark ? '#9C968A' : '#6B6559',
-    fontFamily: "'Inter', sans-serif",
-    fontSize: 11.5,
-    fontWeight: 600,
-    padding: '4px 9px',
-    borderRadius: 7,
-    cursor: 'pointer',
-  }
-  const chromeLabel: CSSProperties = {
-    fontSize: 11.5,
-    color: dark ? '#8C8578' : '#8A857A',
-    fontWeight: 500,
-  }
-
   return (
-    <div
-      style={{
-        // svh (not dvh) so the canvas doesn't jump when mobile browsers hide
-        // or reveal the URL bar mid-scroll. svh always reports the SHORT
-        // viewport (URL bar visible) so the height stays constant.
-        height: '100svh',
-        display: 'flex',
-        flexDirection: 'column',
-        background: dark ? '#1A1712' : '#FCFAF5',
-        ...({ '--pg-border': chromeBorder } as CSSProperties),
-      }}
-    >
-      <div
-        className="pg-toolbar"
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 10,
-          flexWrap: 'wrap',
-          padding: '10px 14px',
-          borderBottom: `1px solid ${chromeBorder}`,
-        }}
-      >
-        <a
-          href="/"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 9,
-            color: paneText,
-            fontWeight: 600,
-            letterSpacing: '-0.02em',
-            fontSize: 15.5,
-            marginRight: 4,
-          }}
-        >
-          <Logo size={24} />
+    <div className="pg-page">
+      <div className="pg-toolbar">
+        <a href="/" className="brand">
+          <Logo size={20} />
           Kilauea
-          <span style={{ ...chromeLabel, fontWeight: 600, marginLeft: 2 }}>Playground</span>
+          <span className="brand-suffix">Playground</span>
         </a>
-        <div
-          className="pg-controls"
-          style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}
-        >
+        <div className="pg-controls">
           <div ref={menuRef} style={{ position: 'relative' }}>
             <button
               type="button"
+              className="btn btn-outline btn-sm"
               onClick={() => setMenuOpen((o) => !o)}
               aria-haspopup="menu"
               aria-expanded={menuOpen}
-              style={chromeBtn}
             >
-              ⌗ Samples ▾
+              Samples
+              <ChevronDownIcon />
             </button>
             {menuOpen && (
-              <div
-                role="menu"
-                style={{
-                  position: 'absolute',
-                  top: 'calc(100% + 6px)',
-                  right: 0,
-                  zIndex: 30,
-                  minWidth: 170,
-                  background: dark ? '#231F19' : '#FFFFFF',
-                  border: `1px solid ${chromeBorder}`,
-                  borderRadius: 10,
-                  boxShadow: '0 12px 34px -12px rgba(28,26,23,0.35)',
-                  padding: 5,
-                  display: 'flex',
-                  flexDirection: 'column',
-                }}
-              >
-                <span style={{ ...chromeLabel, fontSize: 10.5, textTransform: 'uppercase', letterSpacing: '0.07em', padding: '5px 9px 4px' }}>
-                  Load sample
-                </span>
+              <div role="menu" className="menu">
+                <span className="menu-label">Load sample</span>
                 {Object.keys(TYPE_LABELS).map((k) => (
-                  <button
-                    key={k}
-                    type="button"
-                    role="menuitem"
-                    onClick={() => loadSample(k)}
-                    style={{
-                      border: 'none',
-                      background: 'transparent',
-                      textAlign: 'left',
-                      fontFamily: "'Inter', sans-serif",
-                      fontSize: 13,
-                      fontWeight: 500,
-                      color: dark ? '#C9C2B4' : '#544F47',
-                      padding: '7px 9px',
-                      borderRadius: 7,
-                      cursor: 'pointer',
-                    }}
-                  >
+                  <button key={k} type="button" role="menuitem" className="menu-item" onClick={() => loadSample(k)}>
                     {TYPE_LABELS[k]}
                   </button>
                 ))}
               </div>
             )}
           </div>
-          <button type="button" onClick={() => setSkin(dark ? 'light' : 'dark')} style={chromeBtn}>
-            {dark ? '☾ Dark' : '☀ Light'}
-          </button>
-          <button
-            type="button"
-            className="pg-share-btn"
-            onClick={share}
-            style={{ ...chromeBtn, background: '#0E7C6B', border: '1px solid #0E7C6B', color: '#FFFFFF' }}
-          >
-            {shareCopied ? 'Link copied' : '↗ Share'}
+          <SkinToggle skin={skin} onChange={setSkin} />
+          <button type="button" className="btn btn-primary btn-sm pg-share-btn" onClick={share}>
+            {shareCopied ? <CheckIcon /> : <LinkIcon />}
+            {shareCopied ? 'Link copied' : 'Share'}
           </button>
         </div>
       </div>
 
-      <div
-        className="pg-grid pg-grid-full"
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'minmax(0, 0.9fr) minmax(0, 1.15fr)',
-          flex: 1,
-          minHeight: 0,
-        }}
-      >
-        <div
-          className={dark ? 'pg-code-pane demo-pane demo-pane-dark' : 'pg-code-pane demo-pane'}
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            minHeight: 0,
-            background: paneBg,
-            borderRight: `1px solid ${chromeBorder}`,
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              height: 44, padding: '0 14px', flex: 'none',
-              borderBottom: `1px solid ${chromeBorder}`,
-            }}
-          >
-            <span style={{ width: 9, height: 9, borderRadius: 99, background: '#0E7C6B' }} />
-            <span style={{ fontFamily: mono, fontSize: 12.5, color: paneText }}>diagram.mmd</span>
-            <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
-              <button type="button" onClick={copySource} style={ghostBtn}>
+      <div className="pg-grid pg-grid-full" data-skin={skin}>
+        <div className={skin === 'dark' ? 'pg-pane pg-code-pane demo-pane demo-pane-dark' : 'pg-pane pg-code-pane demo-pane'}>
+          <div className="pg-pane-head">
+            <span className="pg-filename">diagram.mmd</span>
+            <div className="pg-pane-actions">
+              <button type="button" className="btn btn-ghost btn-xs" onClick={copySource}>
+                {copied ? <CheckIcon /> : <CopyIcon />}
                 {copied ? 'Copied' : 'Copy'}
               </button>
             </div>
@@ -301,39 +169,16 @@ export default function PlaygroundPage() {
           <CodeMirrorPane editor={editor} />
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', minHeight: 0, background: previewBg }}>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              height: 44, padding: '0 14px', flex: 'none',
-              borderBottom: `1px solid ${chromeBorder}`,
-            }}
-          >
-            <span style={{ fontSize: 12.5, fontWeight: 600, color: paneText }}>Preview</span>
-            <span className="pg-hint-long" style={chromeLabel}>
+        <div className="pg-pane">
+          <div className="pg-pane-head">
+            <span className="pg-pane-title">Preview</span>
+            <span className="pg-hint pg-hint-long">
               click to select · double-click to edit · alt + drag to connect · pinch to zoom
             </span>
-            <span className="pg-hint-short" style={chromeLabel}>
-              tap to select · double-tap to edit · pinch to zoom
-            </span>
+            <span className="pg-hint pg-hint-short">tap to select · double-tap to edit · pinch to zoom</span>
           </div>
-          <div style={{ position: 'relative', flex: 1, minHeight: 0 }}>
-            <PeleCanvas
-              editor={editor}
-              accentColor="#0E7C6B"
-              panZoom
-              className="site-demo-canvas"
-              style={{
-                ...themeVars(skin),
-                backgroundColor: previewBg,
-                backgroundImage: dark
-                  ? 'radial-gradient(#231f19 1px, transparent 1px)'
-                  : 'radial-gradient(#EFEADF 1px, transparent 1px)',
-                backgroundSize: '20px 20px',
-              }}
-            />
+          <div className="pg-canvas-wrap">
+            <PeleCanvas editor={editor} accentColor={ACCENT} panZoom className="site-demo-canvas" style={canvasStyle(skin)} />
           </div>
         </div>
       </div>

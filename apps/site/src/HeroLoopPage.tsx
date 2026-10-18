@@ -260,7 +260,7 @@ export default function HeroLoopPage() {
           <span
             style={{
               marginLeft: 12,
-              fontFamily: "'JetBrains Mono', monospace",
+              fontFamily: "'Geist Mono', ui-monospace, monospace",
               fontSize: 12,
               color: '#8A857A',
             }}
@@ -270,7 +270,7 @@ export default function HeroLoopPage() {
         </div>
         {/* Vertically center the SVG (default is flex-start / top) so
              the tiny 3-node flowchart doesn't stick to the top edge. */}
-        <style>{`#hero-loop .mw-canvas { --pele-surface: #EAF3F0; --pele-border: #0E7C6B; --pele-line: #8A9B96; --pele-font: 'Inter', sans-serif; } #hero-loop .mw-canvas .mw-svg-host { align-items: center; }`}</style>
+        <style>{`#hero-loop .mw-canvas { --pele-surface: #EAF3F0; --pele-border: #0E7C6B; --pele-line: #8A9B96; --pele-font: 'Geist', sans-serif; } #hero-loop .mw-canvas .mw-svg-host { align-items: center; }`}</style>
         <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
           <div
             ref={codePaneRef}
