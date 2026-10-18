@@ -8,5 +8,6 @@ verifyDepsBeforeRun: false
 allowBuilds:
   core-js: false
   esbuild: true
+  workerd: true
 minimumReleaseAgeExclude:
   - pele@1.6.0

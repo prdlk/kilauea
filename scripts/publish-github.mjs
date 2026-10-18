@@ -3,9 +3,11 @@
 // owner scope. GitHub Packages only accepts a scope equal to the repository
 // owner, so the source names stay @kilauea/* and the staged tarballs are
 // renamed to @<owner>/kilauea-<dir> with their workspace deps rewritten to
-// match. The repo's own versions are left alone: pass the version to publish.
+// match. The version defaults to the one in the repo (all five packages share
+// it, see `.changeset/config.json`); versions already on the registry are
+// skipped, so re-running is safe.
 //
-//   node scripts/publish-github.mjs <version> [--owner prdlk] [--dry-run]
+//   node scripts/publish-github.mjs [version] [--owner prdlk] [--dry-run]
 //
 // Needs `pnpm build` to have run, and GITHUB_TOKEN with write:packages.
 import { spawnSync } from 'node:child_process'
@@ -19,13 +21,11 @@ const REGISTRY = 'https://npm.pkg.github.com'
 const PACKAGES = ['core', 'dom', 'codemirror', 'monaco', 'react']
 
 const args = process.argv.slice(2)
-const version = args.find((a) => !a.startsWith('--'))
 const owner = args.includes('--owner') ? args[args.indexOf('--owner') + 1] : 'prdlk'
 const dryRun = args.includes('--dry-run')
-if (!version) {
-  console.error('usage: node scripts/publish-github.mjs <version> [--owner <owner>] [--dry-run]')
-  process.exit(2)
-}
+const version =
+  args.find((a) => !a.startsWith('--') && a !== owner) ??
+  JSON.parse(readFileSync(join(ROOT, 'packages', 'core', 'package.json'), 'utf8')).version
 const token = process.env.GITHUB_TOKEN ?? process.env.GH_TOKEN
 if (!token && !dryRun) {
   console.error('GITHUB_TOKEN (write:packages) is required to publish')
@@ -84,14 +84,21 @@ for (const dir of PACKAGES) {
   // scoped auth for this registry only; the file lives in the staged copy
   writeFileSync(join(out, '.npmrc'), `@${owner}:registry=${REGISTRY}\n//npm.pkg.github.com/:_authToken=\${NODE_AUTH_TOKEN}\n`)
 
+  const env = { ...process.env, NODE_AUTH_TOKEN: token ?? '' }
+  const already = spawnSync('npm', ['view', `${manifest.name}@${version}`, 'version', '--registry', REGISTRY], {
+    cwd: out,
+    env,
+    encoding: 'utf8',
+  })
+  if (already.status === 0 && already.stdout.trim() === version) {
+    console.log(`\n= ${manifest.name}@${version} is already published; skipping`)
+    continue
+  }
+
   const npmArgs = ['publish', '--registry', REGISTRY, '--tag', version.includes('-') ? 'next' : 'latest']
   if (dryRun) npmArgs.push('--dry-run')
   console.log(`\n→ ${manifest.name}@${version}${dryRun ? ' (dry run)' : ''}`)
-  const result = spawnSync('npm', npmArgs, {
-    cwd: out,
-    stdio: 'inherit',
-    env: { ...process.env, NODE_AUTH_TOKEN: token ?? '' },
-  })
+  const result = spawnSync('npm', npmArgs, { cwd: out, stdio: 'inherit', env })
   if (result.status !== 0) {
     console.error(`${manifest.name}: npm publish exited with ${result.status}`)
     process.exit(result.status ?? 1)

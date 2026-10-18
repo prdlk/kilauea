@@ -18,7 +18,7 @@ Changesets configuration for versioning and publishing the five `@kilauea/*` pac
 - Because of the `fixed` group, any changeset touching one package bumps all five to the same version; `.github/workflows/release.yml` relies on this and reads the version from `packages/core/package.json`.
 - Adding a new publishable package under `packages/` requires adding it to `fixed` (the release verification loop checks every non-private `packages/*`).
 - Apps are in `ignore`; never add changesets for them.
-- In the public repo the Version PR is made in agents-private, and Copybara syncs the bump and removes the `.md` files. The release workflow skips publishing while any `.changeset/*.md` (other than `README.md`) remains on `main`. Do not hand-edit versions.
+- `.github/workflows/release.yml` opens the "Version Packages" PR (`pnpm changeset version`) while any `.changeset/*.md` (other than `README.md`) is on `main`, and publishes to GitHub Packages once none remain. Do not hand-edit versions.
 
 ### Testing Requirements
 None; `pnpm changeset status` can inspect state.

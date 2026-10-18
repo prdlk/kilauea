@@ -1,36 +1,32 @@
 # .github
 
 **Parent context:** `../AGENTS.md`
-**Generated:** 2026-10-17 · **Updated:** 2026-10-17
+**Generated:** 2026-10-17 · **Updated:** 2026-10-18
 
 ## Purpose
-GitHub automation for the public Kilauea repo (`prdlk/kilauea`). This repo is a Copybara-synced public mirror of `public/kilauea` inside the private `inkeep/agents-private` monorepo, so CI here has only two jobs: publish the five `@kilauea/*` packages to npm (`workflows/release.yml`) and bridge outside contributors' public PRs into agents-private (`workflows/monorepo-pr-bridge.yml` + `scripts/bridge-public-pr-to-monorepo.mjs`). There is no test/lint CI workflow here.
+GitHub Actions for `prdlk/kilauea`: a CI check on every PR and push, and a release pipeline driven by changesets that versions the five `@kilauea/*` packages together and publishes them to GitHub Packages.
 
 ## Subdirectories
 | Directory | Purpose |
 |-----------|---------|
-| `workflows/` | Two GitHub Actions workflows: Publish, Monorepo PR Bridge (see `workflows/AGENTS.md`) |
-| `scripts/` | Node script driven by the bridge workflow (see `scripts/AGENTS.md`) |
+| `workflows/` | `ci.yml` and `release.yml` (see `workflows/AGENTS.md`) |
 
 ## For AI Agents
 
 ### Working In This Directory
-- Everything here ships to the public repo through Copybara; the bridge script comments say sibling copies live in other `public/*` repos and "cannot import shared code", so keep it self-contained and code-shape aligned with them.
-- Action `uses:` refs are pinned by commit SHA with a version comment; keep that convention.
-- Version PRs are NOT created here: agents-private owns "Version Packages (kilauea)"; this repo only publishes (see `workflows/AGENTS.md`).
+- Both workflows use `pnpm/action-setup@v4` (reads `packageManager` from the root `package.json`) and Node 22.
+- Releases need no secrets: `GITHUB_TOKEN` with `packages: write` publishes to `npm.pkg.github.com`, and `contents`/`pull-requests: write` lets `changesets/action` open the Version Packages PR.
+- The site is deployed from a developer machine (`pnpm deploy:site`, see `apps/site/AGENTS.md`); there is no deploy workflow because no Cloudflare API token is stored in the repo.
 
 ### Testing Requirements
-No automated tests. The bridge script exports `buildCommitAttribution`, `buildInternalPrBody`, `buildWelcomePublicComment`, `listPublicPrCommits`, `prefixPatchPaths` for tests, but no test file exists in this directory. Workflows can only be exercised on GitHub.
-
-### Common Patterns
-Both workflows use Node 22 and `concurrency` groups (`kilauea-publish`, `monorepo-pr-bridge-<pr number>`).
+Workflows can only be exercised on GitHub: `gh run list`, `gh run view <id> --log-failed`.
 
 ## Dependencies
 
 ### Internal
-Release workflow builds `packages/*` and reads `.changeset/`; see root `package.json` scripts.
+`scripts/publish-github.mjs` (publish step), `.changeset/config.json` (fixed version group).
 
 ### External
-GitHub Actions: `actions/checkout`, `actions/setup-node`, `pnpm/setup`, `actions/create-github-app-token`.
+`actions/checkout@v4`, `pnpm/action-setup@v4`, `actions/setup-node@v4`, `changesets/action@v1`.
 
 ## Manual Notes
