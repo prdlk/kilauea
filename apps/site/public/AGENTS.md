@@ -10,10 +10,10 @@ Static files served from the site root by Vite.
 | File | Description |
 |------|-------------|
 | `favicon.svg` | Icon, also used for `mask-icon` and `apple-touch-icon` in `index.html` |
-| `og-image.png` | 1200x630 Open Graph/Twitter image referenced as `https://kilauea.prdlk.dev/og-image.png` |
+| `og-image.png` | 1200x630 Open Graph/Twitter image referenced as `https://kilauea.dev/og-image.png` |
 | `og-image.svg` | Vector source of the OG image |
-| `robots.txt` | `Allow: /`, points to `https://kilauea.prdlk.dev/sitemap.xml` |
-| `sitemap.xml` | Lists only `https://kilauea.prdlk.dev/` (weekly, priority 1.0) |
+| `robots.txt` | `Allow: /`, points to `https://kilauea.dev/sitemap.xml` |
+| `sitemap.xml` | Lists only `https://kilauea.dev/` (weekly, priority 1.0) |
 
 ## For AI Agents
 

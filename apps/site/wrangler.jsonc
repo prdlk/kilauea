@@ -1,0 +1,17 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "kilauea-site",
+  // the authenticated account; a stale CLOUDFLARE_ACCOUNT_ID in the shell
+  // would otherwise retarget the deploy
+  "account_id": "54c3f12c7eb138d1c426bcdbddb9d6fe",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-10-17",
+  // `vite build` output; `/playground` and `/hero-loop` are client routes
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application"
+  },
+  "routes": [{ "pattern": "kilauea.dev", "custom_domain": true }],
+  "observability": { "enabled": true }
+}

@@ -7,7 +7,7 @@ import './site.css'
 import './analytics'
 
 // Two pages, one bundle: path decides which renders. /playground survives
-// refresh via the SPA fallback rewrite in vercel.json (vite dev falls back
+// refresh via the Worker's `single-page-application` asset fallback (vite dev falls back
 // to index.html on its own). /hero-loop is a dev-only capture target for
 // the README animation.
 const path = window.location.pathname.replace(/\/+$/, '')

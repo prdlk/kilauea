@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://kilauea.prdlk.dev/sitemap.xml
+Sitemap: https://kilauea.dev/sitemap.xml

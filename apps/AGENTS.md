@@ -11,7 +11,7 @@ Private (never published) Vite applications that consume the `@kilauea/*` worksp
 |-----------|---------|
 | `playground/` | React playground (port 5173); the manual test harness for every diagram type (see `playground/AGENTS.md`) |
 | `js-playground/` | Vanilla TS playground (port 5174) with no React; owns the shared `SAMPLES` list (see `js-playground/AGENTS.md`) |
-| `site/` | Marketing site + `/playground` page, deployed to Vercel (see `site/AGENTS.md`) |
+| `site/` | Marketing site + `/playground` page, deployed to Cloudflare Workers at kilauea.dev (see `site/AGENTS.md`) |
 
 ## For AI Agents
 
