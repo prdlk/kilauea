@@ -19,7 +19,7 @@ Tests for `bindMonaco` using an in-memory fake Monaco (node environment, no jsdo
 - Real Monaco is never instantiated (no DOM/workers).
 
 ### Testing Requirements
-`pnpm --filter @visimer/monaco test`; `pnpm --filter @visimer/monaco typecheck` for the conformance canary.
+`pnpm --filter @kilauea/monaco test`; `pnpm --filter @kilauea/monaco typecheck` for the conformance canary.
 
 ### Common Patterns
 `fake.moveCursor(offset, reason?)`, `fake.pressUndo(true)`, `fake.state.highlights`, `fake.text`.
@@ -27,7 +27,7 @@ Tests for `bindMonaco` using an in-memory fake Monaco (node environment, no jsdo
 ## Dependencies
 
 ### Internal
-`@visimer/core`, `../src`.
+`@kilauea/core`, `../src`.
 
 ### External
 `vitest ^2.1.9`, `monaco-editor ^0.55.1` (types only).

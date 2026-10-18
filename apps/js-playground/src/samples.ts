@@ -1,5 +1,5 @@
 export interface Sample {
-  /** must match a DiagramTypeInfo id from @visimer/core */
+  /** must match a DiagramTypeInfo id from @kilauea/core */
   typeId: string
   title: string
   code: string
@@ -194,7 +194,7 @@ export const SAMPLES: Sample[] = [
     typeId: 'mindmap',
     title: 'Mindmap',
     code: `mindmap
-  root((visimer))
+  root((kilauea))
     Parsing
       Lossless CST
       Statement classifier

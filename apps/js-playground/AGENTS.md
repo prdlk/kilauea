@@ -4,13 +4,13 @@
 **Generated:** 2026-10-17 · **Updated:** 2026-10-17
 
 ## Purpose
-Framework-free playground showing the headless API: `@visimer/core` + `@visimer/dom` + `@visimer/codemirror` driven from plain TypeScript and hand-built DOM. Run with `pnpm dev:js` (http://localhost:5174, `strictPort`).
+Framework-free playground showing the headless API: `@kilauea/core` + `@kilauea/dom` + `@kilauea/codemirror` driven from plain TypeScript and hand-built DOM. Run with `pnpm dev:js` (http://localhost:5174, `strictPort`).
 
 ## Key Files
 | File | Description |
 |------|-------------|
 | `index.html` | Static shell: topbar (theme select, accent colour, read-only checkbox), `#sidebar`, `#toolbar`, `#canvas`, `#inspector`, `#codepane`, `#statusbar`; loads `/src/main.ts` |
-| `vite.config.ts` | Port 5174 strict; excludes core, dom and codemirror workspace packages from optimizeDeps; pre-bundles pele (`@visimer/dom > pele`) and CodeMirror deps |
+| `vite.config.ts` | Port 5174 strict; excludes core, dom and codemirror workspace packages from optimizeDeps; pre-bundles pele (`@kilauea/dom > pele`) and CodeMirror deps |
 | `tsconfig.json` | Extends `../../tsconfig.base.json`, DOM libs, `vite/client` types |
 | `package.json` | Scripts `dev`, `build`, `typecheck`; `workspace:*` on core, dom, codemirror |
 
@@ -35,7 +35,7 @@ Per-type toolbar buttons call `editor.dispatch({ type: '...' })` (e.g. `gantt.ad
 ## Dependencies
 
 ### Internal
-`@visimer/core`, `@visimer/dom`, `@visimer/codemirror`.
+`@kilauea/core`, `@kilauea/dom`, `@kilauea/codemirror`.
 
 ### External
 @codemirror/{state ^6.4.1, view ^6.34.1, commands ^6.6.1, language ^6.10.3}, @lezer/highlight ^1.2.1, vite ^6.3.5.

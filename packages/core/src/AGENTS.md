@@ -4,7 +4,7 @@
 **Generated:** 2026-10-17 · **Updated:** 2026-10-17
 
 ## Purpose
-Source of `@visimer/core`. Top-level files hold the generic machinery (line scanning, type detection, the editor/history class, the text pane binding); each subdirectory implements one diagram type's projection and ops.
+Source of `@kilauea/core`. Top-level files hold the generic machinery (line scanning, type detection, the editor/history class, the text pane binding); each subdirectory implements one diagram type's projection and ops.
 
 ## Key Files
 | File | Description |
@@ -45,7 +45,7 @@ Source of `@visimer/core`. Top-level files hold the generic machinery (line scan
 - `applyEdits` in `text.ts` throws `Error('Overlapping text edits')`; ops that emit multiple edits must not overlap.
 
 ### Testing Requirements
-`pnpm --filter @visimer/core test`. Add tests in `../test/` for any new op; use `new MermaidWysiwygEditor({code})`, `editor.dispatch(...)`, assert `editor.code`.
+`pnpm --filter @kilauea/core test`. Add tests in `../test/` for any new op; use `new MermaidWysiwygEditor({code})`, `editor.dispatch(...)`, assert `editor.code`.
 
 ### Common Patterns
 - Context type per type: `{ code, lines, graph }` (`FlowOpContext`, `ClOpContext`, `ErOpContext`, `PieOpContext`, `GanttOpContext`, `LiOpContext`); `OpResult { edits, created? }` is defined in `flowchart/ops.ts`.

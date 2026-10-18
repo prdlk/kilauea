@@ -20,10 +20,10 @@ The generic handler for the long tail of chart-style diagram types that have no 
 - Ops: `li.setLine` (newlines collapsed; empty text deletes the line, keeps indent otherwise), `li.addItem` (default `addTemplate`, indent copied from last item, `'  '` if none, `created: ['item:<anchor+1>']`), `li.deleteItem`.
 - Spans cover the line from after indent to line end; `lineItemAt` matches any offset in the full line.
 - Helper extractors: `firstQuoted`, `firstBracketed` (`[..]`, `((..))`, `(..)`, `{{..}}`), `beforeColon`, `afterKeyword`.
-- Editing is whole-line by design (not structural), so `@visimer/dom` can only offer text-level edits for these types.
+- Editing is whole-line by design (not structural), so `@kilauea/dom` can only offer text-level edits for these types.
 
 ### Testing Requirements
-`pnpm --filter @visimer/core test`; `test/lineitems.test.ts`.
+`pnpm --filter @kilauea/core test`; `test/lineitems.test.ts`.
 
 ### Common Patterns
 Config-table dispatch instead of per-type modules; entity ids are line-index keyed like pie/gantt.

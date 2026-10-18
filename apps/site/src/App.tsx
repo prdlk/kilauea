@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
-import { MermaidCanvas, useMermaidEditor } from '@visimer/react'
+import { MermaidCanvas, useMermaidEditor } from '@kilauea/react'
 import { track } from './analytics'
 import {
   HERO_HEADLINE,
@@ -22,9 +22,9 @@ import {
   useCanvasControlTracking,
 } from './playground-shared'
 
-const REPO = 'inkeep/visimer'
+const REPO = 'prdlk/kilauea'
 const REPO_URL = `https://github.com/${REPO}`
-const INSTALL_CMD = 'npm i @visimer/react'
+const INSTALL_CMD = 'npm i @kilauea/react'
 
 /**
  * Direction is picked once at mount rather than on every resize: a phone fits the
@@ -345,7 +345,7 @@ export default function App() {
             }}
           >
             <Logo size={26} />
-            Visimer
+            Kilauea
           </a>
           <nav className="site-nav" style={{ display: 'flex', gap: 22, marginLeft: 6, fontSize: 14.5 }}>
             <a href="#demo" style={{ color: '#6B6559' }}>
@@ -858,22 +858,22 @@ export default function App() {
             The playground above is this exact package. Six recipes cover it all.
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 16 }}>
-            <CodeCard title="React · @visimer/react">
-              <span style={cmt}># npm i @visimer/react</span>
+            <CodeCard title="React · @kilauea/react">
+              <span style={cmt}># npm i @kilauea/react</span>
               {'\n'}
               <span style={kw}>import</span> {'{ MermaidWysiwyg }'} <span style={kw}>from</span>{' '}
-              <span style={str}>'@visimer/react'</span>
+              <span style={str}>'@kilauea/react'</span>
               {'\n\n'}&lt;<span style={ident}>MermaidWysiwyg</span> <span style={str}>code</span>={'{diagram}'}{' '}
               <span style={str}>onCodeChange</span>={'{setDiagram}'} /&gt;
             </CodeCard>
-            <CodeCard title="Vanilla · @visimer/core + @visimer/dom">
-              <span style={cmt}># npm i @visimer/core @visimer/dom</span>
+            <CodeCard title="Vanilla · @kilauea/core + @kilauea/dom">
+              <span style={cmt}># npm i @kilauea/core @kilauea/dom</span>
               {'\n'}
               <span style={kw}>import</span> {'{ MermaidWysiwygEditor }'} <span style={kw}>from</span>{' '}
-              <span style={str}>'@visimer/core'</span>
+              <span style={str}>'@kilauea/core'</span>
               {'\n'}
               <span style={kw}>import</span> {'{ MermaidCanvasView }'} <span style={kw}>from</span>{' '}
-              <span style={str}>'@visimer/dom'</span>
+              <span style={str}>'@kilauea/dom'</span>
               {'\n\n'}
               <span style={kw}>const</span> editor = <span style={kw}>new</span> <span style={ident}>MermaidWysiwygEditor</span>({'{ '}
               <span style={str}>code</span>
@@ -883,21 +883,21 @@ export default function App() {
               <span style={str}>editor</span>, <span style={str}>container</span>
               {' }'})
             </CodeCard>
-            <CodeCard title="CodeMirror pane · @visimer/codemirror">
-              <span style={cmt}># npm i @visimer/codemirror</span>
+            <CodeCard title="CodeMirror pane · @kilauea/codemirror">
+              <span style={cmt}># npm i @kilauea/codemirror</span>
               {'\n'}
               <span style={kw}>import</span> {'{ MermaidCodeMirror }'} <span style={kw}>from</span>{' '}
-              <span style={str}>'@visimer/codemirror'</span>
+              <span style={str}>'@kilauea/codemirror'</span>
               {'\n\n'}
               <span style={kw}>new</span> <span style={ident}>MermaidCodeMirror</span>(host, editor)
               {'\n'}
               <span style={cmt}># typing, highlights, undo, all shared with the canvas</span>
             </CodeCard>
-            <CodeCard title="Monaco · @visimer/monaco">
-              <span style={cmt}># npm i @visimer/monaco  (bring your own monaco instance)</span>
+            <CodeCard title="Monaco · @kilauea/monaco">
+              <span style={cmt}># npm i @kilauea/monaco  (bring your own monaco instance)</span>
               {'\n'}
               <span style={kw}>import</span> {'{ bindMonaco }'} <span style={kw}>from</span>{' '}
-              <span style={str}>'@visimer/monaco'</span>
+              <span style={str}>'@kilauea/monaco'</span>
               {'\n\n'}
               <span style={kw}>const</span> binding = <span style={ident}>bindMonaco</span>(editor, monacoEditor)
               {'\n'}binding.<span style={ident}>dispose</span>()
@@ -943,13 +943,13 @@ export default function App() {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 9, fontWeight: 600, letterSpacing: '-0.02em' }}>
               <Logo size={22} />
-              Visimer
+              Kilauea
             </div>
             <div style={{ display: 'flex', gap: 20, fontSize: 14, marginLeft: 8, flexWrap: 'wrap' }}>
               <a href={REPO_URL} style={{ color: '#6B6559' }}>
                 GitHub
               </a>
-              <a href="https://www.npmjs.com/package/@visimer/react" style={{ color: '#6B6559' }}>
+              <a href="https://www.npmjs.com/package/@kilauea/react" style={{ color: '#6B6559' }}>
                 npm
               </a>
             </div>

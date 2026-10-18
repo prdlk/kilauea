@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
-import { MermaidCanvas, useMermaidEditor } from '@visimer/react'
+import { MermaidCanvas, useMermaidEditor } from '@kilauea/react'
 import { track } from './analytics'
 import {
   CodeMirrorPane,
@@ -185,7 +185,7 @@ export default function PlaygroundPage() {
           }}
         >
           <Logo size={24} />
-          Visimer
+          Kilauea
           <span style={{ ...chromeLabel, fontWeight: 600, marginLeft: 2 }}>Playground</span>
         </a>
         <div

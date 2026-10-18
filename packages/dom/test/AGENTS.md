@@ -19,7 +19,7 @@ Vitest tests (jsdom) for the canvas. They render through the real pele (`pele ^1
 Each file starts with `// @vitest-environment jsdom`. jsdom lacks `CSS.escape` (polyfilled at the top of each file), `FontFaceSet` and layout; stub per test. `HTMLCanvasElement.prototype.getContext = () => null` makes pele fall back to its width table so text measurement is deterministic. Views render synchronously in the constructor, so assertions need no awaiting for the first render. Import from `../src`, not the package name. `correlate.test.ts` imports samples from the js-playground, so sample edits there affect it.
 
 ### Testing Requirements
-`pnpm --filter @visimer/dom test`. Not covered: pointer gestures, pan/zoom, popovers, React.
+`pnpm --filter @kilauea/dom test`. Not covered: pointer gestures, pan/zoom, popovers, React.
 
 ### Common Patterns
 `mount()` helper in `correlate.test.ts` (editor + container + view with `debounceMs: 0`); `type`/`key`/`editorDiv` helpers in `edit.test.ts` (set `textContent` + dispatch `input`, dispatch `keydown`, find `.mw-inplace-editor`); `vi.mock('pele', …)` keeping the real implementation behind a spy.
@@ -27,7 +27,7 @@ Each file starts with `// @vitest-environment jsdom`. jsdom lacks `CSS.escape` (
 ## Dependencies
 
 ### Internal
-`@visimer/core`, `../src`.
+`@kilauea/core`, `../src`.
 
 ### External
 `pele`, `vitest ^2.1.9`, `jsdom ^25.0.1`.

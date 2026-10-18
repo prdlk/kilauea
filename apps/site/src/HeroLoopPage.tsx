@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react'
-import { MermaidCodeMirror } from '@visimer/codemirror'
-import { MermaidWysiwygEditor } from '@visimer/core'
-import { MermaidCanvasView } from '@visimer/dom'
+import { MermaidCodeMirror } from '@kilauea/codemirror'
+import { MermaidWysiwygEditor } from '@kilauea/core'
+import { MermaidCanvasView } from '@kilauea/dom'
 
-// Deterministic RAF-driven demo of visimer's click-to-edit + drag-to-connect
+// Deterministic RAF-driven demo of kilauea's click-to-edit + drag-to-connect
 // UX. Rather than driving the real inline-editor and connect gesture through
 // synthesized DOM events, this fires the same editor ops the playground fires
 // and paints a cursor + ghost line on top for the drag visual. The end state (source + diagram)
@@ -74,7 +74,7 @@ export default function HeroLoopPage() {
     let committedConnected = false
 
     // Any dispatch that would auto-select a new entity (renameNode, connect)
-    // triggers visimer's own popover chip. This animation shows the raw editor
+    // triggers kilauea's own popover chip. This animation shows the raw editor
     // behavior, not the selection UI, so we clear right after each write.
     const clearSel = () => editor.setSelection([], 'api' as never)
 

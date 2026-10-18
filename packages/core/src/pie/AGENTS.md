@@ -19,7 +19,7 @@ Single-file handler for `pie` charts. Everything (graph, ops, selection mapping)
 - Setters replace only `valueSpan`/`labelSpan`.
 
 ### Testing Requirements
-`pnpm --filter @visimer/core test`; the `pie` suite is inside `test/er.test.ts`.
+`pnpm --filter @kilauea/core test`; the `pie` suite is inside `test/er.test.ts`.
 
 ### Common Patterns
 Returns `{edits, created?}` directly (no dedicated result type); same delete-line logic (remove trailing `\n`, or preceding one on the last line).

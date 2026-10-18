@@ -7,7 +7,7 @@ import type {
   PieGraph,
   SequenceGraph,
   StateGraph,
-} from '@visimer/core'
+} from '@kilauea/core'
 
 /**
  * Entity id → rendered element maps for the node/edge-shaped diagram types.

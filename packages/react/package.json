@@ -1,7 +1,7 @@
 {
-  "name": "@visimer/react",
+  "name": "@kilauea/react",
   "version": "1.1.3",
-  "description": "React bindings for visimer: a drop-in visual Mermaid editor component and hooks, rendered through pele.",
+  "description": "React bindings for kilauea: a drop-in visual Mermaid editor component and hooks, rendered through pele.",
   "type": "module",
   "main": "./src/index.tsx",
   "types": "./src/index.tsx",
@@ -13,8 +13,8 @@
     "build": "tsup src/index.tsx --format esm --dts --sourcemap --out-dir dist --external react"
   },
   "dependencies": {
-    "@visimer/core": "workspace:*",
-    "@visimer/dom": "workspace:*"
+    "@kilauea/core": "workspace:*",
+    "@kilauea/dom": "workspace:*"
   },
   "peerDependencies": {
     "react": ">=18"
@@ -27,11 +27,11 @@
   "author": "Inkeep",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/inkeep/visimer.git",
+    "url": "git+https://github.com/prdlk/kilauea.git",
     "directory": "packages/react"
   },
-  "homepage": "https://github.com/inkeep/visimer#readme",
-  "bugs": "https://github.com/inkeep/visimer/issues",
+  "homepage": "https://github.com/prdlk/kilauea#readme",
+  "bugs": "https://github.com/prdlk/kilauea/issues",
   "keywords": [
     "mermaid",
     "wysiwyg",

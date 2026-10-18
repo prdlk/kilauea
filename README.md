@@ -1,10 +1,10 @@
 <div align="center">
 
-# Visimer
+# Kilauea
 
 **Visual editor for Mermaid diagrams.**
 
-Visimer brings "what you see is what you get" editability to Mermaid diagrams. Rename labels, change shapes, add new nodes, etc. by live editing the rendered diagram.
+Kilauea brings "what you see is what you get" editability to Mermaid diagrams. Rename labels, change shapes, add new nodes, etc. by live editing the rendered diagram.
 
 [![MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![Renders with pele](https://img.shields.io/badge/renderer-pele-ff3670.svg)](https://github.com/obsidianmd/pele)
@@ -29,12 +29,12 @@ Read the [launch post](https://openknowledge.ai/blog/edit-mermaid-diagrams-visua
 ## Quick start
 
 ```bash
-npm i @visimer/core @visimer/dom
+npm i @kilauea/core @kilauea/dom
 ```
 
 ```ts
-import { MermaidWysiwygEditor } from '@visimer/core'
-import { MermaidCanvasView } from '@visimer/dom'
+import { MermaidWysiwygEditor } from '@kilauea/core'
+import { MermaidCanvasView } from '@kilauea/dom'
 
 const editor = new MermaidWysiwygEditor({
   code: 'flowchart TD\n  A[Start] --> B{OK?}\n  B -->|yes| C[Ship]',
@@ -72,7 +72,7 @@ Fonts are measured when the diagram renders: after changing `--pele-font`, call 
 
 ## Try with Open Knowledge
 
-[OpenKnowledge](https://openknowledge.ai) is a markdown editor that allows WYSIWYG editing of markdown files. It leverages Visimer as the native visual editor for Mermaid diagrams. Available as a Mac, Linux, and Windows IDE-style app or npm package.
+[OpenKnowledge](https://openknowledge.ai) is a markdown editor that allows WYSIWYG editing of markdown files. It leverages Kilauea as the native visual editor for Mermaid diagrams. Available as a Mac, Linux, and Windows IDE-style app or npm package.
 
 ## What you can do
 
@@ -130,11 +130,11 @@ Fonts are measured when the diagram renders: after changing `--pele-font`, call 
 
 | Package | Purpose |
 |---|---|
-| `@visimer/core` | Headless engine: lossless CST, semantic graphs, ops → minimal text edits, unified history. Zero DOM deps |
-| `@visimer/dom` | Interactive canvas: renders through pele, correlates SVG ⇄ graph, all gestures |
-| `@visimer/codemirror` | CodeMirror 6 pane: two-way sync, entity decorations, mermaid syntax highlighting, shared undo |
-| `@visimer/monaco` | Monaco binding for an editor instance you own; zero monaco dependency of its own |
-| `@visimer/react` | React bindings: `<MermaidWysiwyg code onCodeChange />` drop-in component plus `useMermaidEditor` hook |
+| `@kilauea/core` | Headless engine: lossless CST, semantic graphs, ops → minimal text edits, unified history. Zero DOM deps |
+| `@kilauea/dom` | Interactive canvas: renders through pele, correlates SVG ⇄ graph, all gestures |
+| `@kilauea/codemirror` | CodeMirror 6 pane: two-way sync, entity decorations, mermaid syntax highlighting, shared undo |
+| `@kilauea/monaco` | Monaco binding for an editor instance you own; zero monaco dependency of its own |
+| `@kilauea/react` | React bindings: `<MermaidWysiwyg code onCodeChange />` drop-in component plus `useMermaidEditor` hook |
 
 The code-editor integration is a contract, not a dependency. `core` exposes
 `bindTextPane`, a five-method adapter that gives any editor the same two-way sync;

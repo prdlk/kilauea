@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest'
-import { MermaidWysiwygEditor } from '@visimer/core'
+import { MermaidWysiwygEditor } from '@kilauea/core'
 import { MermaidCodeMirror } from '../src'
 
 const CODE = 'flowchart TD\n  A[Start] --> B[End]\n'

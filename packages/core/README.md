@@ -1,4 +1,4 @@
-# @visimer/core
+# @kilauea/core
 
 Headless bidirectional editing engine for [Mermaid](https://mermaid.js.org) diagrams.
 Text is the source of truth: a lossless CST and per-type semantic graphs turn visual
@@ -6,7 +6,7 @@ operations (rename, connect, reorder, restyle) into **minimal text edits** again
 actual Mermaid source. Zero DOM dependencies.
 
 ```ts
-import { MermaidWysiwygEditor } from '@visimer/core'
+import { MermaidWysiwygEditor } from '@kilauea/core'
 
 const editor = new MermaidWysiwygEditor({ code: 'flowchart TD\n  A --> B' })
 editor.dispatch({ type: 'renameNode', id: 'A', label: 'Start' })
@@ -17,12 +17,12 @@ editor.undo()
 ## Bring your own code editor
 
 `bindTextPane` syncs the engine with any code editor behind a five-method adapter.
-For CodeMirror use [`@visimer/codemirror`](https://npmjs.com/package/@visimer/codemirror),
-for Monaco use [`@visimer/monaco`](https://npmjs.com/package/@visimer/monaco);
+For CodeMirror use [`@kilauea/codemirror`](https://npmjs.com/package/@kilauea/codemirror),
+for Monaco use [`@kilauea/monaco`](https://npmjs.com/package/@kilauea/monaco);
 both are implementations of this contract. For anything else, implement the adapter:
 
 ```ts
-import { bindTextPane } from '@visimer/core'
+import { bindTextPane } from '@kilauea/core'
 
 const binding = bindTextPane(editor, {
   getText: () => /* current document text */,
@@ -43,5 +43,5 @@ selection syncs both ways, and undo/redo shares the canvas history stack. The
 notify methods no-op while the binding is applying engine edits, so there is no
 echo loop to guard against.
 
-Pairs with [`@visimer/dom`](https://npmjs.com/package/@visimer/dom)
-(interactive canvas). Docs: [github.com/inkeep/visimer](https://github.com/inkeep/visimer)
+Pairs with [`@kilauea/dom`](https://npmjs.com/package/@kilauea/dom)
+(interactive canvas). Docs: [github.com/prdlk/kilauea](https://github.com/prdlk/kilauea)

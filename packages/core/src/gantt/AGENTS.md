@@ -19,7 +19,7 @@ Single-file handler for `gantt` charts: tasks (`name : meta`) grouped under `sec
 - Do not add date arithmetic here; edits touch only `nameSpan`/`metaSpan`.
 
 ### Testing Requirements
-`pnpm --filter @visimer/core test`; the `gantt` suite is in `test/er.test.ts`.
+`pnpm --filter @kilauea/core test`; the `gantt` suite is in `test/er.test.ts`.
 
 ### Common Patterns
 Same single-file `build…Graph`/`compile…Op`/`…EntitySpans`/`…EntityAt` quartet as `pie/index.ts`.

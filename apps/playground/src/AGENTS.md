@@ -31,7 +31,7 @@ Source of the React playground.
 ## Dependencies
 
 ### Internal
-`@visimer/core`, `@visimer/dom` (types), `@visimer/react`, `@visimer/codemirror`, `@visimer/monaco`.
+`@kilauea/core`, `@kilauea/dom` (types), `@kilauea/react`, `@kilauea/codemirror`, `@kilauea/monaco`.
 
 ### External
 react, monaco-editor.

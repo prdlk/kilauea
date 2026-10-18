@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react'
-import type { MermaidWysiwygEditor } from '@visimer/core'
-import { bindMonaco, registerMermaidLanguage } from '@visimer/monaco'
+import type { MermaidWysiwygEditor } from '@kilauea/core'
+import { bindMonaco, registerMermaidLanguage } from '@kilauea/monaco'
 
 /**
- * Monaco pane using @visimer/monaco. The app owns the Monaco setup
+ * Monaco pane using @kilauea/monaco. The app owns the Monaco setup
  * (lazy import, worker env, theme, create options); the package owns the sync.
  */
 export function MonacoPane({ editor }: { editor: MermaidWysiwygEditor }) {

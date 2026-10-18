@@ -1,5 +1,5 @@
 {
-  "name": "@visimer/dom",
+  "name": "@kilauea/dom",
   "version": "1.1.3",
   "description": "Interactive WYSIWYG canvas for Mermaid: renders through pele and overlays selection, drag-to-connect, inline label editing, and code sync.",
   "type": "module",
@@ -14,7 +14,7 @@
     "build": "tsup src/index.ts --format esm --dts --sourcemap --out-dir dist"
   },
   "dependencies": {
-    "@visimer/core": "workspace:*",
+    "@kilauea/core": "workspace:*",
     "pele": "^1.6.0"
   },
   "devDependencies": {
@@ -41,11 +41,11 @@
   "author": "Inkeep",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/inkeep/visimer.git",
+    "url": "git+https://github.com/prdlk/kilauea.git",
     "directory": "packages/dom"
   },
-  "homepage": "https://github.com/inkeep/visimer#readme",
-  "bugs": "https://github.com/inkeep/visimer/issues",
+  "homepage": "https://github.com/prdlk/kilauea#readme",
+  "bugs": "https://github.com/prdlk/kilauea/issues",
   "keywords": [
     "mermaid",
     "wysiwyg",

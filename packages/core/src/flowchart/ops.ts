@@ -326,7 +326,7 @@ function patchFlowInitCurve(ctx: FlowOpContext, value: FlowCurve): OpResult {
   }
   // Rewrite the whole init line to keep this simple — the alternative is
   // parsing/merging JSON-ish blobs, which mermaid's tolerant syntax makes
-  // fragile. Nested settings besides `flowchart.curve` are rare in visimer-
+  // fragile. Nested settings besides `flowchart.curve` are rare in kilauea-
   // generated code; when a user hand-wrote a rich directive, they can
   // re-declare it after.
   const start = m.index + m[0].search(/%%\{/)
@@ -600,11 +600,11 @@ export function compileFlowchartOp(ctx: FlowOpContext, op: FlowchartOp): OpResul
       const duration = op.value === 'slow' ? '2s' : '0.6s'
       // Long-hand keys because mermaid's `linkStyle` parser splits declarations
       // on `,` — the `animation` shorthand's own comma-separated form would be
-      // shredded across pseudo-declarations. `vsmr-flow` is injected as a
+      // shredded across pseudo-declarations. `kilauea-flow` is injected as a
       // @keyframes rule once per SVG by the renderer host.
       return patchEdgeLinkStyle(ctx, graph, op.edgeId, {
         'stroke-dasharray': '8',
-        'animation-name': 'vsmr-flow',
+        'animation-name': 'kilauea-flow',
         'animation-duration': duration,
         'animation-timing-function': 'linear',
         'animation-iteration-count': 'infinite',

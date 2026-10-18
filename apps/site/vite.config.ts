@@ -13,7 +13,7 @@ const BOOT_MARKER = '<!--hero-boot-->'
  */
 function heroBoot(): Plugin {
   return {
-    name: 'visimer-hero-boot',
+    name: 'kilauea-hero-boot',
     transformIndexHtml(html) {
       if (!html.includes(BOOT_MARKER)) {
         throw new Error(`index.html is missing the ${BOOT_MARKER} placeholder`)
@@ -30,7 +30,7 @@ function heroBoot(): Plugin {
 export default defineConfig({
   plugins: [react(), heroBoot()],
   optimizeDeps: {
-    exclude: ['@visimer/core', '@visimer/dom', '@visimer/react', '@visimer/codemirror'],
+    exclude: ['@kilauea/core', '@kilauea/dom', '@kilauea/react', '@kilauea/codemirror'],
     include: ['pele', 'react', 'react-dom', '@codemirror/state', '@codemirror/view', '@codemirror/commands', '@codemirror/language', '@lezer/highlight'],
   },
   server: {

@@ -20,7 +20,7 @@ Vitest suite for the CodeMirror binding, run against a real CodeMirror 6 `Editor
 - Not covered: keyboard undo (`Mod-z`) keymap, `revealPosition`, `mermaidLanguage` tokens.
 
 ### Testing Requirements
-`pnpm --filter @visimer/codemirror test`
+`pnpm --filter @kilauea/codemirror test`
 
 ### Common Patterns
 Drive via `editor.dispatch({type:'renameNode',...})`, `editor.setSelection([...], 'canvas')`, `cm.view.dispatch`, and assert `cm.view.state.doc.toString()` equals `editor.code`.
@@ -28,7 +28,7 @@ Drive via `editor.dispatch({type:'renameNode',...})`, `editor.setSelection([...]
 ## Dependencies
 
 ### Internal
-`@visimer/core`, `../src`.
+`@kilauea/core`, `../src`.
 
 ### External
 `vitest ^2.1.9`, `jsdom ^25.0.1`.

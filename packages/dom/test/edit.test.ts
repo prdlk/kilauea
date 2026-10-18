@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { MermaidWysiwygEditor } from '@visimer/core'
+import { MermaidWysiwygEditor } from '@kilauea/core'
 import { MermaidCanvasView } from '../src'
 
 // jsdom has no CSS.escape (browsers do)

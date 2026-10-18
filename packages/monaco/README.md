@@ -1,6 +1,6 @@
-# @visimer/monaco
+# @kilauea/monaco
 
-Monaco binding for [visimer](https://github.com/inkeep/visimer).
+Monaco binding for [kilauea](https://github.com/prdlk/kilauea).
 You create and own the Monaco editor (workers, theme, options); `bindMonaco`
 wires the two-way sync: typing flows into the engine, engine changes come back
 as minimal edits, entity selection renders as decorations and follows the
@@ -12,8 +12,8 @@ that any real Monaco editor satisfies.
 
 ```ts
 import * as monaco from 'monaco-editor'
-import { MermaidWysiwygEditor } from '@visimer/core'
-import { bindMonaco, registerMermaidLanguage } from '@visimer/monaco'
+import { MermaidWysiwygEditor } from '@kilauea/core'
+import { bindMonaco, registerMermaidLanguage } from '@kilauea/monaco'
 
 registerMermaidLanguage(monaco) // optional syntax highlighting
 
@@ -27,5 +27,5 @@ const binding = bindMonaco(editor, me)
 binding.dispose() // unhooks listeners and clears decorations
 ```
 
-Pairs with [`@visimer/dom`](https://npmjs.com/package/@visimer/dom)
-(interactive canvas). Docs: [github.com/inkeep/visimer](https://github.com/inkeep/visimer)
+Pairs with [`@kilauea/dom`](https://npmjs.com/package/@kilauea/dom)
+(interactive canvas). Docs: [github.com/prdlk/kilauea](https://github.com/prdlk/kilauea)

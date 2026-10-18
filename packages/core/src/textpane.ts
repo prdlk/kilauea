@@ -3,7 +3,7 @@
  *
  * Any code editor (CodeMirror, Monaco, a plain textarea) can sync with the
  * engine by implementing TextPaneAdapter and calling the notify* methods on
- * the returned binding from its own events. @visimer/codemirror is
+ * the returned binding from its own events. @kilauea/codemirror is
  * the reference implementation.
  */
 

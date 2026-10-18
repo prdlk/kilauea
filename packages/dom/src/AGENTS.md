@@ -33,14 +33,14 @@ Source of the canvas: the 2.7k-line `MermaidCanvasView` controller, per-diagram 
 
 **Render loop (synchronous).** `render()` calls pele's `render(code, effectiveRenderOptions())` and swaps the SVG in the same tick; the constructor renders immediately, so the first `render` event fires before callers can subscribe (read `view.renderError` / the container's `svg` instead). `validate()` is synchronous too. Triggers: editor `change` (`scheduleRender`, debounced `debounceMs` default 200); constructor; `setRenderOptions` and `refresh()` (both clear `lastRenderedCode`); font settle (`remeasureWhenFontsSettle`, one-shot, resets `lastRenderedCode`); end of a label-edit session (`renderHeldByEdit`). Invariants: skip when `editor.code === lastRenderedCode` (but clear a stale error badge); while `editSession` is open, renders are held, not run; `effectiveRenderOptions` adds a unique `idPrefix` and defaults `fontFamily`/`fontFamilyMono` to the container's `--pele-font`/`--pele-font-mono`, then its computed `font-family` (pele measures with the font it is told, so it must match what is displayed); on a throw show `.mw-error-badge`, call `editor.setDiagnostics` with one `source: 'renderer'` diagnostic (a `PeleError.line` maps to that source line's span, clamped to the last line), emit `render {ok:false}`; `pendingEditEntity` (from `addNode`) opens the label editor after the next render. There is no retry-on-reveal handling: pele needs no layout, so correlation works in detached or hidden containers. A MutationObserver (`svgTransformObserver`) repositions the popover when a host transforms the SVG. Colors never need a render (CSS variables apply live); font variable changes need `refresh()`.
 
-**Edge animation.** Pele drops `animation-*` declarations from `linkStyle`, so `applyEdgeAnimations` (called from `bindSvg` for flowcharts) re-reads each edge's animation seconds from source and sets `style.animation` on the matched line path after every render. `injectAnimationKeyframes` supplies the `vsmr-flow` keyframes.
+**Edge animation.** Pele drops `animation-*` declarations from `linkStyle`, so `applyEdgeAnimations` (called from `bindSvg` for flowcharts) re-reads each edge's animation seconds from source and sets `style.animation` on the matched line path after every render. `injectAnimationKeyframes` supplies the `kilauea-flow` keyframes.
 
 **Popovers/icons.** `updatePopover` → `actionsFor(id)` builds `PopoverAction[]`; actions with `panel` open a secondary grid (`PopoverPanelSection`, items use `swatch` > `svg` > `glyph`). `icon` markup takes precedence over `glyph`. Add icons to `ICONS` via the local `icon()` wrapper (24x24, stroke currentColor, aria-hidden); popover root stops `pointerdown` propagation. Document-level capture `pointerdown` outside the container clears selection and popover.
 
 **Editing.** All label editing goes through `openOverlayEditor`: one session (`editSession`) with a chrome-less contenteditable div positioned over the rendered SVG text, typography copied, original hidden. Typing live-commits (debounced) so code panes follow; the canvas render is held until the session ends. Enter commits, Shift+Enter inserts `<br/>` in the source, Escape reverts everything including live commits and restores the label. A fresh edge with no rendered label anchors at its path midpoint (`pathMidpointRect`). Labels are SVG `<text>` (no foreignObject). `hooks.onEntityDoubleClick` returning true suppresses it. `readOnly` disables dispatching paths.
 
 ### Testing Requirements
-`pnpm --filter @visimer/dom test`. Correlators run against real pele output in `../test/correlate.test.ts` and label editing in `../test/edit.test.ts`; pointer gestures, pan/zoom and popovers are manual in the playground.
+`pnpm --filter @kilauea/dom test`. Correlators run against real pele output in `../test/correlate.test.ts` and label editing in `../test/edit.test.ts`; pointer gestures, pan/zoom and popovers are manual in the playground.
 
 ### Common Patterns
 - `this.disposers.push(...)` for every listener; `destroy()` runs them.
@@ -50,7 +50,7 @@ Source of the canvas: the 2.7k-line `MermaidCanvasView` controller, per-diagram 
 ## Dependencies
 
 ### Internal
-`@visimer/core` (editor, graph types `FlowGraph`, `SequenceGraph`, …, `Diagnostic`, `ShapeId`, `EdgeLine`, `EdgeArrow`, `FlowCurve`).
+`@kilauea/core` (editor, graph types `FlowGraph`, `SequenceGraph`, …, `Diagnostic`, `ShapeId`, `EdgeLine`, `EdgeArrow`, `FlowCurve`).
 
 ### External
 `pele ^1.6.0` (renderer: `render`, `parse`, `PeleError`, `RenderOptions`); DOM APIs.

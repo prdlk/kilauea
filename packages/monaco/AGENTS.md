@@ -4,12 +4,12 @@
 **Generated:** 2026-10-17 · **Updated:** 2026-10-17
 
 ## Purpose
-`@visimer/monaco` (v1.1.3): Monaco binding for visimer implementing core's `bindTextPane`. The consumer creates and owns the Monaco editor; this package wires two-way sync, entity decorations, caret → entity selection, shared undo, and optional Monarch highlighting. It has **no dependency on `monaco-editor`**, even for types.
+`@kilauea/monaco` (v1.1.3): Monaco binding for kilauea implementing core's `bindTextPane`. The consumer creates and owns the Monaco editor; this package wires two-way sync, entity decorations, caret → entity selection, shared undo, and optional Monarch highlighting. It has **no dependency on `monaco-editor`**, even for types.
 
 ## Key Files
 | File | Description |
 |------|-------------|
-| `package.json` | scripts `typecheck`/`build` (tsup)/`test` (vitest); only runtime dep is `@visimer/core`; no peerDependencies |
+| `package.json` | scripts `typecheck`/`build` (tsup)/`test` (vitest); only runtime dep is `@kilauea/core`; no peerDependencies |
 | `tsconfig.json` | extends base; `lib` ES2022 + DOM; includes `src` and `test` |
 | `README.md` | usage of `bindMonaco`, `registerMermaidLanguage`, `.mw-monaco-entity` CSS |
 | `CHANGELOG.md` | changesets-generated |
@@ -27,7 +27,7 @@
 - Do not hand-edit `CHANGELOG.md`/`version`; use changesets.
 
 ### Testing Requirements
-`pnpm --filter @visimer/monaco test` and `pnpm --filter @visimer/monaco typecheck` (typecheck also guards the conformance canary, because `tsconfig.json` includes `test`).
+`pnpm --filter @kilauea/monaco test` and `pnpm --filter @kilauea/monaco typecheck` (typecheck also guards the conformance canary, because `tsconfig.json` includes `test`).
 
 ### Common Patterns
 Structural `*Like` interfaces instead of Monaco types; adapter built on `bindTextPane`.
@@ -35,7 +35,7 @@ Structural `*Like` interfaces instead of Monaco types; adapter built on `bindTex
 ## Dependencies
 
 ### Internal
-`@visimer/core`.
+`@kilauea/core`.
 
 ### External
 Dev only: `monaco-editor ^0.55.1`, `vitest ^2.1.9`, `typescript ^5.6.3`.

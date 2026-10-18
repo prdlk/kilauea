@@ -263,7 +263,7 @@ textarea {
   inset: 0;
 }
 
-/* Demo source pane — the real @visimer/codemirror binding,
+/* Demo source pane — the real @kilauea/codemirror binding,
    restyled to the site palette. Light and dark variants keyed off the shell. */
 .demo-cm {
   flex: 1;

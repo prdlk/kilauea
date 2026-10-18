@@ -4,8 +4,8 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   optimizeDeps: {
-    exclude: ['@visimer/core', '@visimer/dom', '@visimer/codemirror', '@visimer/react'],
-    include: ['@visimer/dom > pele', 'react', 'react-dom'],
+    exclude: ['@kilauea/core', '@kilauea/dom', '@kilauea/codemirror', '@kilauea/react'],
+    include: ['@kilauea/dom > pele', 'react', 'react-dom'],
   },
   server: {
     port: 5173,

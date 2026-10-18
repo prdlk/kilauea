@@ -26,7 +26,7 @@ Implementation of the CodeMirror 6 binding: the `MermaidCodeMirror` class and a 
 - Token names in `language.ts` (comment, string, meta, heading, keyword, operator, number, bracket) are styled through `classHighlighter` CSS classes; ordering of the `stream.match` checks in `token()` is significant (headers before keywords before operators).
 
 ### Testing Requirements
-`pnpm --filter @visimer/codemirror test`; covered by `../test/binding.test.ts`. `language.ts` has no direct tests.
+`pnpm --filter @kilauea/codemirror test`; covered by `../test/binding.test.ts`. `language.ts` has no direct tests.
 
 ### Common Patterns
 `StateField.define` + `StateEffect.define<Span[]>` + `Decoration.mark`; `EditorView.updateListener.of`; `EditorView.baseTheme`.
@@ -34,7 +34,7 @@ Implementation of the CodeMirror 6 binding: the `MermaidCodeMirror` class and a 
 ## Dependencies
 
 ### Internal
-`@visimer/core`.
+`@kilauea/core`.
 
 ### External
 `@codemirror/state`, `@codemirror/view`, `@codemirror/commands` (`defaultKeymap`), `@codemirror/language` (`StreamLanguage`, `syntaxHighlighting`), `@lezer/highlight` (`classHighlighter`).

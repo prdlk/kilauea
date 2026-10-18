@@ -22,7 +22,7 @@ Structural editing for `classDiagram`/`classDiagram-v2`: classes (with `{}` bloc
 - Reuses `bodyIndent`, `insertAfterLine`, `deleteLine` helpers duplicated in this file (same pattern as `er/ops.ts`).
 
 ### Testing Requirements
-`pnpm --filter @visimer/core test`; `test/class.test.ts` (`class parsing`, `class ops`).
+`pnpm --filter @kilauea/core test`; `test/class.test.ts` (`class parsing`, `class ops`).
 
 ### Common Patterns
 Block-aware parse: `inBlockOf` passes the owning class id so `Name: member` and `+field` lines inside `{ }` classify as members.

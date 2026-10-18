@@ -1,5 +1,5 @@
 {
-  "name": "visimer-monorepo",
+  "name": "kilauea-monorepo",
   "private": true,
   "packageManager": "pnpm@12.8.1",
   "scripts": {

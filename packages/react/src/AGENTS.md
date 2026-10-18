@@ -22,7 +22,7 @@ Contains `index.tsx`, the whole React API (~200 lines).
 - Effects run on the client only; no SSR-time DOM access in render.
 
 ### Testing Requirements
-None automated. `pnpm --filter @visimer/react typecheck`; manual check in `apps/playground`.
+None automated. `pnpm --filter @kilauea/react typecheck`; manual check in `apps/playground`.
 
 ### Common Patterns
 Refs for the latest callbacks, effect-per-prop syncing, `origin: 'external'` to mark controlled updates, `eslint-disable react-hooks/exhaustive-deps` on creation effects.
@@ -30,9 +30,9 @@ Refs for the latest callbacks, effect-per-prop syncing, `origin: 'external'` to 
 ## Dependencies
 
 ### Internal
-`@visimer/core` (`MermaidWysiwygEditor`), `@visimer/dom` (`MermaidCanvasView`, `RenderOptions`, `Tool`, `ViewHooks`).
+`@kilauea/core` (`MermaidWysiwygEditor`), `@kilauea/dom` (`MermaidCanvasView`, `RenderOptions`, `Tool`, `ViewHooks`).
 
 ### External
-`react >=18` (peer). Renders through `@visimer/dom`, which depends on `pele ^1.6.0`; the React package has no direct pele import beyond the `RenderOptions` type.
+`react >=18` (peer). Renders through `@kilauea/dom`, which depends on `pele ^1.6.0`; the React package has no direct pele import beyond the `RenderOptions` type.
 
 ## Manual Notes

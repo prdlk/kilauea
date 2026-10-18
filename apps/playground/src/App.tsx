@@ -5,10 +5,10 @@ import {
   type MermaidWysiwygEditor,
   type ParticipantType,
   type ShapeId,
-} from '@visimer/core'
-import type { MermaidCanvasView, Tool } from '@visimer/dom'
-import { MermaidCanvas, useMermaidEditor } from '@visimer/react'
-import { MermaidCodeMirror } from '@visimer/codemirror'
+} from '@kilauea/core'
+import type { MermaidCanvasView, Tool } from '@kilauea/dom'
+import { MermaidCanvas, useMermaidEditor } from '@kilauea/react'
+import { MermaidCodeMirror } from '@kilauea/codemirror'
 import { MonacoPane } from './MonacoPane'
 import { SAMPLES } from '../../js-playground/src/samples'
 
@@ -124,7 +124,7 @@ export default function App() {
       <header className="topbar">
         <div className="brand">
           <span className="logo" />
-          visimer
+          kilauea
           <span className="sep">/</span>
           <span className="sub">playground</span>
         </div>
@@ -138,7 +138,7 @@ export default function App() {
             <input type="checkbox" checked={readOnly} onChange={(e) => setReadOnly(e.target.checked)} />
             Read-only
           </label>
-          <a href="https://github.com/inkeep/visimer" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="https://github.com/prdlk/kilauea" target="_blank" rel="noreferrer">GitHub</a>
         </div>
       </header>
       <div className="body">

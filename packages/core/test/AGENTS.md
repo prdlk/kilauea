@@ -4,7 +4,7 @@
 **Generated:** 2026-10-17 · **Updated:** 2026-10-17
 
 ## Purpose
-Vitest suites for `@visimer/core`. They import from `../src` and exercise parsing, graph building, op → text-edit output, editor history/selection, and the text pane binding. Everything runs headlessly (no DOM).
+Vitest suites for `@kilauea/core`. They import from `../src` and exercise parsing, graph building, op → text-edit output, editor history/selection, and the text pane binding. Everything runs headlessly (no DOM).
 
 ## Key Files
 | File | Description |
@@ -25,7 +25,7 @@ Vitest suites for `@visimer/core`. They import from `../src` and exercise parsin
 - There are no tests for SVG correlation, canvas gestures or React bindings; those live in other packages and are verified manually (see root `TESTING.md`).
 
 ### Testing Requirements
-`pnpm --filter @visimer/core test` (runs `vitest run` over all files); run one file with `pnpm --filter @visimer/core exec vitest run test/class.test.ts`. `pnpm --filter @visimer/core typecheck` also checks `test/` (tsconfig includes it).
+`pnpm --filter @kilauea/core test` (runs `vitest run` over all files); run one file with `pnpm --filter @kilauea/core exec vitest run test/class.test.ts`. `pnpm --filter @kilauea/core typecheck` also checks `test/` (tsconfig includes it).
 
 ### Common Patterns
 Construct `new MermaidWysiwygEditor({ code })`, call `editor.dispatch({ type: ... })`, assert on `editor.code`; parsing tests use `parse(code)` and inspect the `ParseResult` graph fields (`flowchart`, `sequence`, `state`, `classGraph`, `er`, `pie`, `gantt`, `lineItems`).

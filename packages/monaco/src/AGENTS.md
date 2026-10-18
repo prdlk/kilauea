@@ -25,7 +25,7 @@ Monaco binding implemented against structural interfaces, plus Monarch tokens fo
 - `registerMermaidLanguage` is idempotent (checks `getLanguages()` for id `mermaid`). The Monarch grammar is smaller than CodeMirror's (no operators like class relations / ER cardinality, no brackets).
 
 ### Testing Requirements
-`pnpm --filter @visimer/monaco test`; see `../test/binding.test.ts`.
+`pnpm --filter @kilauea/monaco test`; see `../test/binding.test.ts`.
 
 ### Common Patterns
 `*Like` structural types; `subs: MonacoDisposableLike[]` collected then disposed together.
@@ -33,7 +33,7 @@ Monaco binding implemented against structural interfaces, plus Monarch tokens fo
 ## Dependencies
 
 ### Internal
-`@visimer/core` (`bindTextPane`, `MermaidWysiwygEditor`, `TextPaneBinding`).
+`@kilauea/core` (`bindTextPane`, `MermaidWysiwygEditor`, `TextPaneBinding`).
 
 ### External
 None at runtime.

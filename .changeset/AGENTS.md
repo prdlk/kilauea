@@ -4,12 +4,12 @@
 **Generated:** 2026-10-17 · **Updated:** 2026-10-17
 
 ## Purpose
-Changesets configuration for versioning and publishing the five `@visimer/*` packages. Pending release notes are `.changeset/*.md` files; currently only `config.json` is present.
+Changesets configuration for versioning and publishing the five `@kilauea/*` packages. Pending release notes are `.changeset/*.md` files; currently only `config.json` is present.
 
 ## Key Files
 | File | Description |
 |------|-------------|
-| `config.json` | `fixed` group of `@visimer/core`, `dom`, `react`, `codemirror`, `monaco` (always bumped to one shared version); `access: public`; `baseBranch: main`; `commit: false`; `updateInternalDependencies: patch`; `changelog: @changesets/cli/changelog`; `ignore: ["playground", "js-playground", "site"]`; `linked: []`. |
+| `config.json` | `fixed` group of `@kilauea/core`, `dom`, `react`, `codemirror`, `monaco` (always bumped to one shared version); `access: public`; `baseBranch: main`; `commit: false`; `updateInternalDependencies: patch`; `changelog: @changesets/cli/changelog`; `ignore: ["playground", "js-playground", "site"]`; `linked: []`. |
 
 ## For AI Agents
 

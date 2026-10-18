@@ -10,7 +10,7 @@ import {
   type MessageOp,
   type ParticipantType,
   type ShapeId,
-} from '@visimer/core'
+} from '@kilauea/core'
 import { parse as peleParse, PeleError, render as peleRender, type RenderOptions } from 'pele'
 import {
   correlateClass,
@@ -124,7 +124,7 @@ function readEdgeAnimation(code: string, edgeOrder: number): EdgeAnimation {
 }
 
 /**
- * Inject the `@keyframes vsmr-flow` rule behind animated edges. Pele filters
+ * Inject the `@keyframes kilauea-flow` rule behind animated edges. Pele filters
  * `animation-*` declarations out of `linkStyle`, so the view reads them back
  * from the source and sets the animation on the matched path itself
  * (`applyEdgeAnimations`); this rule is what that animation references.
@@ -139,11 +139,11 @@ function readEdgeAnimation(code: string, edgeOrder: number): EdgeAnimation {
  * per animation loop, so the transition from 100% → 0% is invisible.
  */
 function injectAnimationKeyframes(svg: SVGElement): void {
-  if (svg.querySelector('style[data-vsmr-flow]')) return
+  if (svg.querySelector('style[data-kilauea-flow]')) return
   const doc = svg.ownerDocument
   const style = doc.createElementNS('http://www.w3.org/2000/svg', 'style')
-  style.setAttribute('data-vsmr-flow', '')
-  style.textContent = '@keyframes vsmr-flow { to { stroke-dashoffset: -16; } }'
+  style.setAttribute('data-kilauea-flow', '')
+  style.textContent = '@keyframes kilauea-flow { to { stroke-dashoffset: -16; } }'
   svg.insertBefore(style, svg.firstChild)
 }
 
@@ -869,7 +869,7 @@ export class MermaidCanvasView {
       const seconds = readEdgeAnimationSeconds(this.editor.code, edge.order)
       const path = correlation.edges.get(edge.entityId) as SVGElement | undefined
       if (seconds === null || !path?.style) continue
-      path.style.animation = `vsmr-flow ${seconds}s linear infinite`
+      path.style.animation = `kilauea-flow ${seconds}s linear infinite`
     }
   }
 

@@ -9,7 +9,7 @@ Maintenance scripts for the site; currently the hero recording script.
 ## Key Files
 | File | Description |
 |------|-------------|
-| `record-hero.tsx` | Drives the real `/playground` in Playwright Chromium (1200x675 at deviceScaleFactor 2), double-clicks the "Ship it" node, types "Deploy", commits, and writes PNG frames to `os.tmpdir()/visimer-hero-frames`; prints the `img2webp` command that encodes them into `assets/hero-loop.webp` (2400x1350) |
+| `record-hero.tsx` | Drives the real `/playground` in Playwright Chromium (1200x675 at deviceScaleFactor 2), double-clicks the "Ship it" node, types "Deploy", commits, and writes PNG frames to `os.tmpdir()/kilauea-hero-frames`; prints the `img2webp` command that encodes them into `assets/hero-loop.webp` (2400x1350) |
 
 ## For AI Agents
 

@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from 'react'
-import { MermaidWysiwygEditor } from '@visimer/core'
-import { MermaidCanvasView, type RenderOptions, type Tool, type ViewHooks } from '@visimer/dom'
+import { MermaidWysiwygEditor } from '@kilauea/core'
+import { MermaidCanvasView, type RenderOptions, type Tool, type ViewHooks } from '@kilauea/dom'
 
-export { MermaidWysiwygEditor } from '@visimer/core'
-export { MermaidCanvasView, type RenderOptions } from '@visimer/dom'
+export { MermaidWysiwygEditor } from '@kilauea/core'
+export { MermaidCanvasView, type RenderOptions } from '@kilauea/dom'
 
 /**
  * Own an editor instance in React. Re-renders on document and selection

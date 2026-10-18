@@ -1,7 +1,7 @@
 {
-  "name": "@visimer/codemirror",
+  "name": "@kilauea/codemirror",
   "version": "1.1.3",
-  "description": "CodeMirror 6 binding for visimer: two-way code sync, entity highlight decorations, shared undo authority.",
+  "description": "CodeMirror 6 binding for kilauea: two-way code sync, entity highlight decorations, shared undo authority.",
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
@@ -14,7 +14,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@visimer/core": "workspace:*"
+    "@kilauea/core": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.6.3",
@@ -45,11 +45,11 @@
   "author": "Inkeep",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/inkeep/visimer.git",
+    "url": "git+https://github.com/prdlk/kilauea.git",
     "directory": "packages/codemirror"
   },
-  "homepage": "https://github.com/inkeep/visimer#readme",
-  "bugs": "https://github.com/inkeep/visimer/issues",
+  "homepage": "https://github.com/prdlk/kilauea#readme",
+  "bugs": "https://github.com/prdlk/kilauea/issues",
   "keywords": [
     "mermaid",
     "wysiwyg",

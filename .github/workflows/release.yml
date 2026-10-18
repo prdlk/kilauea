@@ -2,11 +2,11 @@ name: Publish
 
 # Responsibility split (see agents-private for the other half):
 #
-#   agents-private  -> owns the "Version Packages (visimer)" PR for the 5
-#                      @visimer/* packages. When that PR merges, copybara
+#   agents-private  -> owns the "Version Packages (kilauea)" PR for the 5
+#                      @kilauea/* packages. When that PR merges, copybara
 #                      syncs the version bumps here and deletes the
 #                      .changeset/*.md files.
-#   inkeep/visimer  -> THIS file. On push to main with no pending
+#   prdlk/kilauea  -> THIS file. On push to main with no pending
 #                      changesets, publish the bumped packages to npm via
 #                      Trusted Publishing (OIDC).
 #
@@ -30,7 +30,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: visimer-publish
+  group: kilauea-publish
   cancel-in-progress: false
 
 jobs:
@@ -140,7 +140,7 @@ jobs:
             exit 0
           fi
 
-          # All @visimer/* packages share a version (fixed group in
+          # All @kilauea/* packages share a version (fixed group in
           # .changeset/config.json), so core's package.json is authoritative.
           VERSION=$(node -p "require('./packages/core/package.json').version")
 
@@ -174,9 +174,9 @@ jobs:
             exit 1
           fi
 
-          echo "All @visimer/* packages verified present on npm at v$VERSION."
+          echo "All @kilauea/* packages verified present on npm at v$VERSION."
 
-          # `changeset publish` created local tags (@visimer/core@X.Y.Z, ...);
+          # `changeset publish` created local tags (@kilauea/core@X.Y.Z, ...);
           # push them so the release is discoverable from the repo.
           git push origin --tags
         env:

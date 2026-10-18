@@ -16,7 +16,7 @@ Vanilla-TS source of the playground: one imperative `main.ts` plus the sample di
 ## For AI Agents
 
 ### Working In This Directory
-- `Sample.typeId` must match a `DiagramTypeInfo` id from `@visimer/core` (comment in `samples.ts`). Add a sample for every new diagram type; this list is the manual test matrix, also consumed by the React playground.
+- `Sample.typeId` must match a `DiagramTypeInfo` id from `@kilauea/core` (comment in `samples.ts`). Add a sample for every new diagram type; this list is the manual test matrix, also consumed by the React playground.
 - `loadSample(index)` creates a fresh `MermaidWysiwygEditor({ code })`, a new `MermaidCanvasView` and `MermaidCodeMirror`. Palette changes go through `applyPalette`, which sets `--pele-*` variables on `#canvas`.
 - `buildToolbar()` branches on `editor.result.typeInfo?.id` / `capability === 'edit'` and `editor.result.lineItems`; the toolbar is disabled when not editable or read-only is checked.
 - Tools: `setTool('select'|'connect')`; `SHAPES` is the `ShapeId` list for the inspector.
@@ -31,9 +31,9 @@ Vanilla-TS source of the playground: one imperative `main.ts` plus the sample di
 ## Dependencies
 
 ### Internal
-`@visimer/core` (`MermaidWysiwygEditor`, `DIAGRAM_TYPES`, `PARTICIPANT_TYPES`), `@visimer/dom`, `@visimer/codemirror`.
+`@kilauea/core` (`MermaidWysiwygEditor`, `DIAGRAM_TYPES`, `PARTICIPANT_TYPES`), `@kilauea/dom`, `@kilauea/codemirror`.
 
 ### External
-None (pele comes in through `@visimer/dom`).
+None (pele comes in through `@kilauea/dom`).
 
 ## Manual Notes

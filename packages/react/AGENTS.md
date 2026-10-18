@@ -4,7 +4,7 @@
 **Generated:** 2026-10-17 · **Updated:** 2026-10-17
 
 ## Purpose
-`@visimer/react` (v1.1.3) is a thin React (>=18) binding: a drop-in `MermaidWysiwyg` component, a canvas-only `MermaidCanvas`, and the `useMermaidEditor` hook, all wrapping `@visimer/core`'s editor and `@visimer/dom`'s `MermaidCanvasView` (which renders through pele; tuned via the `renderOptions` prop).
+`@kilauea/react` (v1.1.3) is a thin React (>=18) binding: a drop-in `MermaidWysiwyg` component, a canvas-only `MermaidCanvas`, and the `useMermaidEditor` hook, all wrapping `@kilauea/core`'s editor and `@kilauea/dom`'s `MermaidCanvasView` (which renders through pele; tuned via the `renderOptions` prop).
 
 ## Key Files
 | File | Description |
@@ -24,7 +24,7 @@
 Keep this package a thin adapter; logic belongs in core/dom. `react` must stay external in the bundle. Changes need a changeset (fixed version group).
 
 ### Testing Requirements
-No automated tests; `pnpm test` (pnpm -r) skips it because it has no `test` script. Run `pnpm --filter @visimer/react typecheck` and verify behavior manually in `apps/playground`.
+No automated tests; `pnpm test` (pnpm -r) skips it because it has no `test` script. Run `pnpm --filter @kilauea/react typecheck` and verify behavior manually in `apps/playground`.
 
 ### Common Patterns
 See `src/AGENTS.md`.
@@ -32,9 +32,9 @@ See `src/AGENTS.md`.
 ## Dependencies
 
 ### Internal
-`@visimer/core`, `@visimer/dom` (`workspace:*`).
+`@kilauea/core`, `@kilauea/dom` (`workspace:*`).
 
 ### External
-Peer `react >=18`; renderer `pele ^1.6.0` arrives transitively via `@visimer/dom` (type `RenderOptions` is re-exported); dev `react ^18.3.1`, `@types/react ^18.3.12`, `typescript ^5.6.3`.
+Peer `react >=18`; renderer `pele ^1.6.0` arrives transitively via `@kilauea/dom` (type `RenderOptions` is re-exported); dev `react ^18.3.1`, `@types/react ^18.3.12`, `typescript ^5.6.3`.
 
 ## Manual Notes

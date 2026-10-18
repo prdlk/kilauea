@@ -80,11 +80,11 @@ jobs:
       - name: Sync public PR into agents-private
         env:
           INTERNAL_BASE_REF: main
-          INTERNAL_BRANCH_PREFIX: public-pr/visimer
+          INTERNAL_BRANCH_PREFIX: public-pr/kilauea
           INTERNAL_REPO: inkeep/agents-private
           INTERNAL_REPO_DIR: ${{ github.workspace }}/agents-private
           INTERNAL_TOKEN: ${{ steps.app-token.outputs.token }}
-          MONOREPO_PATH_PREFIX: public/visimer
+          MONOREPO_PATH_PREFIX: public/kilauea
           PUBLIC_PR_ACTION: ${{ github.event.action }}
           PUBLIC_PR_NUMBER: ${{ github.event.pull_request.number }}
           PUBLIC_REPO: ${{ github.repository }}
@@ -118,7 +118,7 @@ jobs:
 
       - name: Handle public PR closure
         env:
-          INTERNAL_BRANCH_PREFIX: public-pr/visimer
+          INTERNAL_BRANCH_PREFIX: public-pr/kilauea
           INTERNAL_REPO: inkeep/agents-private
           INTERNAL_TOKEN: ${{ steps.app-token.outputs.token }}
           PUBLIC_PR_NUMBER: ${{ github.event.pull_request.number }}

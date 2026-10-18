@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { MermaidWysiwygEditor } from '@visimer/core'
+import { MermaidWysiwygEditor } from '@kilauea/core'
 import { render } from 'pele'
 import type * as Pele from 'pele'
 import { MermaidCanvasView } from '../src'

@@ -1,7 +1,7 @@
 import { useEffect, useRef, type CSSProperties } from 'react'
 import { EditorView } from '@codemirror/view'
-import { MermaidCodeMirror } from '@visimer/codemirror'
-import type { MermaidWysiwygEditor } from '@visimer/core'
+import { MermaidCodeMirror } from '@kilauea/codemirror'
+import type { MermaidWysiwygEditor } from '@kilauea/core'
 import { track } from './analytics'
 
 /** Sample diagrams + chrome shared by the inline demo and /playground. */
@@ -142,7 +142,7 @@ export function CodeMirrorPane({ editor }: { editor: MermaidWysiwygEditor }) {
 
 /**
  * Tracks clicks on the canvas corner zoom controls (zoom in / zoom out /
- * fit). The buttons are rendered by @visimer/dom, so the site listens by
+ * fit). The buttons are rendered by @kilauea/dom, so the site listens by
  * delegation instead of teaching the package about analytics.
  */
 export function useCanvasControlTracking() {

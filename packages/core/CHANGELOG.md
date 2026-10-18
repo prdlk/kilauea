@@ -1,4 +1,4 @@
-# @visimer/core
+# @kilauea/core
 
 ## 1.1.3
 
@@ -26,9 +26,9 @@
 
 ### Major Changes
 
-- 7ab9082: Rename the library to visimer. Packages move from `@inkeep/mermaid-wysiwyg-*` to
-  scoped `@visimer/*` (`core`, `dom`, `react`, `codemirror`, `monaco`); the public
-  repo moves from `inkeep/mermaid-wysiwyg` to `inkeep/visimer`. Update imports and
+- 7ab9082: Rename the library to kilauea. Packages move from `@inkeep/mermaid-wysiwyg-*` to
+  scoped `@kilauea/*` (`core`, `dom`, `react`, `codemirror`, `monaco`); the public
+  repo moves from `inkeep/mermaid-wysiwyg` to `prdlk/kilauea`. Update imports and
   install commands accordingly.
 
 ### Minor Changes
@@ -51,4 +51,4 @@
 
 ### Patch Changes
 
-- c13374b: `@visimer/dom`: tapping empty canvas margin now dismisses the popover in panzoom mode. Previously, taps outside the SVG but inside its host (the padded margin where the SVG is centered) fell through the SVG's click handler and the popover stayed pinned to the selected node.
+- c13374b: `@kilauea/dom`: tapping empty canvas margin now dismisses the popover in panzoom mode. Previously, taps outside the SVG but inside its host (the padded margin where the SVG is centered) fell through the SVG's click handler and the popover stayed pinned to the selected node.

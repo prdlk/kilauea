@@ -6,9 +6,9 @@ import {
   type EdgeLine,
   type EdgeArrow,
   type ParticipantType,
-} from '@visimer/core'
-import { MermaidCanvasView, type Tool } from '@visimer/dom'
-import { MermaidCodeMirror } from '@visimer/codemirror'
+} from '@kilauea/core'
+import { MermaidCanvasView, type Tool } from '@kilauea/dom'
+import { MermaidCodeMirror } from '@kilauea/codemirror'
 import { SAMPLES } from './samples'
 import './style.css'
 

@@ -4,13 +4,13 @@
 **Generated:** 2026-10-17 · **Updated:** 2026-10-17
 
 ## Purpose
-React playground and the primary manual test harness: it exercises every diagram type in `SAMPLES`, the `@visimer/react` bindings (`MermaidCanvas`, `useMermaidEditor`), and both text panes (CodeMirror and Monaco). `pnpm dev` (root) starts it on http://localhost:5173 (`strictPort`).
+React playground and the primary manual test harness: it exercises every diagram type in `SAMPLES`, the `@kilauea/react` bindings (`MermaidCanvas`, `useMermaidEditor`), and both text panes (CodeMirror and Monaco). `pnpm dev` (root) starts it on http://localhost:5173 (`strictPort`).
 
 ## Key Files
 | File | Description |
 |------|-------------|
 | `index.html` | `#root` + `/src/main.tsx` |
-| `vite.config.ts` | `@vitejs/plugin-react`; optimizeDeps excludes core, dom, codemirror, react workspace packages; pre-bundles pele (`@visimer/dom > pele`), react, react-dom |
+| `vite.config.ts` | `@vitejs/plugin-react`; optimizeDeps excludes core, dom, codemirror, react workspace packages; pre-bundles pele (`@kilauea/dom > pele`), react, react-dom |
 | `tsconfig.json` | Extends base, `jsx: react-jsx` |
 | `package.json` | `workspace:*` on codemirror, core, dom, monaco, react; monaco-editor ^0.55.1 |
 
@@ -35,7 +35,7 @@ Palettes (`ink`, `dark`, `light`, `forest`, `neutral`) are sets of `--pele-*` CS
 ## Dependencies
 
 ### Internal
-`@visimer/core`, `@visimer/dom`, `@visimer/react`, `@visimer/codemirror`, `@visimer/monaco`; `../js-playground/src/samples`.
+`@kilauea/core`, `@kilauea/dom`, `@kilauea/react`, `@kilauea/codemirror`, `@kilauea/monaco`; `../js-playground/src/samples`.
 
 ### External
 react/react-dom ^18.3.1, monaco-editor ^0.55.1, vite ^6.3.5, @vitejs/plugin-react ^4.3.4.

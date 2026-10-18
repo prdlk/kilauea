@@ -4,11 +4,11 @@
   "commit": false,
   "fixed": [
     [
-      "@visimer/core",
-      "@visimer/dom",
-      "@visimer/react",
-      "@visimer/codemirror",
-      "@visimer/monaco"
+      "@kilauea/core",
+      "@kilauea/dom",
+      "@kilauea/react",
+      "@kilauea/codemirror",
+      "@kilauea/monaco"
     ]
   ],
   "linked": [],

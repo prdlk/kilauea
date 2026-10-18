@@ -21,7 +21,7 @@ Structural editing for `erDiagram`: entities with attribute blocks and crow's-fo
 - Left vs right glyph sets are asymmetric; always go through `cardinalityFromGlyph` and the glyph maps instead of string-flipping.
 
 ### Testing Requirements
-`pnpm --filter @visimer/core test`; `test/er.test.ts` (`er parsing`, `er ops`; the same file also holds the `pie` and `gantt` suites).
+`pnpm --filter @kilauea/core test`; `test/er.test.ts` (`er parsing`, `er ops`; the same file also holds the `pie` and `gantt` suites).
 
 ### Common Patterns
 Same `bodyIndent`/`insertAfterLine`/`deleteLine`/`findRelation` local helpers as `class/ops.ts`.

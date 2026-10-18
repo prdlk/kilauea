@@ -2,7 +2,7 @@
  * Records `assets/hero-loop.webp` from the REAL playground.
  *
  * Why a recorder exists at all: the hero is the first thing a visitor sees, and it has to show a pointer.
- * Visimer's claim is direct manipulation of the rendered diagram, so a clip with no cursor is
+ * Kilauea's claim is direct manipulation of the rendered diagram, so a clip with no cursor is
  * indistinguishable from a source-pane screencast — the double-click that renames the node is the product,
  * and an invisible double-click proves nothing. The previous asset was recorded without one, and there was
  * no script to re-record it. This is that script.
@@ -31,7 +31,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 const URL_BASE = process.env.HERO_URL ?? 'http://localhost:5174'
-const OUT = join(tmpdir(), 'visimer-hero-frames')
+const OUT = join(tmpdir(), 'kilauea-hero-frames')
 
 /** The diagram the hero renames a node in. Seeded through the playground's own `#code=` hash. */
 const SRC = `flowchart TD
@@ -151,7 +151,7 @@ for (let f = 0; f < TOTAL; f++) {
   }
   if (f === COMMIT) await page.keyboard.press('Enter')
   // Committing leaves the node selected, and a selected node keeps the floating node toolbar up, covering
-  // the "yes" edge label. Escape does NOT deselect in Visimer — clicking bare canvas is the real gesture,
+  // the "yes" edge label. Escape does NOT deselect in Kilauea — clicking bare canvas is the real gesture,
   // and it also gives the loop a clean resting frame.
   if (f === RETREAT_END) await page.mouse.click(EMPTY.x, EMPTY.y)
 

@@ -1,11 +1,11 @@
-# @visimer/dom
+# @kilauea/dom
 
 ## 1.1.3
 
 ### Patch Changes
 
 - ca5cd66: Cancelling an in-place label edit with Escape now restores the label exactly as mermaid rendered it. Before, the canvas parsed the raw label text from the diagram source as HTML, which skipped mermaid's sanitizer. If your canvas renders diagrams that you did not write, upgrade.
-  - @visimer/core@1.1.3
+  - @kilauea/core@1.1.3
 
 ## 1.1.2
 
@@ -17,7 +17,7 @@
 
   `MermaidCanvasView` now watches `document.fonts` after each render. If the document's fonts are still loading it waits for them to settle and then re-renders, which re-measures every label against the fonts the browser is actually painting with. It arms only while fonts are pending, so a page whose fonts are already available renders exactly once, as before. Environments with no `FontFaceSet` are unaffected.
 
-  - @visimer/core@1.1.2
+  - @kilauea/core@1.1.2
 
 ## 1.1.1
 
@@ -37,7 +37,7 @@
 
   `readLabelHtml` used to pass Chromium's `&nbsp;` entity through to the source rewriter unchanged. Typing a trailing space in a contenteditable label produced `"foo&nbsp;"`, and the `&` character tripped the `NEEDS_QUOTE` regex, so the live commit wrapped the label in double quotes; every subsequent keystroke saw `ref.quoted === true` and the quotes stuck around forever. The read now canonicalises `&nbsp;` back to a real space so `.trim()` catches it and the label stays unquoted through the whole edit session.
 
-  - @visimer/core@1.1.1
+  - @kilauea/core@1.1.1
 
 ## 1.1.0
 
@@ -50,29 +50,29 @@
 ### Patch Changes
 
 - Updated dependencies [784f461]
-  - @visimer/core@1.1.0
+  - @kilauea/core@1.1.0
 
 ## 1.0.2
 
 ### Patch Changes
 
 - 3c0812b: Fixed the edge-label overlay landing on a neighboring edge's label when you added a label to a freshly-created arrow. Now the text-input opens on the arrow itself; no other label is visually disturbed during editing.
-  - @visimer/core@1.0.2
+  - @kilauea/core@1.0.2
 
 ## 1.0.1
 
 ### Patch Changes
 
 - Updated dependencies [23611c0]
-  - @visimer/core@1.0.1
+  - @kilauea/core@1.0.1
 
 ## 1.0.0
 
 ### Major Changes
 
-- 7ab9082: Rename the library to visimer. Packages move from `@inkeep/mermaid-wysiwyg-*` to
-  scoped `@visimer/*` (`core`, `dom`, `react`, `codemirror`, `monaco`); the public
-  repo moves from `inkeep/mermaid-wysiwyg` to `inkeep/visimer`. Update imports and
+- 7ab9082: Rename the library to kilauea. Packages move from `@inkeep/mermaid-wysiwyg-*` to
+  scoped `@kilauea/*` (`core`, `dom`, `react`, `codemirror`, `monaco`); the public
+  repo moves from `inkeep/mermaid-wysiwyg` to `prdlk/kilauea`. Update imports and
   install commands accordingly.
 
 ### Minor Changes
@@ -99,9 +99,9 @@
 ### Patch Changes
 
 - 4afd20d: The selection glow is no longer clipped flat at the diagram's top and bottom edges.
-- c13374b: `@visimer/dom`: tapping empty canvas margin now dismisses the popover in panzoom mode. Previously, taps outside the SVG but inside its host (the padded margin where the SVG is centered) fell through the SVG's click handler and the popover stayed pinned to the selected node.
+- c13374b: `@kilauea/dom`: tapping empty canvas margin now dismisses the popover in panzoom mode. Previously, taps outside the SVG but inside its host (the padded margin where the SVG is centered) fell through the SVG's click handler and the popover stayed pinned to the selected node.
 - e6feaec: Committing an overlay label edit (sequence notes, ER attribute rows, and other SVG-text labels) no longer flashes the pre-edit text while the re-render catches up.
 - Updated dependencies [c13374b]
 - Updated dependencies [7ab9082]
 - Updated dependencies [7ab9082]
-  - @visimer/core@1.0.0
+  - @kilauea/core@1.0.0

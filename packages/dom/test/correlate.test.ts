@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest'
-import { MermaidWysiwygEditor } from '@visimer/core'
+import { MermaidWysiwygEditor } from '@kilauea/core'
 import { MermaidCanvasView } from '../src'
 import { SAMPLES } from '../../../apps/js-playground/src/samples'
 

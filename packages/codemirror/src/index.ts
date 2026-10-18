@@ -1,7 +1,7 @@
 import { defaultKeymap } from '@codemirror/commands'
 import { EditorState, StateEffect, StateField } from '@codemirror/state'
 import { Decoration, EditorView, keymap, lineNumbers, type DecorationSet } from '@codemirror/view'
-import { bindTextPane, type MermaidWysiwygEditor, type Span, type TextPaneBinding } from '@visimer/core'
+import { bindTextPane, type MermaidWysiwygEditor, type Span, type TextPaneBinding } from '@kilauea/core'
 import { mermaidLanguage } from './language'
 
 export { mermaidLanguage } from './language'

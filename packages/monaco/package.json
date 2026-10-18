@@ -1,7 +1,7 @@
 {
-  "name": "@visimer/monaco",
+  "name": "@kilauea/monaco",
   "version": "1.1.3",
-  "description": "Monaco binding for visimer: two-way code sync, entity highlight decorations, shared undo authority. No monaco-editor dependency; bring your own instance.",
+  "description": "Monaco binding for kilauea: two-way code sync, entity highlight decorations, shared undo authority. No monaco-editor dependency; bring your own instance.",
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
@@ -14,7 +14,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@visimer/core": "workspace:*"
+    "@kilauea/core": "workspace:*"
   },
   "devDependencies": {
     "monaco-editor": "^0.55.1",
@@ -40,11 +40,11 @@
   "author": "Inkeep",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/inkeep/visimer.git",
+    "url": "git+https://github.com/prdlk/kilauea.git",
     "directory": "packages/monaco"
   },
-  "homepage": "https://github.com/inkeep/visimer#readme",
-  "bugs": "https://github.com/inkeep/visimer/issues",
+  "homepage": "https://github.com/prdlk/kilauea#readme",
+  "bugs": "https://github.com/prdlk/kilauea/issues",
   "keywords": [
     "mermaid",
     "wysiwyg",

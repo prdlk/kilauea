@@ -5,7 +5,7 @@ import { constants } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const SUBTREE = 'Visimer';
+const SUBTREE = 'Kilauea';
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 const LOCKFILE = 'pnpm-lock.yaml';
 const INSTALLED_LOCKFILE = 'node_modules/.pnpm/lock.yaml';

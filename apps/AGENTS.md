@@ -4,7 +4,7 @@
 **Generated:** 2026-10-17 · **Updated:** 2026-10-17
 
 ## Purpose
-Private (never published) Vite applications that consume the `@visimer/*` workspace packages. They are the manual test harnesses and the public marketing site; nothing here ships to npm.
+Private (never published) Vite applications that consume the `@kilauea/*` workspace packages. They are the manual test harnesses and the public marketing site; nothing here ships to npm.
 
 ## Subdirectories
 | Directory | Purpose |
@@ -16,7 +16,7 @@ Private (never published) Vite applications that consume the `@visimer/*` worksp
 ## For AI Agents
 
 ### Working In This Directory
-- Every app declares `@visimer/*` as `workspace:*` dependencies and lists them in vite `optimizeDeps.exclude`, so Vite transforms the package sources directly instead of pre-bundling them. There are no path aliases in the vite configs.
+- Every app declares `@kilauea/*` as `workspace:*` dependencies and lists them in vite `optimizeDeps.exclude`, so Vite transforms the package sources directly instead of pre-bundling them. There are no path aliases in the vite configs.
 - Root scripts: `pnpm dev` -> `playground`, `pnpm dev:js` -> `js-playground`, `pnpm dev:site` -> `site`, `pnpm build:site` -> site build. Root `pnpm build` only builds `packages/*`.
 - Port clash: `js-playground` and `site` both use 5174 with `strictPort: true`; do not run them at once. `playground` uses 5173.
 - None of these apps defines a `test` script, so `pnpm test` skips them. Use `pnpm typecheck` (each has `tsc -p tsconfig.json`).

@@ -21,7 +21,7 @@ Structural editing for `stateDiagram`/`stateDiagram-v2`: states (simple, composi
 - A state may be referenced on many lines (`declLines`, `refLines`, `firstRefLine`); label edits go to `decl` when present else insert at `firstRefLine`.
 
 ### Testing Requirements
-`pnpm --filter @visimer/core test`; `test/state.test.ts` (`state parsing`, `state ops`). Stereotype ops for state are also exercised in `test/class.test.ts` (`state stereotype ops`).
+`pnpm --filter @kilauea/core test`; `test/state.test.ts` (`state parsing`, `state ops`). Stereotype ops for state are also exercised in `test/class.test.ts` (`state stereotype ops`).
 
 ### Common Patterns
 `ID` regex `(?:\[\*\]|[\w-]+)`; `TRANSITION_RE` and `QUOTED_DECL_RE` in `parse.ts`; per-line parse, graph aggregation, span-replacing ops.

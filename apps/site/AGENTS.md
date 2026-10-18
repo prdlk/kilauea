@@ -4,7 +4,7 @@
 **Generated:** 2026-10-17 · **Updated:** 2026-10-17
 
 ## Purpose
-Public marketing site (visimer.com), a client-rendered Vite SPA deployed on Vercel. One bundle serves three routes: `/` (landing), `/playground` and `/hero-loop`. Run with `pnpm dev:site` (http://localhost:5174, `strictPort`); build with `pnpm build:site`.
+Public marketing site (kilauea.com), a client-rendered Vite SPA deployed on Vercel. One bundle serves three routes: `/` (landing), `/playground` and `/hero-loop`. Run with `pnpm dev:site` (http://localhost:5174, `strictPort`); build with `pnpm build:site`.
 
 ## Key Files
 | File | Description |
@@ -42,7 +42,7 @@ Package source edits hot-reload (workspace packages excluded from pre-bundle).
 ## Dependencies
 
 ### Internal
-`@visimer/core`, `@visimer/dom`, `@visimer/codemirror`, `@visimer/react`.
+`@kilauea/core`, `@kilauea/dom`, `@kilauea/codemirror`, `@kilauea/react`.
 
 ### External
 posthog-js ^1.407.2, react ^18.3.1, mermaid ^11.16.1, @codemirror/* (state ^6.7.1, view ^6.43.6, commands ^6.10.4, language ^6.12.4), vite ^6.3.5.

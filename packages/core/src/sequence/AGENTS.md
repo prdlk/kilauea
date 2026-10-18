@@ -22,7 +22,7 @@ Structural editing for `sequenceDiagram`: participants (implicit or declared), m
 - `deleteParticipant` also has to deal with events that reference it; `editor.deleteEntities` deletes `event:` ids before `participant:` ids.
 
 ### Testing Requirements
-`pnpm --filter @visimer/core test`; `test/sequence.test.ts` (`sequence parsing`, `sequence ops`).
+`pnpm --filter @kilauea/core test`; `test/sequence.test.ts` (`sequence parsing`, `sequence ops`).
 
 ### Common Patterns
 Same `{code, lines, graph}` context as other types; messages parse into spans (source, op, target, text) so ops replace just one span.

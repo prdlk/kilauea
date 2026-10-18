@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-// Publish the five @visimer/* packages to GitHub Packages under this fork's
+// Publish the five @kilauea/* packages to GitHub Packages under this fork's
 // owner scope. GitHub Packages only accepts a scope equal to the repository
-// owner, so the source names stay @visimer/* and the staged tarballs are
-// renamed to @<owner>/visimer-<dir> with their workspace deps rewritten to
+// owner, so the source names stay @kilauea/* and the staged tarballs are
+// renamed to @<owner>/kilauea-<dir> with their workspace deps rewritten to
 // match. The repo's own versions are left alone: pass the version to publish.
 //
 //   node scripts/publish-github.mjs <version> [--owner prdlk] [--dry-run]
@@ -32,8 +32,8 @@ if (!token && !dryRun) {
   process.exit(2)
 }
 
-const publishedName = (dir) => `@${owner}/visimer-${dir}`
-const sourceToPublished = Object.fromEntries(PACKAGES.map((dir) => [`@visimer/${dir}`, publishedName(dir)]))
+const publishedName = (dir) => `@${owner}/kilauea-${dir}`
+const sourceToPublished = Object.fromEntries(PACKAGES.map((dir) => [`@kilauea/${dir}`, publishedName(dir)]))
 
 function rewriteDeps(deps) {
   if (!deps) return undefined
@@ -64,7 +64,7 @@ for (const dir of PACKAGES) {
     if (!file.isFile() || !/\.(m?js|d\.ts|ts|tsx|map|md)$/.test(file.name)) continue
     const path = join(file.parentPath, file.name)
     const text = readFileSync(path, 'utf8')
-    const next = text.replace(/@visimer\/(core|dom|codemirror|monaco|react)\b/g, (_, dir) => publishedName(dir))
+    const next = text.replace(/@kilauea\/(core|dom|codemirror|monaco|react)\b/g, (_, dir) => publishedName(dir))
     if (next !== text) writeFileSync(path, next)
   }
   cpSync(join(ROOT, 'LICENSE'), join(out, 'LICENSE'))
@@ -77,7 +77,7 @@ for (const dir of PACKAGES) {
     exports: publishConfig.exports ?? pkg.exports,
     dependencies: rewriteDeps(pkg.dependencies),
     peerDependencies: pkg.peerDependencies,
-    repository: { type: 'git', url: `git+https://github.com/${owner}/visimer.git`, directory: `packages/${dir}` },
+    repository: { type: 'git', url: `git+https://github.com/${owner}/kilauea.git`, directory: `packages/${dir}` },
     publishConfig: { registry: REGISTRY },
   }
   writeFileSync(join(out, 'package.json'), JSON.stringify(manifest, null, 2) + '\n')

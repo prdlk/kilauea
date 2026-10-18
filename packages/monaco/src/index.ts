@@ -1,5 +1,5 @@
 /**
- * Monaco binding for visimer, built on core's editor-agnostic
+ * Monaco binding for kilauea, built on core's editor-agnostic
  * `bindTextPane` contract.
  *
  * The types below are structural on purpose: this package has no dependency
@@ -10,7 +10,7 @@
  * test suite).
  */
 
-import { bindTextPane, type MermaidWysiwygEditor, type TextPaneBinding } from '@visimer/core'
+import { bindTextPane, type MermaidWysiwygEditor, type TextPaneBinding } from '@kilauea/core'
 
 export { mermaidMonarchTokens, registerMermaidLanguage, type MonacoNamespaceLike } from './language'
 

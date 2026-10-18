@@ -24,7 +24,7 @@ Full structural support for `flowchart`/`graph` diagrams: a hand-written tokeniz
 - Edge colors/animation/curve are written as Mermaid `linkStyle`/edge-id/`%%{init}` style statements appended in the doc; check existing implementation in `ops.ts` before changing.
 
 ### Testing Requirements
-`pnpm --filter @visimer/core test`. Covered by `test/core.test.ts` (`flowchart parsing`, `ops → minimal text edits`, `editor state`).
+`pnpm --filter @kilauea/core test`. Covered by `test/core.test.ts` (`flowchart parsing`, `ops → minimal text edits`, `editor state`).
 
 ### Common Patterns
 Parse is purely lexical per line (`LineInfo` → stmt with absolute `Span`s); graph aggregates stmts into `statements: Map<lineIndex, FlowStmt>`; ops read spans from the graph and emit `{start,end,text}` replacing only that span.
