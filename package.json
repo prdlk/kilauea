@@ -14,7 +14,7 @@
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release": "pnpm build && changeset publish",
-    "deploy:site": "pnpm --filter site deploy"
+    "deploy:site": "pnpm --filter site release"
   },
   "devDependencies": {
     "tsup": "^8.5.1",

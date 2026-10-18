@@ -4,7 +4,7 @@
 **Generated:** 2026-10-17 · **Updated:** 2026-10-17
 
 ## Purpose
-Public marketing site (https://kilauea.dev), a client-rendered Vite SPA deployed as a Cloudflare Worker with static assets. One bundle serves three routes: `/` (landing), `/playground` and `/hero-loop`. Run with `pnpm dev:site` (http://localhost:5174, `strictPort`); build with `pnpm build:site`; deploy with `pnpm deploy:site` (`vite build && wrangler deploy`).
+Public marketing site (https://kilauea.dev), a client-rendered Vite SPA deployed as a Cloudflare Worker with static assets. One bundle serves three routes: `/` (landing), `/playground` and `/hero-loop`. Run with `pnpm dev:site` (http://localhost:5174, `strictPort`); build with `pnpm build:site`; deploy with `pnpm deploy:site` (`pnpm --filter site release`: `vite build && wrangler deploy`).
 
 ## Key Files
 | File | Description |
@@ -16,7 +16,7 @@ Public marketing site (https://kilauea.dev), a client-rendered Vite SPA deployed
 | `.env.example` | `VITE_POSTHOG_KEY` (empty disables analytics), `VITE_POSTHOG_HOST` (default `/ingest`) |
 | `.gitignore` | `.env*` except `.env.example` |
 | `README.md` | Short intro and local dev notes |
-| `package.json` | Scripts `dev`, `build`, `typecheck`, `deploy`; deps core, dom, codemirror, react (`workspace:*`), posthog-js; devDep `wrangler` |
+| `package.json` | Scripts `dev`, `build`, `typecheck`, `release`; deps core, dom, codemirror, react (`workspace:*`), posthog-js; devDep `wrangler` |
 | `tsconfig.json` | Extends base, `jsx: react-jsx` |
 
 ## Subdirectories

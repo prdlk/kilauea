@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "typecheck": "tsc -p tsconfig.json",
-    "deploy": "vite build && wrangler deploy"
+    "release": "vite build && wrangler deploy"
   },
   "dependencies": {
     "@codemirror/commands": "^6.10.4",
