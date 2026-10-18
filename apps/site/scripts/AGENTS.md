@@ -18,7 +18,7 @@ Maintenance scripts for the site; currently the hero recording script.
 - Prerequisites are deliberately not dependencies: `pnpm --filter site add -D playwright && pnpm --filter site exec playwright install chromium`, and `img2webp` (libwebp). Do not commit them to `package.json`.
 - Usage: `pnpm dev:site`, then `pnpm --filter site exec tsx scripts/record-hero.tsx`. Base URL overridable via `HERO_URL` (default `http://localhost:5174`). The diagram is seeded through the `#code=` hash (`encodeCode`: base64url of UTF-8).
 - Frames are deterministic: one input per frame, then screenshot. The only painted element is the injected pointer (`ARROW_SVG`/`IBEAM_SVG`), positioned by hotspot. It clicks bare canvas to deselect because Escape does not deselect.
-- It depends on the playground's `g.node` markup and the `Meta+A` select-all; update if the UI changes.
+- It depends on the playground's `g.pele-node` markup and the `ControlOrMeta+A` select-all; update if the UI changes. Without `img2webp`, `ffmpeg -framerate 1000/33 -i <frames>/f%04d.png -c:v libwebp_anim -lossless 0 -quality 76 -loop 0 assets/hero-loop.webp` produces the same 33 ms/frame loop (identical frames are merged, so the frame count is lower but the duration matches).
 
 ### Testing Requirements
 None; run manually. It is excluded from tsconfig `include` (only `src`, `vite.config.ts`).

@@ -10,7 +10,9 @@ Kilauea brings "what you see is what you get" editability to Pele diagrams. Rena
 [![Renders with pele](https://img.shields.io/badge/renderer-pele-ff3670.svg)](https://github.com/obsidianmd/pele)
 [![Types](https://img.shields.io/badge/types-included-3178c6.svg)](#packages)
 
-![A node label is double-clicked and retyped on the canvas; the matching line of Pele source rewrites live as it is typed](./assets/hero-loop.webp)
+[![In the Kilauea Playground, the "Ship it" node is double-clicked and retyped as "Deploy" on the canvas; the matching line of Pele source rewrites live as it is typed](./assets/hero-loop.webp)](https://kilauea.dev/playground)
+
+**[Open the playground →](https://kilauea.dev/playground)**
 
 </div>
 

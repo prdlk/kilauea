@@ -145,7 +145,7 @@ for (let f = 0; f < TOTAL; f++) {
   await setCursor(cx, cy, ibeam)
 
   if (f === DBLCLICK) await page.mouse.dblclick(target.x, target.y)
-  if (f === TYPE_START - 2) await page.keyboard.press('Meta+A')
+  if (f === TYPE_START - 2) await page.keyboard.press('ControlOrMeta+A')
   if (f >= TYPE_START && f < TYPE_END && (f - TYPE_START) % PER_CHAR === 0) {
     await page.keyboard.type(NEW_LABEL[(f - TYPE_START) / PER_CHAR]!)
   }
