@@ -147,7 +147,7 @@ input[type="color"] { width: 26px; height: 22px; padding: 0; border: 1px solid v
 #codepane .cm-activeLineGutter { background: transparent; color: var(--fg); }
 #codepane .cm-selectionBackground, #codepane .cm-editor ::selection { background: #334155aa !important; }
 
-/* Mermaid-syntax highlighting (classHighlighter token classes) */
+/* Pele-syntax highlighting (classHighlighter token classes) */
 #codepane .tok-comment { color: #64748b; font-style: italic; }
 #codepane .tok-string { color: #fbbf24; }
 #codepane .tok-keyword { color: #c084fc; }

@@ -85,7 +85,7 @@ export {
   type PieOp,
 } from './pie/index'
 export {
-  MermaidWysiwygEditor,
+  PeleWysiwygEditor,
   parse,
   type ParseResult,
   type ChangeEvent,

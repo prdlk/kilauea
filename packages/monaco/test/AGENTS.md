@@ -9,7 +9,7 @@ Tests for `bindMonaco` using an in-memory fake Monaco (node environment, no jsdo
 ## Key Files
 | File | Description |
 |------|-------------|
-| `binding.test.ts` | `_conformance: (e: monaco.editor.IStandaloneCodeEditor) => MonacoEditorLike` type canary (`import type` only); `fakeMonaco(initial)` implements model, decorations, cursor/key listeners; tests: minimal edits from engine ops, model edits without echo, decorations + reveal, explicit vs edit-driven caret (`reason` 3 vs 0), undo keys via `pressUndo(shift?)`, dispose unhooks and clears, `registerMermaidLanguage` idempotent |
+| `binding.test.ts` | `_conformance: (e: monaco.editor.IStandaloneCodeEditor) => MonacoEditorLike` type canary (`import type` only); `fakeMonaco(initial)` implements model, decorations, cursor/key listeners; tests: minimal edits from engine ops, model edits without echo, decorations + reveal, explicit vs edit-driven caret (`reason` 3 vs 0), undo keys via `pressUndo(shift?)`, dispose unhooks and clears, `registerPeleLanguage` idempotent |
 
 ## For AI Agents
 

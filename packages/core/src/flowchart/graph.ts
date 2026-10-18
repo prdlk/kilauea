@@ -15,7 +15,7 @@ export interface NodeRefSite {
 }
 
 export interface FlowNode {
-  /** entity id: `node:<mermaidId>` */
+  /** entity id: `node:<peleId>` */
   entityId: string
   id: string
   /** display label (falls back to id) */
@@ -40,7 +40,7 @@ export interface FlowEdge {
   sourceRef: NodeRef
   targetRef: NodeRef
   label: string | null
-  /** order in document (== mermaid render order) */
+  /** order in document (== pele render order) */
   order: number
 }
 

@@ -141,7 +141,7 @@ class LineParser {
   constructor(line: LineInfo) {
     this.text = line.text
     this.base = line.start
-    // trim trailing semicolons/whitespace (mermaid allows optional `;`)
+    // trim trailing semicolons/whitespace (pele allows optional `;`)
     let e = this.text.length
     while (e > 0 && /[;\s]/.test(this.text[e - 1])) e--
     this.end = e

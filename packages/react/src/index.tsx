@@ -1,16 +1,16 @@
 import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from 'react'
-import { MermaidWysiwygEditor } from '@kilauea/core'
-import { MermaidCanvasView, type RenderOptions, type Tool, type ViewHooks } from '@kilauea/dom'
+import { PeleWysiwygEditor } from '@kilauea/core'
+import { PeleCanvasView, type RenderOptions, type Tool, type ViewHooks } from '@kilauea/dom'
 
-export { MermaidWysiwygEditor } from '@kilauea/core'
-export { MermaidCanvasView, type RenderOptions } from '@kilauea/dom'
+export { PeleWysiwygEditor } from '@kilauea/core'
+export { PeleCanvasView, type RenderOptions } from '@kilauea/dom'
 
 /**
  * Own an editor instance in React. Re-renders on document and selection
  * changes; dispatch ops or bind the code string to your own state.
  */
-export function useMermaidEditor(initialCode: string) {
-  const [editor] = useState(() => new MermaidWysiwygEditor({ code: initialCode }))
+export function usePeleEditor(initialCode: string) {
+  const [editor] = useState(() => new PeleWysiwygEditor({ code: initialCode }))
   const code = useSyncExternalStore(
     (cb) => editor.on('change', cb),
     () => editor.code,
@@ -28,7 +28,7 @@ export function useMermaidEditor(initialCode: string) {
  * every React render; callers passing `icons`/`measurer` functions should
  * memoize them.
  */
-function useRenderOptions(viewRef: { current: MermaidCanvasView | null }, options: RenderOptions | undefined) {
+function useRenderOptions(viewRef: { current: PeleCanvasView | null }, options: RenderOptions | undefined) {
   const applied = useRef(options)
   useEffect(() => {
     const prev = applied.current ?? {}
@@ -47,8 +47,8 @@ function useRenderOptions(viewRef: { current: MermaidCanvasView | null }, option
   }, [viewRef, options])
 }
 
-export interface MermaidWysiwygProps {
-  /** mermaid source (controlled when `onCodeChange` is provided) */
+export interface PeleWysiwygProps {
+  /** pele source (controlled when `onCodeChange` is provided) */
   code: string
   onCodeChange?: (code: string) => void
   /**
@@ -64,24 +64,24 @@ export interface MermaidWysiwygProps {
   hooks?: ViewHooks
   onSelectionChange?: (entityIds: string[]) => void
   /** access the underlying editor and canvas view */
-  onReady?: (editor: MermaidWysiwygEditor, view: MermaidCanvasView) => void
+  onReady?: (editor: PeleWysiwygEditor, view: PeleCanvasView) => void
   className?: string
   style?: CSSProperties
 }
 
 /**
- * Drop-in visual Mermaid editor: full WYSIWYG canvas bound to a `code` prop.
+ * Drop-in visual Pele editor: full WYSIWYG canvas bound to a `code` prop.
  *
  * ```tsx
  * const [code, setCode] = useState('flowchart TD\n  A --> B')
- * <MermaidWysiwyg code={code} onCodeChange={setCode} />
+ * <PeleWysiwyg code={code} onCodeChange={setCode} />
  * ```
  */
-export function MermaidWysiwyg(props: MermaidWysiwygProps) {
+export function PeleWysiwyg(props: PeleWysiwygProps) {
   const { code, onCodeChange, renderOptions, accentColor, readOnly, panZoom, tool, hooks, onSelectionChange, onReady, className, style } = props
   const hostRef = useRef<HTMLDivElement>(null)
-  const editorRef = useRef<MermaidWysiwygEditor | null>(null)
-  const viewRef = useRef<MermaidCanvasView | null>(null)
+  const editorRef = useRef<PeleWysiwygEditor | null>(null)
+  const viewRef = useRef<PeleCanvasView | null>(null)
   const onCodeChangeRef = useRef(onCodeChange)
   const onSelectionChangeRef = useRef(onSelectionChange)
   onCodeChangeRef.current = onCodeChange
@@ -89,8 +89,8 @@ export function MermaidWysiwyg(props: MermaidWysiwygProps) {
 
   useEffect(() => {
     if (!hostRef.current) return
-    const editor = new MermaidWysiwygEditor({ code })
-    const view = new MermaidCanvasView({
+    const editor = new PeleWysiwygEditor({ code })
+    const view = new PeleCanvasView({
       editor,
       container: hostRef.current,
       renderOptions,
@@ -145,30 +145,30 @@ export function MermaidWysiwyg(props: MermaidWysiwygProps) {
   return <div ref={hostRef} className={className} style={{ minHeight: 240, ...style }} />
 }
 
-export interface MermaidCanvasProps {
-  /** an editor you own (e.g. from `useMermaidEditor`) */
-  editor: MermaidWysiwygEditor
-  /** see `MermaidWysiwygProps.renderOptions` */
+export interface PeleCanvasProps {
+  /** an editor you own (e.g. from `usePeleEditor`) */
+  editor: PeleWysiwygEditor
+  /** see `PeleWysiwygProps.renderOptions` */
   renderOptions?: RenderOptions
   accentColor?: string
   readOnly?: boolean
   /** fit-to-canvas + drag-pan + pinch/ctrl-wheel zoom with corner controls */
   panZoom?: boolean
   hooks?: ViewHooks
-  onReady?: (view: MermaidCanvasView) => void
+  onReady?: (view: PeleCanvasView) => void
   className?: string
   style?: CSSProperties
 }
 
 /** Canvas-only binding for an editor instance you manage yourself. */
-export function MermaidCanvas(props: MermaidCanvasProps) {
+export function PeleCanvas(props: PeleCanvasProps) {
   const { editor, renderOptions, accentColor, readOnly, panZoom, hooks, onReady, className, style } = props
   const hostRef = useRef<HTMLDivElement>(null)
-  const viewRef = useRef<MermaidCanvasView | null>(null)
+  const viewRef = useRef<PeleCanvasView | null>(null)
 
   useEffect(() => {
     if (!hostRef.current) return
-    const view = new MermaidCanvasView({
+    const view = new PeleCanvasView({
       editor,
       container: hostRef.current,
       renderOptions,

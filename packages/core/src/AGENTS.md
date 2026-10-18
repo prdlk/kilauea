@@ -9,11 +9,11 @@ Source of `@kilauea/core`. Top-level files hold the generic machinery (line scan
 ## Key Files
 | File | Description |
 |------|-------------|
-| `index.ts` | Sole public entry: re-exports types, `bindTextPane`, `DIAGRAM_TYPES`/`detectDiagramType`, text helpers, and each type's parse/graph/ops symbols plus `MermaidWysiwygEditor`/`parse` |
+| `index.ts` | Sole public entry: re-exports types, `bindTextPane`, `DIAGRAM_TYPES`/`detectDiagramType`, text helpers, and each type's parse/graph/ops symbols plus `PeleWysiwygEditor`/`parse` |
 | `types.ts` | `Span`, `TextEdit`, `Origin` (`'code'｜'canvas'｜'api'｜'history'｜'external'`), `Capability`, `DiagramTypeInfo`, `LineKind`, `LineInfo`, `Diagnostic` |
 | `text.ts` | Lossless CST primitives: `scanLines`, `classifyLines` (frontmatter `---`, `%%{` directive, `%%` comment, header, statement), `applyEdits` (throws on overlap, returns inverse edits), `diffText` (single prefix/suffix edit), `spanContains`, `mapOffset` |
 | `registry.ts` | `DIAGRAM_TYPES` (33 types: 22 `'edit'` plus 11 pele-only `'render'` types, each with regex `match`, `capability: 'edit'｜'render'`, `docsUrl`) and `detectDiagramType(headerLine)` |
-| `editor.ts` | `parse(code) → ParseResult` and `MermaidWysiwygEditor` (code, selection, undo/redo, events, `dispatch`, `deleteEntities`, `entityExists`, `entityRanges`, `entityAt`) |
+| `editor.ts` | `parse(code) → ParseResult` and `PeleWysiwygEditor` (code, selection, undo/redo, events, `dispatch`, `deleteEntities`, `entityExists`, `entityRanges`, `entityAt`) |
 | `textpane.ts` | `TextPaneAdapter`, `TextPaneBinding`, `bindTextPane(editor, adapter)` |
 
 ## Subdirectories
@@ -45,7 +45,7 @@ Source of `@kilauea/core`. Top-level files hold the generic machinery (line scan
 - `applyEdits` in `text.ts` throws `Error('Overlapping text edits')`; ops that emit multiple edits must not overlap.
 
 ### Testing Requirements
-`pnpm --filter @kilauea/core test`. Add tests in `../test/` for any new op; use `new MermaidWysiwygEditor({code})`, `editor.dispatch(...)`, assert `editor.code`.
+`pnpm --filter @kilauea/core test`. Add tests in `../test/` for any new op; use `new PeleWysiwygEditor({code})`, `editor.dispatch(...)`, assert `editor.code`.
 
 ### Common Patterns
 - Context type per type: `{ code, lines, graph }` (`FlowOpContext`, `ClOpContext`, `ErOpContext`, `PieOpContext`, `GanttOpContext`, `LiOpContext`); `OpResult { edits, created? }` is defined in `flowchart/ops.ts`.

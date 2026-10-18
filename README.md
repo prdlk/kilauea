@@ -2,29 +2,29 @@
 
 # Kilauea
 
-**Visual editor for Mermaid diagrams.**
+**Visual editor for Pele diagrams.**
 
-Kilauea brings "what you see is what you get" editability to Mermaid diagrams. Rename labels, change shapes, add new nodes, etc. by live editing the rendered diagram.
+Kilauea brings "what you see is what you get" editability to Pele diagrams. Rename labels, change shapes, add new nodes, etc. by live editing the rendered diagram.
 
 [![MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![Renders with pele](https://img.shields.io/badge/renderer-pele-ff3670.svg)](https://github.com/obsidianmd/pele)
 [![Types](https://img.shields.io/badge/types-included-3178c6.svg)](#packages)
 
-![A node label is double-clicked and retyped on the canvas; the matching line of Mermaid source rewrites live as it is typed](./assets/hero-loop.webp)
+![A node label is double-clicked and retyped on the canvas; the matching line of Pele source rewrites live as it is typed](./assets/hero-loop.webp)
 
 </div>
 
 ---
 
 ## Why
-AI is great for generating Mermaid diagrams that help explain concepts visually. We wanted to make it easy to edit fine details visually without digging into Mermaid syntax.
+AI is great for generating Pele diagrams that help explain concepts visually. We wanted to make it easy to edit fine details visually without digging into Pele syntax.
 
 ## Usage
 
 - Use as a component library that can be embedded in any application. 
-- Use with a Markdown editing app like [OpenKnowledge](https://openknowledge.ai/) to edit Mermaid diagrams in your markdown.
+- Use with a Markdown editing app like [OpenKnowledge](https://openknowledge.ai/) to edit Pele diagrams in your markdown.
 
-Read the [launch post](https://openknowledge.ai/blog/edit-mermaid-diagrams-visually) for the story and a live editable diagram.
+Read the [launch post](https://openknowledge.ai/blog/edit-pele-diagrams-visually) for the story and a live editable diagram.
 
 ## Quick start
 
@@ -33,14 +33,14 @@ npm i @kilauea/core @kilauea/dom
 ```
 
 ```ts
-import { MermaidWysiwygEditor } from '@kilauea/core'
-import { MermaidCanvasView } from '@kilauea/dom'
+import { PeleWysiwygEditor } from '@kilauea/core'
+import { PeleCanvasView } from '@kilauea/dom'
 
-const editor = new MermaidWysiwygEditor({
+const editor = new PeleWysiwygEditor({
   code: 'flowchart TD\n  A[Start] --> B{OK?}\n  B -->|yes| C[Ship]',
 })
 
-new MermaidCanvasView({
+new PeleCanvasView({
   editor,
   container: document.querySelector('#canvas')!,
 })
@@ -68,11 +68,11 @@ Rendering is themed by CSS variables, set on the canvas container or any ancesto
 
 Available variables: `--pele-bg`, `--pele-fg`, `--pele-muted`, `--pele-line`, `--pele-surface`, `--pele-surface-alt`, `--pele-border`, `--pele-accent`, `--pele-critical`, `--pele-error`, `--pele-font`, `--pele-font-mono`, `--pele-title-weight`, `--pele-heading-weight`, `--pele-bold-weight`, `--pele-radius`, and series colors `--pele-series-1` … `--pele-series-8`. Defaults are a light palette. Colors set in the source (`style`, `classDef`, `linkStyle`) are kept.
 
-Fonts are measured when the diagram renders: after changing `--pele-font`, call `view.refresh()`. Other pele options (`fontSize`, `padding`, `maxWidth`, `links`, `icons`, …) go in `renderOptions` / `view.setRenderOptions(...)`. Mermaid's `%%{init}%%` themes and `theme`/`securityLevel` configs do not apply.
+Fonts are measured when the diagram renders: after changing `--pele-font`, call `view.refresh()`. Other pele options (`fontSize`, `padding`, `maxWidth`, `links`, `icons`, …) go in `renderOptions` / `view.setRenderOptions(...)`. Pele's `%%{init}%%` themes and `theme`/`securityLevel` configs do not apply.
 
 ## Try with Open Knowledge
 
-[OpenKnowledge](https://openknowledge.ai) is a markdown editor that allows WYSIWYG editing of markdown files. It leverages Kilauea as the native visual editor for Mermaid diagrams. Available as a Mac, Linux, and Windows IDE-style app or npm package.
+[OpenKnowledge](https://openknowledge.ai) is a markdown editor that allows WYSIWYG editing of markdown files. It leverages Kilauea as the native visual editor for Pele diagrams. Available as a Mac, Linux, and Windows IDE-style app or npm package.
 
 ## What you can do
 
@@ -86,7 +86,7 @@ Fonts are measured when the diagram renders: after changing `--pele-font`, call 
 
 ## Diagram support
 
-**22 of 33 Mermaid diagram types are editable; the other 11 render view-only.**
+**22 of 33 Pele diagram types are editable; the other 11 render view-only.**
 
 | Type | View | Item editing | Structural editing |
 |---|:---:|:---:|:---:|
@@ -132,9 +132,9 @@ Fonts are measured when the diagram renders: after changing `--pele-font`, call 
 |---|---|
 | `@kilauea/core` | Headless engine: lossless CST, semantic graphs, ops → minimal text edits, unified history. Zero DOM deps |
 | `@kilauea/dom` | Interactive canvas: renders through pele, correlates SVG ⇄ graph, all gestures |
-| `@kilauea/codemirror` | CodeMirror 6 pane: two-way sync, entity decorations, mermaid syntax highlighting, shared undo |
+| `@kilauea/codemirror` | CodeMirror 6 pane: two-way sync, entity decorations, pele syntax highlighting, shared undo |
 | `@kilauea/monaco` | Monaco binding for an editor instance you own; zero monaco dependency of its own |
-| `@kilauea/react` | React bindings: `<MermaidWysiwyg code onCodeChange />` drop-in component plus `useMermaidEditor` hook |
+| `@kilauea/react` | React bindings: `<PeleWysiwyg code onCodeChange />` drop-in component plus `usePeleEditor` hook |
 
 The code-editor integration is a contract, not a dependency. `core` exposes
 `bindTextPane`, a five-method adapter that gives any editor the same two-way sync;
@@ -143,14 +143,14 @@ in unless you install it (editor libraries are peer dependencies or absent entir
 Some other editor? Implement the adapter, it's about forty lines.
 
 ## Architecture
-- Rendering is done by [pele](https://github.com/obsidianmd/pele), a zero-dependency, synchronous Mermaid renderer themed by CSS variables. We overlay point-edit functionality on top.
-- We map the rendered SVG elements back (correlators key off pele's `data-id` attributes) to a Concrete Syntax Tree (CST) representation, which we can then use to edit only the parts of the Mermaid source that need updating (without affecting the rest of the file).
+- Rendering is done by [pele](https://github.com/obsidianmd/pele), a zero-dependency, synchronous Pele renderer themed by CSS variables. We overlay point-edit functionality on top.
+- We map the rendered SVG elements back (correlators key off pele's `data-id` attributes) to a Concrete Syntax Tree (CST) representation, which we can then use to edit only the parts of the Pele source that need updating (without affecting the rest of the file).
 
 ## Design
 
-```mermaid
+```pele
 flowchart TD
-  SRC["Your Mermaid source"] --> MR["pele renderer (synchronous)"]
+  SRC["Your Pele source"] --> MR["pele renderer (synchronous)"]
   MR --> SVG["Rendered SVG"]
   SVG --> COR["Correlator: SVG element → CST span"]
   COR --> OV["Point-edit overlay"]

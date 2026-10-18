@@ -109,10 +109,10 @@ export interface EditorOptions {
 }
 
 /**
- * Headless bidirectional Mermaid editor.
+ * Headless bidirectional Pele editor.
  * Text is the single source of truth; every mutation funnels through text edits.
  */
-export class MermaidWysiwygEditor {
+export class PeleWysiwygEditor {
   private _code: string
   private _result: ParseResult
   private _selection: string[] = []

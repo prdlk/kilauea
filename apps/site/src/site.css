@@ -37,7 +37,7 @@ textarea {
 }
 
 /* ---- Hero masthead -------------------------------------------------------
-   The h1 is a live Mermaid flowchart rather than text. It renders through the
+   The h1 is a live Pele flowchart rather than text. It renders through the
    published canvas, so it is editable in place: double-click a word and the
    headline rewrites itself.
 
@@ -310,7 +310,7 @@ textarea {
 .demo-cm .cm-editor ::selection {
   background: #cbe7df;
 }
-/* mermaid token colors (classHighlighter tok-* classes) — light pane */
+/* pele token colors (classHighlighter tok-* classes) — light pane */
 .demo-cm .tok-heading {
   color: #0e7c6b;
   font-weight: 600;

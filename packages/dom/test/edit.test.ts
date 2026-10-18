@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { MermaidWysiwygEditor } from '@kilauea/core'
-import { MermaidCanvasView } from '../src'
+import { PeleWysiwygEditor } from '@kilauea/core'
+import { PeleCanvasView } from '../src'
 
 // jsdom has no CSS.escape (browsers do)
 if (typeof (globalThis as { CSS?: unknown }).CSS === 'undefined') {
@@ -36,16 +36,16 @@ function key(div: HTMLElement, key: string, init: KeyboardEventInit = {}) {
  * it, live commits included.
  */
 describe('label editing session', () => {
-  let editor: MermaidWysiwygEditor
+  let editor: PeleWysiwygEditor
   let container: HTMLElement
-  let view: MermaidCanvasView
+  let view: PeleCanvasView
 
   beforeEach(() => {
     vi.useFakeTimers()
-    editor = new MermaidWysiwygEditor({ code: CODE })
+    editor = new PeleWysiwygEditor({ code: CODE })
     container = document.createElement('div')
     document.body.appendChild(container)
-    view = new MermaidCanvasView({ editor, container, debounceMs: 0 })
+    view = new PeleCanvasView({ editor, container, debounceMs: 0 })
   })
 
   afterEach(() => {

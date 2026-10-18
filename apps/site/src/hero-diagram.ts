@@ -17,7 +17,7 @@ import { render } from 'pele'
 
 /** The three labels the diagram is built from. */
 const NODE_A = 'WYSIWYG editor'
-const NODE_B = 'native mermaid'
+const NODE_B = 'native pele'
 const EDGE_LABEL = 'renders'
 
 /**
@@ -31,11 +31,11 @@ const EDGE_LABEL = 'renders'
 export const HERO_HEADLINE = `${NODE_A} ${EDGE_LABEL} ${NODE_B}`
 export const HERO_SUBHEAD = 'Click a node to edit it. Perfect for polishing AI-generated diagrams.'
 export const HERO_LICENSE = 'MIT'
-export const HERO_HINT_LEAD = 'That headline is a live Mermaid diagram.'
+export const HERO_HINT_LEAD = 'That headline is a live Pele diagram.'
 export const HERO_HINT_BODY = 'Double-click a word to rewrite it.'
 
 /**
- * The headline, as Mermaid. The verb rides the connector, which is where Mermaid
+ * The headline, as Pele. The verb rides the connector, which is where Pele
  * puts verbs, so the whole thing reads as one sentence.
  */
 export const HERO_SOURCE_LR = `flowchart LR

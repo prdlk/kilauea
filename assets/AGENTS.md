@@ -9,7 +9,7 @@ Static media referenced by the root README. Contains only the hero animation.
 ## Key Files
 | File | Description |
 |------|-------------|
-| `hero-loop.webp` | Animated WebP embedded at the top of `README.md` (`./assets/hero-loop.webp`): a node label is double-clicked and retyped on the canvas while the Mermaid source rewrites live. |
+| `hero-loop.webp` | Animated WebP embedded at the top of `README.md` (`./assets/hero-loop.webp`): a node label is double-clicked and retyped on the canvas while the Pele source rewrites live. |
 
 ## For AI Agents
 

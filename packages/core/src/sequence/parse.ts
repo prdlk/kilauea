@@ -1,6 +1,6 @@
 import type { LineInfo, Span } from '../types'
 
-/** All participant types supported by mermaid (v11.7+ for the extended set). */
+/** All participant types supported by pele (v11.7+ for the extended set). */
 export type ParticipantType =
   | 'participant'
   | 'actor'
@@ -22,7 +22,7 @@ export const PARTICIPANT_TYPES: ParticipantType[] = [
   'queue',
 ]
 
-/** The eight mermaid sequence message operators. */
+/** The eight pele sequence message operators. */
 export type MessageOp = '->' | '-->' | '->>' | '-->>' | '-x' | '--x' | '-)' | '--)'
 
 export const MESSAGE_OPS: Array<{ op: MessageOp; label: string }> = [

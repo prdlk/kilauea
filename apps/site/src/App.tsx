@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
-import { MermaidCanvas, useMermaidEditor } from '@kilauea/react'
+import { PeleCanvas, usePeleEditor } from '@kilauea/react'
 import { track } from './analytics'
 import {
   HERO_HEADLINE,
@@ -40,7 +40,7 @@ const FEATURES: Array<{ mark: string; title: string; body: string }> = [
   {
     mark: '⇄',
     title: 'Two-way sync',
-    body: 'Type Mermaid or edit visually. Both stay in lockstep.',
+    body: 'Type Pele or edit visually. Both stay in lockstep.',
   },
   {
     mark: '⊹',
@@ -173,12 +173,12 @@ function CodeCard({ title, children }: { title: string; children: ReactNode }) {
 export default function App() {
   const [type, setType] = useState('flowchart')
   const [skin, setSkin] = useState<'light' | 'dark'>('light')
-  const { editor } = useMermaidEditor(PRESETS.flowchart)
+  const { editor } = usePeleEditor(PRESETS.flowchart)
 
   // The headline runs on its own editor so editing it never disturbs the
   // playground below, and vice versa.
   const [heroInitial] = useState(initialHeroSource)
-  const { editor: heroEditor } = useMermaidEditor(heroInitial)
+  const { editor: heroEditor } = usePeleEditor(heroInitial)
   const [heroSource, setHeroSource] = useState(heroInitial)
   useEffect(() => heroEditor.on('change', ({ code }) => setHeroSource(code.trim())), [heroEditor])
 
@@ -480,7 +480,7 @@ export default function App() {
               local copy. The live source is echoed in the hint line below instead. */}
           <h1 className="sr-only">{HERO_HEADLINE}</h1>
           <div className="hero-masthead" aria-hidden>
-            <MermaidCanvas
+            <PeleCanvas
               editor={heroEditor}
               accentColor="#0E7C6B"
               className="site-demo-canvas"
@@ -766,7 +766,7 @@ export default function App() {
                   </span>
                 </div>
                 <div style={{ position: 'relative', flex: 1, minHeight: 0 }}>
-                  <MermaidCanvas
+                  <PeleCanvas
                     editor={editor}
                     accentColor="#0E7C6B"
                     panZoom
@@ -805,7 +805,7 @@ export default function App() {
             Diagrams you can actually touch.
           </h2>
           <p style={{ textAlign: 'center', color: '#544F47', fontSize: 17, maxWidth: 560, margin: '14px auto 0', textWrap: 'pretty' }}>
-            Fix a diagram fast. No re-learning Mermaid syntax to move one arrow.
+            Fix a diagram fast. No re-learning Pele syntax to move one arrow.
           </p>
           <div
             style={{
@@ -861,35 +861,35 @@ export default function App() {
             <CodeCard title="React · @kilauea/react">
               <span style={cmt}># npm i @kilauea/react</span>
               {'\n'}
-              <span style={kw}>import</span> {'{ MermaidWysiwyg }'} <span style={kw}>from</span>{' '}
+              <span style={kw}>import</span> {'{ PeleWysiwyg }'} <span style={kw}>from</span>{' '}
               <span style={str}>'@kilauea/react'</span>
-              {'\n\n'}&lt;<span style={ident}>MermaidWysiwyg</span> <span style={str}>code</span>={'{diagram}'}{' '}
+              {'\n\n'}&lt;<span style={ident}>PeleWysiwyg</span> <span style={str}>code</span>={'{diagram}'}{' '}
               <span style={str}>onCodeChange</span>={'{setDiagram}'} /&gt;
             </CodeCard>
             <CodeCard title="Vanilla · @kilauea/core + @kilauea/dom">
               <span style={cmt}># npm i @kilauea/core @kilauea/dom</span>
               {'\n'}
-              <span style={kw}>import</span> {'{ MermaidWysiwygEditor }'} <span style={kw}>from</span>{' '}
+              <span style={kw}>import</span> {'{ PeleWysiwygEditor }'} <span style={kw}>from</span>{' '}
               <span style={str}>'@kilauea/core'</span>
               {'\n'}
-              <span style={kw}>import</span> {'{ MermaidCanvasView }'} <span style={kw}>from</span>{' '}
+              <span style={kw}>import</span> {'{ PeleCanvasView }'} <span style={kw}>from</span>{' '}
               <span style={str}>'@kilauea/dom'</span>
               {'\n\n'}
-              <span style={kw}>const</span> editor = <span style={kw}>new</span> <span style={ident}>MermaidWysiwygEditor</span>({'{ '}
+              <span style={kw}>const</span> editor = <span style={kw}>new</span> <span style={ident}>PeleWysiwygEditor</span>({'{ '}
               <span style={str}>code</span>
               {' }'})
               {'\n'}
-              <span style={kw}>new</span> <span style={ident}>MermaidCanvasView</span>({'{ '}
+              <span style={kw}>new</span> <span style={ident}>PeleCanvasView</span>({'{ '}
               <span style={str}>editor</span>, <span style={str}>container</span>
               {' }'})
             </CodeCard>
             <CodeCard title="CodeMirror pane · @kilauea/codemirror">
               <span style={cmt}># npm i @kilauea/codemirror</span>
               {'\n'}
-              <span style={kw}>import</span> {'{ MermaidCodeMirror }'} <span style={kw}>from</span>{' '}
+              <span style={kw}>import</span> {'{ PeleCodeMirror }'} <span style={kw}>from</span>{' '}
               <span style={str}>'@kilauea/codemirror'</span>
               {'\n\n'}
-              <span style={kw}>new</span> <span style={ident}>MermaidCodeMirror</span>(host, editor)
+              <span style={kw}>new</span> <span style={ident}>PeleCodeMirror</span>(host, editor)
               {'\n'}
               <span style={cmt}># typing, highlights, undo, all shared with the canvas</span>
             </CodeCard>

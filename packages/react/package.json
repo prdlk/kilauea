@@ -1,7 +1,7 @@
 {
   "name": "@kilauea/react",
   "version": "1.1.3",
-  "description": "React bindings for kilauea: a drop-in visual Mermaid editor component and hooks, rendered through pele.",
+  "description": "React bindings for kilauea: a drop-in visual Pele editor component and hooks, rendered through pele.",
   "type": "module",
   "main": "./src/index.tsx",
   "types": "./src/index.tsx",
@@ -33,7 +33,7 @@
   "homepage": "https://github.com/prdlk/kilauea#readme",
   "bugs": "https://github.com/prdlk/kilauea/issues",
   "keywords": [
-    "mermaid",
+    "pele",
     "wysiwyg",
     "diagram",
     "editor",

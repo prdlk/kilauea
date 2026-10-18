@@ -6,7 +6,7 @@ const DOCS = 'https://mermaid.js.org'
  * Every diagram type documented at https://mermaid.js.org/intro/.
  * `capability` describes what this library can do beyond rendering:
  *  - 'edit'   → full structural WYSIWYG (semantic graph + ops)
- *  - 'render' → renders through mermaid, generic CST (statement selection,
+ *  - 'render' → renders through pele, generic CST (statement selection,
  *               comments/frontmatter handling, lossless round-trip) only.
  */
 export const DIAGRAM_TYPES: DiagramTypeInfo[] = [

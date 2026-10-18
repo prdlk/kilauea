@@ -30,7 +30,7 @@ export interface StTransition {
   lineIndex: number
   stmt: StTransitionStmt
   label: string | null
-  /** document order (== mermaid render order) */
+  /** document order (== pele render order) */
   order: number
 }
 

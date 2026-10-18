@@ -3,7 +3,7 @@
 **Generated:** 2026-10-17 · **Updated:** 2026-10-17
 
 ## Purpose
-Kilauea is a WYSIWYG editor for Mermaid diagrams. [pele](https://github.com/obsidianmd/pele), a zero-dependency synchronous Mermaid renderer themed by CSS variables, draws the SVG. Kilauea maps the rendered elements back to a lossless concrete syntax tree (CST) and turns canvas gestures (rename, connect, reorder, restyle) into minimal text edits on the Mermaid source. This directory is a pnpm workspace holding five published `@kilauea/*` libraries (`packages/`) and three private apps (`apps/`).
+Kilauea is a WYSIWYG editor for Pele diagrams. [pele](https://github.com/obsidianmd/pele), a zero-dependency synchronous Pele renderer themed by CSS variables, draws the SVG. Kilauea maps the rendered elements back to a lossless concrete syntax tree (CST) and turns canvas gestures (rename, connect, reorder, restyle) into minimal text edits on the Pele source. This directory is a pnpm workspace holding five published `@kilauea/*` libraries (`packages/`) and three private apps (`apps/`).
 
 ## Key Files
 | File | Description |

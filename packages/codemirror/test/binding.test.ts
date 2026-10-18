@@ -1,19 +1,19 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest'
-import { MermaidWysiwygEditor } from '@kilauea/core'
-import { MermaidCodeMirror } from '../src'
+import { PeleWysiwygEditor } from '@kilauea/core'
+import { PeleCodeMirror } from '../src'
 
 const CODE = 'flowchart TD\n  A[Start] --> B[End]\n'
 
 function mount(code = CODE) {
-  const editor = new MermaidWysiwygEditor({ code })
+  const editor = new PeleWysiwygEditor({ code })
   const host = document.createElement('div')
   document.body.appendChild(host)
-  const cm = new MermaidCodeMirror(host, editor)
+  const cm = new PeleCodeMirror(host, editor)
   return { editor, host, cm }
 }
 
-describe('MermaidCodeMirror against real CodeMirror 6', () => {
+describe('PeleCodeMirror against real CodeMirror 6', () => {
   it('mirrors engine ops into the view', () => {
     const { editor, cm } = mount()
     editor.dispatch({ type: 'renameNode', id: 'A', label: 'Begin' })

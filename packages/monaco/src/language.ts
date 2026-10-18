@@ -1,6 +1,6 @@
-/** Mermaid syntax highlighting for Monaco (Monarch tokens). */
+/** Pele syntax highlighting for Monaco (Monarch tokens). */
 
-/** the slice of the monaco namespace `registerMermaidLanguage` needs */
+/** the slice of the monaco namespace `registerPeleLanguage` needs */
 export interface MonacoNamespaceLike {
   languages: {
     getLanguages(): Array<{ id: string }>
@@ -9,8 +9,8 @@ export interface MonacoNamespaceLike {
   }
 }
 
-/** Monarch token rules for mermaid source; pass to `setMonarchTokensProvider` */
-export const mermaidMonarchTokens = {
+/** Monarch token rules for pele source; pass to `setMonarchTokensProvider` */
+export const peleMonarchTokens = {
   defaultToken: '',
   tokenizer: {
     root: [
@@ -30,9 +30,9 @@ export const mermaidMonarchTokens = {
   },
 }
 
-/** Register the mermaid language with a monaco namespace (idempotent). */
-export function registerMermaidLanguage(monaco: MonacoNamespaceLike): void {
-  if (monaco.languages.getLanguages().some((l) => l.id === 'mermaid')) return
-  monaco.languages.register({ id: 'mermaid' })
-  monaco.languages.setMonarchTokensProvider('mermaid', mermaidMonarchTokens)
+/** Register the pele language with a monaco namespace (idempotent). */
+export function registerPeleLanguage(monaco: MonacoNamespaceLike): void {
+  if (monaco.languages.getLanguages().some((l) => l.id === 'pele')) return
+  monaco.languages.register({ id: 'pele' })
+  monaco.languages.setMonarchTokensProvider('pele', peleMonarchTokens)
 }

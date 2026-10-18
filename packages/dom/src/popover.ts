@@ -1,4 +1,4 @@
-/** Floating entity-action popover, anchored above a canvas element (mermaid.ai-style). */
+/** Floating entity-action popover, anchored above a canvas element (pele.ai-style). */
 
 import { ICONS } from './icons'
 

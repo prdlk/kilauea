@@ -10,9 +10,9 @@
  * test suite).
  */
 
-import { bindTextPane, type MermaidWysiwygEditor, type TextPaneBinding } from '@kilauea/core'
+import { bindTextPane, type PeleWysiwygEditor, type TextPaneBinding } from '@kilauea/core'
 
-export { mermaidMonarchTokens, registerMermaidLanguage, type MonacoNamespaceLike } from './language'
+export { peleMonarchTokens, registerPeleLanguage, type MonacoNamespaceLike } from './language'
 
 export interface MonacoRangeLike {
   startLineNumber: number
@@ -70,7 +70,7 @@ export interface BindMonacoOptions {
 const CURSOR_EXPLICIT = 3
 
 /**
- * Bind an existing Monaco editor to a MermaidWysiwygEditor.
+ * Bind an existing Monaco editor to a PeleWysiwygEditor.
  *
  * You create and own the Monaco editor (workers, theme, options); this only
  * wires the two-way sync: typing flows into the engine, engine changes come
@@ -80,7 +80,7 @@ const CURSOR_EXPLICIT = 3
  * Returns the binding; call `dispose()` to unhook everything.
  */
 export function bindMonaco(
-  editor: MermaidWysiwygEditor,
+  editor: PeleWysiwygEditor,
   monacoEditor: MonacoEditorLike,
   options: BindMonacoOptions = {},
 ): TextPaneBinding {

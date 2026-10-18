@@ -1,10 +1,10 @@
 import { defaultKeymap } from '@codemirror/commands'
 import { EditorState, StateEffect, StateField } from '@codemirror/state'
 import { Decoration, EditorView, keymap, lineNumbers, type DecorationSet } from '@codemirror/view'
-import { bindTextPane, type MermaidWysiwygEditor, type Span, type TextPaneBinding } from '@kilauea/core'
-import { mermaidLanguage } from './language'
+import { bindTextPane, type PeleWysiwygEditor, type Span, type TextPaneBinding } from '@kilauea/core'
+import { peleLanguage } from './language'
 
-export { mermaidLanguage } from './language'
+export { peleLanguage } from './language'
 
 const setHighlights = StateEffect.define<Span[]>()
 
@@ -35,7 +35,7 @@ const baseTheme = EditorView.baseTheme({
 })
 
 /**
- * CodeMirror 6 pane bound to a MermaidWysiwygEditor.
+ * CodeMirror 6 pane bound to a PeleWysiwygEditor.
  *
  * A thin adapter over core's editor-agnostic `bindTextPane`; the same contract
  * works for Monaco or any other code editor.
@@ -45,11 +45,11 @@ const baseTheme = EditorView.baseTheme({
  * - entity selection renders as decorations; the caret selects entities
  * - ⌘Z/⌘⇧Z route to the engine's unified history (the same stack the canvas uses)
  */
-export class MermaidCodeMirror {
+export class PeleCodeMirror {
   readonly view: EditorView
   private binding: TextPaneBinding
 
-  constructor(host: HTMLElement, editor: MermaidWysiwygEditor, extraExtensions: unknown[] = []) {
+  constructor(host: HTMLElement, editor: PeleWysiwygEditor, extraExtensions: unknown[] = []) {
     const updateListener = EditorView.updateListener.of((update) => {
       if (update.docChanged) this.binding.notifyTextChange()
       else if (update.selectionSet) this.binding.notifyCaretMove(update.state.selection.main.head)
@@ -78,7 +78,7 @@ export class MermaidCodeMirror {
           ]),
           keymap.of(defaultKeymap),
           lineNumbers(),
-          mermaidLanguage(),
+          peleLanguage(),
           highlightField,
           baseTheme,
           updateListener,

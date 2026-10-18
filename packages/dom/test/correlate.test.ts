@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest'
-import { MermaidWysiwygEditor } from '@kilauea/core'
-import { MermaidCanvasView } from '../src'
+import { PeleWysiwygEditor } from '@kilauea/core'
+import { PeleCanvasView } from '../src'
 import { SAMPLES } from '../../../apps/js-playground/src/samples'
 
 // jsdom has no CSS.escape (browsers do)
@@ -14,10 +14,10 @@ if (typeof (globalThis as { CSS?: unknown }).CSS === 'undefined') {
 HTMLCanvasElement.prototype.getContext = () => null
 
 function mount(code: string) {
-  const editor = new MermaidWysiwygEditor({ code })
+  const editor = new PeleWysiwygEditor({ code })
   const container = document.createElement('div')
   document.body.appendChild(container)
-  const view = new MermaidCanvasView({ editor, container, debounceMs: 0 })
+  const view = new PeleCanvasView({ editor, container, debounceMs: 0 })
   return { editor, container, view }
 }
 

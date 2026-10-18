@@ -17,7 +17,7 @@ export interface SeqParticipant {
   ptype: ParticipantType
   /** declaration statement, if explicitly declared */
   decl: SeqParticipantStmt | null
-  /** left-to-right order as mermaid will render it (first mention) */
+  /** left-to-right order as pele will render it (first mention) */
   order: number
 }
 

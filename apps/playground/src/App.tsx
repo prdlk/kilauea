@@ -2,13 +2,13 @@ import { useEffect, useRef, useState } from 'react'
 import {
   DIAGRAM_TYPES,
   PARTICIPANT_TYPES,
-  type MermaidWysiwygEditor,
+  type PeleWysiwygEditor,
   type ParticipantType,
   type ShapeId,
 } from '@kilauea/core'
-import type { MermaidCanvasView, Tool } from '@kilauea/dom'
-import { MermaidCanvas, useMermaidEditor } from '@kilauea/react'
-import { MermaidCodeMirror } from '@kilauea/codemirror'
+import type { PeleCanvasView, Tool } from '@kilauea/dom'
+import { PeleCanvas, usePeleEditor } from '@kilauea/react'
+import { PeleCodeMirror } from '@kilauea/codemirror'
 import { MonacoPane } from './MonacoPane'
 import { SAMPLES } from '../../js-playground/src/samples'
 
@@ -165,8 +165,8 @@ export default function App() {
 }
 
 function Workspace({ code, theme, readOnly }: { code: string; theme: string; readOnly: boolean }) {
-  const { editor } = useMermaidEditor(code)
-  const [view, setView] = useState<MermaidCanvasView | null>(null)
+  const { editor } = usePeleEditor(code)
+  const [view, setView] = useState<PeleCanvasView | null>(null)
   const [tool, setToolState] = useState<Tool>('select')
   const [status, setStatus] = useState<string | null>(null)
   const [pane, setPane] = useState<'codemirror' | 'monaco'>('codemirror')
@@ -203,7 +203,7 @@ function Workspace({ code, theme, readOnly }: { code: string; theme: string; rea
           <button disabled={!editor.canUndo} onClick={() => editor.undo()}>Undo</button>
           <button disabled={!editor.canRedo} onClick={() => editor.redo()}>Redo</button>
         </div>
-        <MermaidCanvas
+        <PeleCanvas
           editor={editor}
           accentColor="#69a3ff"
           readOnly={readOnly}
@@ -215,7 +215,7 @@ function Workspace({ code, theme, readOnly }: { code: string; theme: string; rea
       <section className="codepanel">
         <div className="panel-title">
           <span className="panel-title-left">
-            Mermaid source
+            Pele source
             <span className="seg">
               <button className={pane === 'codemirror' ? 'on' : ''} onClick={() => setPane('codemirror')}>
                 CodeMirror
@@ -241,13 +241,13 @@ function Workspace({ code, theme, readOnly }: { code: string; theme: string; rea
 }
 
 /** re-render on document changes */
-function useEditorCode(editor: MermaidWysiwygEditor) {
+function useEditorCode(editor: PeleWysiwygEditor) {
   const [code, setCode] = useState(editor.code)
   useEffect(() => editor.on('change', ({ code: next }) => setCode(next)), [editor])
   return code
 }
 
-function TypeTools({ editor, view }: { editor: MermaidWysiwygEditor; view: MermaidCanvasView | null }) {
+function TypeTools({ editor, view }: { editor: PeleWysiwygEditor; view: PeleCanvasView | null }) {
   const typeId = editor.result.typeInfo?.id
   const openEditorSoon = (created?: string[]) => {
     const id = created?.[0]
@@ -339,11 +339,11 @@ function DirectionSelect({ value, options, onChange }: { value: string; options:
   )
 }
 
-function CodePane({ editor }: { editor: MermaidWysiwygEditor }) {
+function CodePane({ editor }: { editor: PeleWysiwygEditor }) {
   const ref = useRef<HTMLDivElement>(null)
   useEffect(() => {
     if (!ref.current) return
-    const cm = new MermaidCodeMirror(ref.current, editor)
+    const cm = new PeleCodeMirror(ref.current, editor)
     return () => cm.destroy()
   }, [editor])
   return <div className="codepane" ref={ref} />

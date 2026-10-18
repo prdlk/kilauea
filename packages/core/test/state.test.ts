@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { MermaidWysiwygEditor, parse } from '../src'
+import { PeleWysiwygEditor, parse } from '../src'
 
 const ST = `stateDiagram-v2
   [*] --> Still
@@ -47,7 +47,7 @@ describe('state parsing', () => {
 
 describe('state ops', () => {
   it('addState and connect', () => {
-    const ed = new MermaidWysiwygEditor({ code: ST })
+    const ed = new PeleWysiwygEditor({ code: ST })
     const res = ed.dispatch({ type: 'st.addState', label: 'Parked' })
     expect(res?.created).toEqual(['state:s1'])
     expect(ed.code).toContain('  s1: Parked')
@@ -57,7 +57,7 @@ describe('state ops', () => {
   })
 
   it('setStateLabel declares or edits a description', () => {
-    const ed = new MermaidWysiwygEditor({ code: ST })
+    const ed = new PeleWysiwygEditor({ code: ST })
     ed.dispatch({ type: 'st.setStateLabel', id: 'Still', label: 'Standing still' })
     expect(ed.code).toContain('  Still: Standing still')
     ed.dispatch({ type: 'st.setStateLabel', id: 'Still', label: 'At rest' })
@@ -66,7 +66,7 @@ describe('state ops', () => {
   })
 
   it('setTransitionLabel adds, edits, and removes', () => {
-    const ed = new MermaidWysiwygEditor({ code: ST })
+    const ed = new PeleWysiwygEditor({ code: ST })
     const t = ed.result.state!.transitions[2] // Still --> Moving
     ed.dispatch({ type: 'st.setTransitionLabel', transId: t.entityId, label: 'accelerate' })
     expect(ed.code).toContain('Still --> Moving: accelerate')
@@ -76,7 +76,7 @@ describe('state ops', () => {
   })
 
   it('deleteState removes declarations and touching transitions', () => {
-    const ed = new MermaidWysiwygEditor({ code: ST })
+    const ed = new PeleWysiwygEditor({ code: ST })
     ed.dispatch({ type: 'st.deleteState', id: 'Moving' })
     expect(ed.code).toBe(`stateDiagram-v2
   [*] --> Still
@@ -91,14 +91,14 @@ describe('state ops', () => {
     A --> B
   }
 `
-    const ed = new MermaidWysiwygEditor({ code })
+    const ed = new PeleWysiwygEditor({ code })
     const res = ed.dispatch({ type: 'st.deleteState', id: 'Config' })
     expect(res).toBeNull()
     expect(ed.code).toBe(code)
   })
 
   it('setDirection inserts or rewrites the direction statement', () => {
-    const ed = new MermaidWysiwygEditor({ code: ST })
+    const ed = new PeleWysiwygEditor({ code: ST })
     ed.dispatch({ type: 'st.setDirection', direction: 'LR' })
     expect(ed.code.split('\n')[1]).toBe('  direction LR')
     ed.dispatch({ type: 'st.setDirection', direction: 'BT' })

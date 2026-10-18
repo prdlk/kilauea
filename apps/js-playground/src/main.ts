@@ -1,5 +1,5 @@
 import {
-  MermaidWysiwygEditor,
+  PeleWysiwygEditor,
   DIAGRAM_TYPES,
   PARTICIPANT_TYPES,
   type ShapeId,
@@ -7,8 +7,8 @@ import {
   type EdgeArrow,
   type ParticipantType,
 } from '@kilauea/core'
-import { MermaidCanvasView, type Tool } from '@kilauea/dom'
-import { MermaidCodeMirror } from '@kilauea/codemirror'
+import { PeleCanvasView, type Tool } from '@kilauea/dom'
+import { PeleCodeMirror } from '@kilauea/codemirror'
 import { SAMPLES } from './samples'
 import './style.css'
 
@@ -106,9 +106,9 @@ function applyPalette(name: string) {
   for (const [k, v] of Object.entries(PALETTES[name] ?? PALETTES.dark)) canvasEl.style.setProperty(k, v)
 }
 
-let editor: MermaidWysiwygEditor
-let view: MermaidCanvasView
-let codePane: MermaidCodeMirror | null = null
+let editor: PeleWysiwygEditor
+let view: PeleCanvasView
+let codePane: PeleCodeMirror | null = null
 
 const SHAPES: Array<{ id: ShapeId; label: string }> = [
   { id: 'rect', label: 'Rectangle' },
@@ -246,7 +246,7 @@ function buildToolbar() {
     const autoBtn = document.createElement('button')
     const autoOn = () => editor.result.sequence?.autonumber.enabled ?? false
     autoBtn.textContent = '# Autonumber'
-    autoBtn.title = 'Toggle mermaid autonumber'
+    autoBtn.title = 'Toggle pele autonumber'
     autoBtn.className = autoOn() ? 'active' : ''
     autoBtn.addEventListener('click', () => editor.dispatch({ type: 'seq.toggleAutonumber' }))
     toolbarEl.appendChild(autoBtn)
@@ -431,8 +431,8 @@ function loadSample(index: number) {
   canvasEl.innerHTML = ''
   applyPalette(themeSel.value)
 
-  editor = new MermaidWysiwygEditor({ code: sample.code })
-  view = new MermaidCanvasView({
+  editor = new PeleWysiwygEditor({ code: sample.code })
+  view = new PeleCanvasView({
     editor,
     container: canvasEl,
     accentColor: accentInput.value,
@@ -457,7 +457,7 @@ function loadSample(index: number) {
   codePane?.destroy()
   const codeHost = $('#codepane')
   codeHost.innerHTML = ''
-  codePane = new MermaidCodeMirror(codeHost, editor)
+  codePane = new PeleCodeMirror(codeHost, editor)
 
   buildSidebar(index)
   buildToolbar()

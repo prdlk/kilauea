@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import type * as monaco from 'monaco-editor'
-import { MermaidWysiwygEditor } from '@kilauea/core'
+import { PeleWysiwygEditor } from '@kilauea/core'
 import {
   bindMonaco,
-  registerMermaidLanguage,
+  registerPeleLanguage,
   type MonacoDecorationsCollectionLike,
   type MonacoEditorLike,
   type MonacoModelLike,
@@ -116,7 +116,7 @@ function fakeMonaco(initial: string) {
 
 describe('bindMonaco', () => {
   it('applies engine ops to the model as minimal edits', () => {
-    const editor = new MermaidWysiwygEditor({ code: CODE })
+    const editor = new PeleWysiwygEditor({ code: CODE })
     const fake = fakeMonaco(editor.code)
     bindMonaco(editor, fake.editor)
     editor.dispatch({ type: 'renameNode', id: 'A', label: 'Begin' })
@@ -125,7 +125,7 @@ describe('bindMonaco', () => {
   })
 
   it('flows model edits into the engine without echoing back', () => {
-    const editor = new MermaidWysiwygEditor({ code: CODE })
+    const editor = new PeleWysiwygEditor({ code: CODE })
     const fake = fakeMonaco(editor.code)
     bindMonaco(editor, fake.editor)
     const pos = fake.text.indexOf('B[End]')
@@ -145,7 +145,7 @@ describe('bindMonaco', () => {
   })
 
   it('renders selection as decorations and reveals canvas selections', () => {
-    const editor = new MermaidWysiwygEditor({ code: CODE })
+    const editor = new PeleWysiwygEditor({ code: CODE })
     const fake = fakeMonaco(editor.code)
     bindMonaco(editor, fake.editor)
     editor.setSelection(['node:B'], 'canvas')
@@ -154,7 +154,7 @@ describe('bindMonaco', () => {
   })
 
   it('explicit caret moves select the entity; edit-driven moves do not', () => {
-    const editor = new MermaidWysiwygEditor({ code: CODE })
+    const editor = new PeleWysiwygEditor({ code: CODE })
     const fake = fakeMonaco(editor.code)
     bindMonaco(editor, fake.editor)
     fake.moveCursor(CODE.indexOf('A[Start]') + 1)
@@ -164,7 +164,7 @@ describe('bindMonaco', () => {
   })
 
   it('routes undo keys to the engine history', () => {
-    const editor = new MermaidWysiwygEditor({ code: CODE })
+    const editor = new PeleWysiwygEditor({ code: CODE })
     const fake = fakeMonaco(editor.code)
     bindMonaco(editor, fake.editor)
     editor.dispatch({ type: 'renameNode', id: 'A', label: 'Begin' })
@@ -175,7 +175,7 @@ describe('bindMonaco', () => {
   })
 
   it('dispose unhooks listeners and clears decorations', () => {
-    const editor = new MermaidWysiwygEditor({ code: CODE })
+    const editor = new PeleWysiwygEditor({ code: CODE })
     const fake = fakeMonaco(editor.code)
     const binding = bindMonaco(editor, fake.editor)
     editor.setSelection(['node:A'], 'canvas')
@@ -186,7 +186,7 @@ describe('bindMonaco', () => {
     expect(fake.text).toBe(CODE)
   })
 
-  it('registerMermaidLanguage is idempotent', () => {
+  it('registerPeleLanguage is idempotent', () => {
     const registered: string[] = []
     const ns: MonacoNamespaceLike = {
       languages: {
@@ -195,8 +195,8 @@ describe('bindMonaco', () => {
         setMonarchTokensProvider: () => {},
       },
     }
-    registerMermaidLanguage(ns)
-    registerMermaidLanguage(ns)
-    expect(registered).toEqual(['mermaid'])
+    registerPeleLanguage(ns)
+    registerPeleLanguage(ns)
+    expect(registered).toEqual(['pele'])
   })
 })

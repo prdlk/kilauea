@@ -11,7 +11,7 @@
 |------|-------------|
 | `package.json` | scripts `typecheck`/`build` (tsup)/`test` (vitest); only runtime dep is `@kilauea/core`; no peerDependencies |
 | `tsconfig.json` | extends base; `lib` ES2022 + DOM; includes `src` and `test` |
-| `README.md` | usage of `bindMonaco`, `registerMermaidLanguage`, `.mw-monaco-entity` CSS |
+| `README.md` | usage of `bindMonaco`, `registerPeleLanguage`, `.mw-monaco-entity` CSS |
 | `CHANGELOG.md` | changesets-generated |
 
 ## Subdirectories

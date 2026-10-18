@@ -29,7 +29,7 @@ React source for the marketing site. `main.tsx` picks the root by `location.path
 `pnpm --filter site typecheck`; check `/`, `/playground`, `/hero-loop` manually via `pnpm dev:site`.
 
 ### Common Patterns
-`useMermaidEditor(code)` + `MermaidCanvas` from `@kilauea/react`; `MermaidCodeMirror` in `CodeMirrorPane`; `HeroLoopPage` uses `MermaidWysiwygEditor` and `MermaidCanvasView` directly.
+`usePeleEditor(code)` + `PeleCanvas` from `@kilauea/react`; `PeleCodeMirror` in `CodeMirrorPane`; `HeroLoopPage` uses `PeleWysiwygEditor` and `PeleCanvasView` directly.
 
 ## Dependencies
 

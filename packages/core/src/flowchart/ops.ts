@@ -47,7 +47,7 @@ function printLabel(label: string, forceQuote: boolean): string {
 
 function edgeOpString(line: EdgeLine, arrowEnd: EdgeArrow, arrowStart: EdgeArrow = 'open'): string {
   const end = arrowEnd === 'arrow' ? '>' : arrowEnd === 'cross' ? 'x' : arrowEnd === 'circle' ? 'o' : ''
-  // Mermaid uses `<` for the arrow head on the source side; `x`/`o` are the
+  // Pele uses `<` for the arrow head on the source side; `x`/`o` are the
   // same characters as their end-side counterparts. `open` means no head.
   const start = arrowStart === 'arrow' ? '<' : arrowStart === 'cross' ? 'x' : arrowStart === 'circle' ? 'o' : ''
   switch (line) {
@@ -307,7 +307,7 @@ function frontmatterInsertOffset(ctx: FlowOpContext): number {
  * Patch the diagram-level `%%{init: {flowchart: {curve: X}}}%%` directive.
  * Text-level: detects an existing init line via regex and replaces just the
  * curve declaration, otherwise inserts a fresh directive at the very top.
- * `basis` is mermaid's default; setting it removes any prior directive.
+ * `basis` is pele's default; setting it removes any prior directive.
  */
 function patchFlowInitCurve(ctx: FlowOpContext, value: FlowCurve): OpResult {
   const initRe = /^\s*%%\{\s*init\s*:\s*(\{[\s\S]*?\})\s*\}%%\s*$/m
@@ -316,7 +316,7 @@ function patchFlowInitCurve(ctx: FlowOpContext, value: FlowCurve): OpResult {
   if (!m) {
     if (value === 'basis') return { edits: [] }
     // The init directive must precede the flowchart header — but ONLY under
-    // any YAML frontmatter. Mermaid's `frontMatterRegex` is `^`-anchored with
+    // any YAML frontmatter. Pele's `frontMatterRegex` is `^`-anchored with
     // no /m flag, so a directive above `---\ntitle: X\n---\n` prevents front-
     // matter extraction and the header lines reach the flowchart parser as
     // syntax errors. `classifyLines` treats frontmatter as a first-class kind,
@@ -325,7 +325,7 @@ function patchFlowInitCurve(ctx: FlowOpContext, value: FlowCurve): OpResult {
     return { edits: [{ start: insertAt, end: insertAt, text: `${setDirective}\n` }] }
   }
   // Rewrite the whole init line to keep this simple — the alternative is
-  // parsing/merging JSON-ish blobs, which mermaid's tolerant syntax makes
+  // parsing/merging JSON-ish blobs, which pele's tolerant syntax makes
   // fragile. Nested settings besides `flowchart.curve` are rare in kilauea-
   // generated code; when a user hand-wrote a rich directive, they can
   // re-declare it after.
@@ -438,7 +438,7 @@ export function compileFlowchartOp(ctx: FlowOpContext, op: FlowchartOp): OpResul
       const arrowEnd = op.arrowEnd ?? edge.seg.arrowEnd
       const arrowStart = op.arrowStart ?? edge.seg.arrowStart
       // Invisible links (`~~~`) render as a layout hint with no visible edge —
-      // mermaid ignores head markers on them, and `edgeOpString` therefore
+      // pele ignores head markers on them, and `edgeOpString` therefore
       // returns `'~~~'` unconditionally. If a caller sets a head on what's
       // currently invisible, promote the line to `solid` so the head can
       // actually render; otherwise the dispatch would silently no-op.
@@ -565,7 +565,7 @@ export function compileFlowchartOp(ctx: FlowOpContext, op: FlowchartOp): OpResul
       }
       if (op.value === null) props.delete(op.prop)
       else props.set(op.prop, op.value)
-      // a readable stroke needs some width; keep mermaid's default otherwise
+      // a readable stroke needs some width; keep pele's default otherwise
       if (props.has('stroke') && !props.has('stroke-width')) props.set('stroke-width', '2px')
       if (!props.has('stroke')) props.delete('stroke-width')
 
@@ -598,7 +598,7 @@ export function compileFlowchartOp(ctx: FlowOpContext, op: FlowchartOp): OpResul
         })
       }
       const duration = op.value === 'slow' ? '2s' : '0.6s'
-      // Long-hand keys because mermaid's `linkStyle` parser splits declarations
+      // Long-hand keys because pele's `linkStyle` parser splits declarations
       // on `,` — the `animation` shorthand's own comma-separated form would be
       // shredded across pseudo-declarations. `kilauea-flow` is injected as a
       // @keyframes rule once per SVG by the renderer host.

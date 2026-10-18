@@ -4,18 +4,18 @@
 **Generated:** 2026-10-17 · **Updated:** 2026-10-17
 
 ## Purpose
-Implementation of the CodeMirror 6 binding: the `MermaidCodeMirror` class and a StreamLanguage mermaid highlighter.
+Implementation of the CodeMirror 6 binding: the `PeleCodeMirror` class and a StreamLanguage pele highlighter.
 
 ## Key Files
 | File | Description |
 |------|-------------|
-| `index.ts` | `MermaidCodeMirror` class (`view`, `destroy()`), `highlightField` StateField, `setHighlights` StateEffect, `baseTheme`; re-exports `mermaidLanguage` |
-| `language.ts` | `mermaidLanguage()` → `[StreamLanguage, syntaxHighlighting(classHighlighter)]`; regexes `HEADERS`, `KEYWORDS`, `OPERATORS` |
+| `index.ts` | `PeleCodeMirror` class (`view`, `destroy()`), `highlightField` StateField, `setHighlights` StateEffect, `baseTheme`; re-exports `peleLanguage` |
+| `language.ts` | `peleLanguage()` → `[StreamLanguage, syntaxHighlighting(classHighlighter)]`; regexes `HEADERS`, `KEYWORDS`, `OPERATORS` |
 
 ## For AI Agents
 
 ### Working In This Directory
-- Public API: `MermaidCodeMirror(host, editor, extraExtensions = [])` and `mermaidLanguage()`. Only these are exported from `index.ts`.
+- Public API: `PeleCodeMirror(host, editor, extraExtensions = [])` and `peleLanguage()`. Only these are exported from `index.ts`.
 - Constructor order matters: the `EditorView` is built first with an `updateListener` that calls `this.binding.notifyTextChange()` on `docChanged`, else `notifyCaretMove(selection.main.head)` on `selectionSet`; `this.binding` is assigned afterwards via `bindTextPane` adapter (`getText`, `applyEdits`, `setText`, `setHighlights`, `revealPosition`).
 - `applyEdits` dispatches all edits in one transaction (`from/to/insert`) since core pre-sorts and clamps against the current text.
 - Highlights: the `highlightField` maps decorations through `tr.changes` and on `setHighlights` drops spans with `end > newDoc.length`; mark class is `mw-cm-entity`, themed with CSS var `--mw-accent` (default `#6366f1`) via `color-mix`.

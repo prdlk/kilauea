@@ -4,7 +4,7 @@
 **Generated:** 2026-10-17 · **Updated:** 2026-10-17
 
 ## Purpose
-`@kilauea/dom` (v1.1.3) is the interactive canvas. `MermaidCanvasView` renders synchronously through [pele](https://github.com/obsidianmd/pele) (a zero-dependency Mermaid renderer themed by `--pele-*` CSS variables), correlates the resulting SVG with `@kilauea/core`'s semantic graphs, and overlays selection, drag-to-connect, in-place label editing, popovers, keyboard editing and optional pan/zoom. Every gesture dispatches a core op; the view never edits text itself.
+`@kilauea/dom` (v1.1.3) is the interactive canvas. `PeleCanvasView` renders synchronously through [pele](https://github.com/obsidianmd/pele) (a zero-dependency Pele renderer themed by `--pele-*` CSS variables), correlates the resulting SVG with `@kilauea/core`'s semantic graphs, and overlays selection, drag-to-connect, in-place label editing, popovers, keyboard editing and optional pan/zoom. Every gesture dispatches a core op; the view never edits text itself.
 
 ## Key Files
 | File | Description |
@@ -23,8 +23,8 @@
 ## For AI Agents
 
 ### Working In This Directory
-- Public API is only `src/index.ts`: `MermaidCanvasView`, `ViewOptions`, `ViewHooks`, `Tool`, `correlateFlowchart`, `correlateSequence`, `Correlation`, `SequenceCorrelation`, `Popover`, `PopoverAction`, `PopoverPanelItem`. Other correlators (`correlateState/Class/Er/Pie/Gantt/LineItems`) are internal to the package. Adding a public symbol means editing `index.ts` and a changeset (all five @kilauea packages are in a `fixed` group).
-- Rendering is `pele` (a hard dependency). `ViewOptions.renderOptions` (pele `RenderOptions`, re-exported from the barrel) / `setRenderOptions` / `refresh` configure it; colors are `--pele-*` CSS variables on the container or an ancestor, never render options. Don't reintroduce a consumer-supplied renderer or `mermaid` import.
+- Public API is only `src/index.ts`: `PeleCanvasView`, `ViewOptions`, `ViewHooks`, `Tool`, `correlateFlowchart`, `correlateSequence`, `Correlation`, `SequenceCorrelation`, `Popover`, `PopoverAction`, `PopoverPanelItem`. Other correlators (`correlateState/Class/Er/Pie/Gantt/LineItems`) are internal to the package. Adding a public symbol means editing `index.ts` and a changeset (all five @kilauea packages are in a `fixed` group).
+- Rendering is `pele` (a hard dependency). `ViewOptions.renderOptions` (pele `RenderOptions`, re-exported from the barrel) / `setRenderOptions` / `refresh` configure it; colors are `--pele-*` CSS variables on the container or an ancestor, never render options. Don't reintroduce a consumer-supplied renderer or `pele` import.
 - `sideEffects: false`, but `view.ts` injects one `<style data-mw>` into `document.head` lazily (module flag `styleInjected`).
 
 ### Testing Requirements

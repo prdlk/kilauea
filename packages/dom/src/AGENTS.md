@@ -4,13 +4,13 @@
 **Generated:** 2026-10-17 · **Updated:** 2026-10-17
 
 ## Purpose
-Source of the canvas: the 2.7k-line `MermaidCanvasView` controller, per-diagram SVG correlators, a floating popover and inline Lucide icons.
+Source of the canvas: the 2.7k-line `PeleCanvasView` controller, per-diagram SVG correlators, a floating popover and inline Lucide icons.
 
 ## Key Files
 | File | Description |
 |------|-------------|
 | `index.ts` | 3-line barrel; the entire public surface |
-| `view.ts` | `MermaidCanvasView`, `ViewOptions` (incl. pele `renderOptions`), `ViewHooks`, `Tool`, `COLOR_PALETTE`, BASE_CSS, edge SVG-preview helpers (`arrowHeadSvg`, `strokeSvg`, `curveSvg`, `animSvg`), label caret helpers, popover `actionsFor` per entity kind, lifeline "+" UI for sequence diagrams |
+| `view.ts` | `PeleCanvasView`, `ViewOptions` (incl. pele `renderOptions`), `ViewHooks`, `Tool`, `COLOR_PALETTE`, BASE_CSS, edge SVG-preview helpers (`arrowHeadSvg`, `strokeSvg`, `curveSvg`, `animSvg`), label caret helpers, popover `actionsFor` per entity kind, lifeline "+" UI for sequence diagrams |
 | `correlate.ts` | `correlateFlowchart/State/Class/Er/Pie/Gantt/LineItems/Sequence`, `addEdgeHitOverlay` |
 | `popover.ts` | `Popover` class (`show`, `hide`, `isOpen`), `PopoverAction/Panel/PanelSection/PanelItem`, `POPOVER_CSS` |
 | `icons.ts` | `ICONS` map of inline Lucide SVG strings (trash, pencil, palette, copy, shapes, arrows, group, plus/minus/maximize, …) |

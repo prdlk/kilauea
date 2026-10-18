@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { MermaidWysiwygEditor, parse } from '../src'
+import { PeleWysiwygEditor, parse } from '../src'
 
 const ER = `erDiagram
   CUSTOMER ||--o{ ORDER : places
@@ -31,7 +31,7 @@ describe('pie', () => {
   "Dogs" : 42
   "Cats" : 15
 `
-    const ed = new MermaidWysiwygEditor({ code })
+    const ed = new PeleWysiwygEditor({ code })
     expect(ed.result.typeInfo?.id).toBe('pie')
     const g = ed.result.pie!
     expect(g.showData).toBe(true)
@@ -60,7 +60,7 @@ describe('gantt', () => {
   section Ship
     Release :2026-01-20, 2d
 `
-    const ed = new MermaidWysiwygEditor({ code })
+    const ed = new PeleWysiwygEditor({ code })
     expect(ed.result.typeInfo?.id).toBe('gantt')
     const g = ed.result.gantt!
     expect(g.tasks.map((t) => `${t.section}/${t.name}`)).toEqual(['Build/Design', 'Build/Implement', 'Ship/Release'])
@@ -80,7 +80,7 @@ describe('gantt', () => {
 
 describe('er ops', () => {
   it('addEntity, connect, addAttribute', () => {
-    const ed = new MermaidWysiwygEditor({ code: ER })
+    const ed = new PeleWysiwygEditor({ code: ER })
     const res = ed.dispatch({ type: 'er.addEntity' })
     expect(res?.created).toEqual(['entity:ENTITY1'])
     expect(ed.code).toContain('  ENTITY1 {\n    string id\n  }')
@@ -91,7 +91,7 @@ describe('er ops', () => {
   })
 
   it('setCardinality and setIdentifying rewrite glyphs in place', () => {
-    const ed = new MermaidWysiwygEditor({ code: ER })
+    const ed = new PeleWysiwygEditor({ code: ER })
     const rel = ed.result.er!.relations[0]
     ed.dispatch({ type: 'er.setCardinality', relId: rel.entityId, side: 'left', card: 'zero-or-more' })
     expect(ed.code).toContain('CUSTOMER }o--o{ ORDER : places')
@@ -101,7 +101,7 @@ describe('er ops', () => {
   })
 
   it('setAttributeText rewrites or deletes an attribute row', () => {
-    const ed = new MermaidWysiwygEditor({ code: ER })
+    const ed = new PeleWysiwygEditor({ code: ER })
     const cust = ed.result.er!.entityById.get('CUSTOMER')!
     ed.dispatch({ type: 'er.setAttributeText', id: 'CUSTOMER', attrLine: cust.attributes[1].lineIndex, text: 'int custNumber PK "unique"' })
     expect(ed.code).toContain('    int custNumber PK "unique"')
@@ -111,14 +111,14 @@ describe('er ops', () => {
   })
 
   it('renameEntity rewrites decl and relations', () => {
-    const ed = new MermaidWysiwygEditor({ code: ER })
+    const ed = new PeleWysiwygEditor({ code: ER })
     ed.dispatch({ type: 'er.renameEntity', id: 'CUSTOMER', name: 'CLIENT' })
     expect(ed.code).toContain('CLIENT ||--o{ ORDER : places')
     expect(ed.code).toContain('CLIENT {')
   })
 
   it('deleteEntity removes block and touching relations', () => {
-    const ed = new MermaidWysiwygEditor({ code: ER })
+    const ed = new PeleWysiwygEditor({ code: ER })
     ed.dispatch({ type: 'er.deleteEntity', id: 'CUSTOMER' })
     expect(ed.code).toBe(`erDiagram
   ORDER ||--|{ LINE-ITEM : contains

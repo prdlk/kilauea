@@ -1,14 +1,14 @@
 # @kilauea/core
 
-Headless bidirectional editing engine for [Mermaid](https://mermaid.js.org) diagrams.
+Headless bidirectional editing engine for [Pele](https://mermaid.js.org) diagrams.
 Text is the source of truth: a lossless CST and per-type semantic graphs turn visual
 operations (rename, connect, reorder, restyle) into **minimal text edits** against your
-actual Mermaid source. Zero DOM dependencies.
+actual Pele source. Zero DOM dependencies.
 
 ```ts
-import { MermaidWysiwygEditor } from '@kilauea/core'
+import { PeleWysiwygEditor } from '@kilauea/core'
 
-const editor = new MermaidWysiwygEditor({ code: 'flowchart TD\n  A --> B' })
+const editor = new PeleWysiwygEditor({ code: 'flowchart TD\n  A --> B' })
 editor.dispatch({ type: 'renameNode', id: 'A', label: 'Start' })
 editor.code // 'flowchart TD\n  A[Start] --> B'
 editor.undo()

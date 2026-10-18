@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { MermaidWysiwygEditor } from '@kilauea/core'
+import { PeleWysiwygEditor } from '@kilauea/core'
 import { render } from 'pele'
 import type * as Pele from 'pele'
-import { MermaidCanvasView } from '../src'
+import { PeleCanvasView } from '../src'
 
 vi.mock('pele', async (importOriginal) => {
   const actual = await importOriginal<typeof Pele>()
@@ -56,14 +56,14 @@ async function flush() {
  * view renders once more when the document's fonts settle — and only then.
  */
 describe('re-measures when the document fonts land after the first render', () => {
-  let editor: MermaidWysiwygEditor
+  let editor: PeleWysiwygEditor
   let container: HTMLElement
-  let view: MermaidCanvasView | null
+  let view: PeleCanvasView | null
 
   beforeEach(() => {
     vi.useFakeTimers()
     vi.mocked(render).mockClear()
-    editor = new MermaidWysiwygEditor({ code: CODE })
+    editor = new PeleWysiwygEditor({ code: CODE })
     container = document.createElement('div')
     document.body.appendChild(container)
     view = null
@@ -79,7 +79,7 @@ describe('re-measures when the document fonts land after the first render', () =
 
   it('re-renders once the fonts finish loading', async () => {
     const fonts = installFontFaceSet('loading')
-    view = new MermaidCanvasView({ editor, container, debounceMs: 0 })
+    view = new PeleCanvasView({ editor, container, debounceMs: 0 })
     expect(renders()).toEqual([CODE])
 
     fonts.settle()
@@ -92,7 +92,7 @@ describe('re-measures when the document fonts land after the first render', () =
 
   it('does not keep re-rendering after the fonts have settled', async () => {
     const fonts = installFontFaceSet('loading')
-    view = new MermaidCanvasView({ editor, container, debounceMs: 0 })
+    view = new PeleCanvasView({ editor, container, debounceMs: 0 })
     fonts.settle()
     await flush()
     await flush()
@@ -102,7 +102,7 @@ describe('re-measures when the document fonts land after the first render', () =
 
   it('arms only one re-measure when several renders land before the fonts do', async () => {
     const fonts = installFontFaceSet('loading')
-    view = new MermaidCanvasView({ editor, container, debounceMs: 0 })
+    view = new PeleCanvasView({ editor, container, debounceMs: 0 })
 
     // a second render while the fonts are still loading: new options, say
     view.setRenderOptions({ padding: 4 })
@@ -118,7 +118,7 @@ describe('re-measures when the document fonts land after the first render', () =
 
   it('does not re-render when the fonts were already available', async () => {
     installFontFaceSet('loaded')
-    view = new MermaidCanvasView({ editor, container, debounceMs: 0 })
+    view = new PeleCanvasView({ editor, container, debounceMs: 0 })
     await flush()
 
     expect(renders()).toEqual([CODE])
@@ -126,7 +126,7 @@ describe('re-measures when the document fonts land after the first render', () =
 
   it('renders normally where the document exposes no font set', async () => {
     Object.defineProperty(document, 'fonts', { value: undefined, configurable: true, writable: true })
-    view = new MermaidCanvasView({ editor, container, debounceMs: 0 })
+    view = new PeleCanvasView({ editor, container, debounceMs: 0 })
     await flush()
 
     expect(renders()).toEqual([CODE])
@@ -134,7 +134,7 @@ describe('re-measures when the document fonts land after the first render', () =
 
   it('does not re-render a destroyed view when the fonts land late', async () => {
     const fonts = installFontFaceSet('loading')
-    view = new MermaidCanvasView({ editor, container, debounceMs: 0 })
+    view = new PeleCanvasView({ editor, container, debounceMs: 0 })
     view.destroy()
     view = null
 

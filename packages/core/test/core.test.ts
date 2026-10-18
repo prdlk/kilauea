@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { MermaidWysiwygEditor, parse, scanLines, DIAGRAM_TYPES, detectDiagramType } from '../src'
+import { PeleWysiwygEditor, parse, scanLines, DIAGRAM_TYPES, detectDiagramType } from '../src'
 
 const FLOW = `flowchart TD
   %% happy path
@@ -99,7 +99,7 @@ describe('flowchart parsing', () => {
   it('treats unparseable lines as unknown without failing the document', () => {
     const code = `flowchart LR
   A --> B
-  this is @@ not $$ mermaid !!!
+  this is @@ not $$ pele !!!
   B --> C
 `
     const g = parse(code).flowchart!
@@ -123,7 +123,7 @@ describe('flowchart parsing', () => {
 
 describe('ops → minimal text edits', () => {
   it('connect inserts a single line after last reference', () => {
-    const ed = new MermaidWysiwygEditor({ code: FLOW })
+    const ed = new PeleWysiwygEditor({ code: FLOW })
     ed.dispatch({ type: 'connect', source: 'B', target: 'D', label: 'no' })
     expect(ed.code).toBe(`flowchart TD
   %% happy path
@@ -135,14 +135,14 @@ describe('ops → minimal text edits', () => {
   })
 
   it('addNode uses the document letter convention', () => {
-    const ed = new MermaidWysiwygEditor({ code: FLOW })
+    const ed = new PeleWysiwygEditor({ code: FLOW })
     const res = ed.dispatch({ type: 'addNode', label: 'Retry', shape: 'round' })
     expect(res?.created).toEqual(['node:E'])
     expect(ed.code).toContain('  E(Retry)')
   })
 
   it('renameNode edits the label in place and quotes when needed', () => {
-    const ed = new MermaidWysiwygEditor({ code: FLOW })
+    const ed = new PeleWysiwygEditor({ code: FLOW })
     ed.dispatch({ type: 'renameNode', id: 'A', label: 'Begin here' })
     expect(ed.code).toContain('A[Begin here] --> B{Valid?}')
     ed.dispatch({ type: 'renameNode', id: 'A', label: 'Begin (now)' })
@@ -150,13 +150,13 @@ describe('ops → minimal text edits', () => {
   })
 
   it('renameNode declares label on implicit nodes', () => {
-    const ed = new MermaidWysiwygEditor({ code: 'flowchart LR\n  A --> B\n' })
+    const ed = new PeleWysiwygEditor({ code: 'flowchart LR\n  A --> B\n' })
     ed.dispatch({ type: 'renameNode', id: 'B', label: 'The End' })
     expect(ed.code).toBe('flowchart LR\n  A --> B[The End]\n')
   })
 
   it('setEdgeLabel adds and edits pipe labels', () => {
-    const ed = new MermaidWysiwygEditor({ code: 'flowchart LR\n  A --> B\n' })
+    const ed = new PeleWysiwygEditor({ code: 'flowchart LR\n  A --> B\n' })
     const edgeId = ed.result.flowchart!.edges[0].entityId
     ed.dispatch({ type: 'setEdgeLabel', edgeId, label: 'go' })
     expect(ed.code).toBe('flowchart LR\n  A -->|go| B\n')
@@ -166,7 +166,7 @@ describe('ops → minimal text edits', () => {
   })
 
   it('deleteEdge preserves node declarations that live on the same line', () => {
-    const ed = new MermaidWysiwygEditor({ code: 'flowchart LR\n  A[Start] --> B\n  B --> C\n' })
+    const ed = new PeleWysiwygEditor({ code: 'flowchart LR\n  A[Start] --> B\n  B --> C\n' })
     const edgeId = ed.result.flowchart!.edges[0].entityId
     ed.dispatch({ type: 'deleteEdge', edgeId })
     expect(ed.code).toBe('flowchart LR\n  A[Start]\n  B --> C\n')
@@ -179,7 +179,7 @@ describe('ops → minimal text edits', () => {
   class B,C important
   style B fill:#f00
 `
-    const ed = new MermaidWysiwygEditor({ code })
+    const ed = new PeleWysiwygEditor({ code })
     ed.dispatch({ type: 'deleteNode', id: 'B' })
     // A, C keep their declarations; D survives as an isolated node
     expect(ed.code).toBe(`flowchart LR
@@ -191,19 +191,19 @@ describe('ops → minimal text edits', () => {
   })
 
   it('setDirection edits the header token', () => {
-    const ed = new MermaidWysiwygEditor({ code: FLOW })
+    const ed = new PeleWysiwygEditor({ code: FLOW })
     ed.dispatch({ type: 'setDirection', direction: 'LR' })
     expect(ed.code.startsWith('flowchart LR\n')).toBe(true)
   })
 
   it('setNodeShape rewrites delimiters keeping the label', () => {
-    const ed = new MermaidWysiwygEditor({ code: FLOW })
+    const ed = new PeleWysiwygEditor({ code: FLOW })
     ed.dispatch({ type: 'setNodeShape', id: 'C', shape: 'stadium' })
     expect(ed.code).toContain('C([Process])')
   })
 
   it('setNodeColor manages a style statement (add, merge, clear)', () => {
-    const ed = new MermaidWysiwygEditor({ code: FLOW })
+    const ed = new PeleWysiwygEditor({ code: FLOW })
     ed.dispatch({ type: 'setNodeColor', id: 'A', prop: 'fill', value: '#ef4444' })
     expect(ed.code).toContain('style A fill:#ef4444')
     ed.dispatch({ type: 'setNodeColor', id: 'A', prop: 'stroke', value: '#22c55e' })
@@ -223,24 +223,24 @@ describe('ops → minimal text edits', () => {
   linkStyle 2 stroke:#0f0,stroke-width:2px
 `
     // deleting edge 0 shifts both styles down
-    const ed = new MermaidWysiwygEditor({ code })
+    const ed = new PeleWysiwygEditor({ code })
     ed.dispatch({ type: 'deleteEdge', edgeId: ed.result.flowchart!.edges[0].entityId })
     expect(ed.code).toContain('linkStyle 0 stroke:#f00')
     expect(ed.code).toContain('linkStyle 1 stroke:#0f0')
     // deleting the styled edge drops its linkStyle line
-    const ed2 = new MermaidWysiwygEditor({ code })
+    const ed2 = new PeleWysiwygEditor({ code })
     ed2.dispatch({ type: 'deleteEdge', edgeId: ed2.result.flowchart!.edges[1].entityId })
     expect(ed2.code).not.toContain('#f00')
     expect(ed2.code).toContain('linkStyle 1 stroke:#0f0')
     // inserting an edge mid-order (after B's last ref, before C-->D) shifts later styles up
-    const ed3 = new MermaidWysiwygEditor({ code })
+    const ed3 = new PeleWysiwygEditor({ code })
     ed3.dispatch({ type: 'connect', source: 'A', target: 'B' })
     expect(ed3.code).toContain('linkStyle 1 stroke:#f00')
     expect(ed3.code).toContain('linkStyle 3 stroke:#0f0')
   })
 
   it('setEdgeColor manages a linkStyle statement by edge order', () => {
-    const ed = new MermaidWysiwygEditor({ code: FLOW })
+    const ed = new PeleWysiwygEditor({ code: FLOW })
     const second = ed.result.flowchart!.edges[1]
     ed.dispatch({ type: 'setEdgeColor', edgeId: second.entityId, value: '#06b6d4' })
     expect(ed.code).toContain('linkStyle 1 stroke:#06b6d4,stroke-width:2px')
@@ -250,7 +250,7 @@ describe('ops → minimal text edits', () => {
   })
 
   it('setEdgeStyle round-trips arrowStart for the double-headed arrow', () => {
-    const ed = new MermaidWysiwygEditor({ code: 'flowchart LR\n  A --> B\n' })
+    const ed = new PeleWysiwygEditor({ code: 'flowchart LR\n  A --> B\n' })
     const edgeId = ed.result.flowchart!.edges[0].entityId
     ed.dispatch({ type: 'setEdgeStyle', edgeId, arrowStart: 'arrow', arrowEnd: 'arrow' })
     expect(ed.code).toBe('flowchart LR\n  A <--> B\n')
@@ -261,24 +261,24 @@ describe('ops → minimal text edits', () => {
   })
 
   it('setEdgeStyle preserves label + line when only heads change', () => {
-    const ed = new MermaidWysiwygEditor({ code: 'flowchart LR\n  A -.->|maybe| B\n' })
+    const ed = new PeleWysiwygEditor({ code: 'flowchart LR\n  A -.->|maybe| B\n' })
     const edgeId = ed.result.flowchart!.edges[0].entityId
     ed.dispatch({ type: 'setEdgeStyle', edgeId, arrowStart: 'circle', arrowEnd: 'circle' })
     expect(ed.code).toBe('flowchart LR\n  A o-.-o|maybe| B\n')
   })
 
   it('setEdgeStyle emits x on both ends for cross/cross', () => {
-    const ed = new MermaidWysiwygEditor({ code: 'flowchart LR\n  A --> B\n' })
+    const ed = new PeleWysiwygEditor({ code: 'flowchart LR\n  A --> B\n' })
     const edgeId = ed.result.flowchart!.edges[0].entityId
     ed.dispatch({ type: 'setEdgeStyle', edgeId, arrowStart: 'cross', arrowEnd: 'cross' })
     expect(ed.code).toBe('flowchart LR\n  A x--x B\n')
   })
 
   it('setEdgeStyle promotes an invisible link to solid when a head is added', () => {
-    // Mermaid ignores head markers on `~~~` links, so without the promotion
+    // Pele ignores head markers on `~~~` links, so without the promotion
     // the dispatch would silently no-op and the picker would appear to
     // accept an option that never landed.
-    const ed = new MermaidWysiwygEditor({ code: 'flowchart LR\n  A ~~~ B\n' })
+    const ed = new PeleWysiwygEditor({ code: 'flowchart LR\n  A ~~~ B\n' })
     const edgeId = ed.result.flowchart!.edges[0].entityId
     ed.dispatch({ type: 'setEdgeStyle', edgeId, arrowEnd: 'arrow' })
     expect(ed.code).toBe('flowchart LR\n  A --> B\n')
@@ -288,14 +288,14 @@ describe('ops → minimal text edits', () => {
     // Pins the load-bearing arrowStart pass-through in the empty-label
     // rewrite path — reverting to the 2-arg edgeOpString call would silently
     // drop `<` and regress `<-->` to `-->`.
-    const ed = new MermaidWysiwygEditor({ code: 'flowchart LR\n  A <-->|go| B\n' })
+    const ed = new PeleWysiwygEditor({ code: 'flowchart LR\n  A <-->|go| B\n' })
     const edgeId = ed.result.flowchart!.edges[0].entityId
     ed.dispatch({ type: 'setEdgeLabel', edgeId, label: '' })
     expect(ed.code).toBe('flowchart LR\n  A <--> B\n')
   })
 
   it('setEdgeAnimation merges onto an existing colored linkStyle without dropping the color', () => {
-    const ed = new MermaidWysiwygEditor({ code: 'flowchart LR\n  A --> B\n' })
+    const ed = new PeleWysiwygEditor({ code: 'flowchart LR\n  A --> B\n' })
     const edgeId = ed.result.flowchart!.edges[0].entityId
     ed.dispatch({ type: 'setEdgeColor', edgeId, value: '#06b6d4' })
     const edgeId2 = ed.result.flowchart!.edges[0].entityId
@@ -310,7 +310,7 @@ describe('ops → minimal text edits', () => {
     // Inverse direction of the merge test above — pins symmetry of
     // patchEdgeLinkStyle so a future rewrite that made writes order-
     // dependent would trip both cases.
-    const ed = new MermaidWysiwygEditor({ code: 'flowchart LR\n  A --> B\n' })
+    const ed = new PeleWysiwygEditor({ code: 'flowchart LR\n  A --> B\n' })
     const edgeId = ed.result.flowchart!.edges[0].entityId
     ed.dispatch({ type: 'setEdgeAnimation', edgeId, value: 'fast' })
     const edgeId2 = ed.result.flowchart!.edges[0].entityId
@@ -321,7 +321,7 @@ describe('ops → minimal text edits', () => {
   })
 
   it('setEdgeAnimation adds/updates/clears the linkStyle animation keys', () => {
-    const ed = new MermaidWysiwygEditor({ code: 'flowchart LR\n  A --> B\n' })
+    const ed = new PeleWysiwygEditor({ code: 'flowchart LR\n  A --> B\n' })
     const edgeId = ed.result.flowchart!.edges[0].entityId
     ed.dispatch({ type: 'setEdgeAnimation', edgeId, value: 'slow' })
     expect(ed.code).toContain('linkStyle 0 ')
@@ -342,9 +342,9 @@ describe('ops → minimal text edits', () => {
 
   it('setFlowCurve preserves YAML frontmatter — directive lands after the closing ---', () => {
     const code = '---\ntitle: My Diagram\n---\nflowchart LR\n  A --> B\n'
-    const ed = new MermaidWysiwygEditor({ code })
+    const ed = new PeleWysiwygEditor({ code })
     ed.dispatch({ type: 'setFlowCurve', value: 'linear' })
-    // frontmatter must still be at the very start so mermaid's ^-anchored
+    // frontmatter must still be at the very start so pele's ^-anchored
     // frontMatterRegex can extract it; directive sits between frontmatter
     // and the flowchart header
     expect(ed.code.startsWith('---\ntitle: My Diagram\n---\n')).toBe(true)
@@ -355,7 +355,7 @@ describe('ops → minimal text edits', () => {
   })
 
   it('setFlowCurve inserts and replaces the init directive; basis removes it', () => {
-    const ed = new MermaidWysiwygEditor({ code: 'flowchart LR\n  A --> B\n' })
+    const ed = new PeleWysiwygEditor({ code: 'flowchart LR\n  A --> B\n' })
     ed.dispatch({ type: 'setFlowCurve', value: 'linear' })
     expect(ed.code).toContain("%%{init: {'flowchart': {'curve': 'linear'}}}%%")
     ed.dispatch({ type: 'setFlowCurve', value: 'natural' })
@@ -363,7 +363,7 @@ describe('ops → minimal text edits', () => {
     expect(ed.code).not.toContain("'curve': 'linear'")
     // one directive, still parseable
     expect(ed.result.flowchart!.edges.length).toBe(1)
-    // basis is the mermaid default: clear the directive
+    // basis is the pele default: clear the directive
     ed.dispatch({ type: 'setFlowCurve', value: 'basis' })
     expect(ed.code).not.toContain('%%{init')
   })
@@ -371,7 +371,7 @@ describe('ops → minimal text edits', () => {
 
 describe('editor state', () => {
   it('undo/redo restores exact text across both surfaces', () => {
-    const ed = new MermaidWysiwygEditor({ code: FLOW })
+    const ed = new PeleWysiwygEditor({ code: FLOW })
     ed.dispatch({ type: 'connect', source: 'B', target: 'D' })
     ed.setCode(ed.code.replace('Start', 'Begin'), 'code')
     const afterBoth = ed.code
@@ -384,7 +384,7 @@ describe('editor state', () => {
   })
 
   it('selection survives unrelated code edits and prunes on delete', () => {
-    const ed = new MermaidWysiwygEditor({ code: FLOW })
+    const ed = new PeleWysiwygEditor({ code: FLOW })
     ed.setSelection(['node:C'])
     ed.setCode(ed.code.replace('Start', 'Begin'), 'code')
     expect(ed.selection).toEqual(['node:C'])
@@ -393,7 +393,7 @@ describe('editor state', () => {
   })
 
   it('entityAt maps code offsets to entities', () => {
-    const ed = new MermaidWysiwygEditor({ code: FLOW })
+    const ed = new PeleWysiwygEditor({ code: FLOW })
     const offset = ed.code.indexOf('B{Valid?}') + 1
     expect(ed.entityAt(offset)).toBe('node:B')
   })

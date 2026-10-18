@@ -28,7 +28,7 @@ Vitest suites for `@kilauea/core`. They import from `../src` and exercise parsin
 `pnpm --filter @kilauea/core test` (runs `vitest run` over all files); run one file with `pnpm --filter @kilauea/core exec vitest run test/class.test.ts`. `pnpm --filter @kilauea/core typecheck` also checks `test/` (tsconfig includes it).
 
 ### Common Patterns
-Construct `new MermaidWysiwygEditor({ code })`, call `editor.dispatch({ type: ... })`, assert on `editor.code`; parsing tests use `parse(code)` and inspect the `ParseResult` graph fields (`flowchart`, `sequence`, `state`, `classGraph`, `er`, `pie`, `gantt`, `lineItems`).
+Construct `new PeleWysiwygEditor({ code })`, call `editor.dispatch({ type: ... })`, assert on `editor.code`; parsing tests use `parse(code)` and inspect the `ParseResult` graph fields (`flowchart`, `sequence`, `state`, `classGraph`, `er`, `pie`, `gantt`, `lineItems`).
 
 ## Dependencies
 

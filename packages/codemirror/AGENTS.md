@@ -4,14 +4,14 @@
 **Generated:** 2026-10-17 · **Updated:** 2026-10-17
 
 ## Purpose
-`@kilauea/codemirror` (v1.1.3): CodeMirror 6 pane for kilauea. It is the reference implementation of core's `bindTextPane` adapter: two-way code sync, entity highlight decorations, caret → entity selection, mermaid syntax highlighting, and undo routed to the engine's unified history.
+`@kilauea/codemirror` (v1.1.3): CodeMirror 6 pane for kilauea. It is the reference implementation of core's `bindTextPane` adapter: two-way code sync, entity highlight decorations, caret → entity selection, pele syntax highlighting, and undo routed to the engine's unified history.
 
 ## Key Files
 | File | Description |
 |------|-------------|
 | `package.json` | scripts `typecheck`/`build` (tsup esm+dts)/`test` (vitest); `main`/`types` point at `src/index.ts`, `publishConfig` swaps to `dist` |
 | `tsconfig.json` | extends `../../tsconfig.base.json` |
-| `README.md` | usage: `new MermaidCodeMirror(hostElement, editor)` |
+| `README.md` | usage: `new PeleCodeMirror(hostElement, editor)` |
 | `CHANGELOG.md` | changesets-generated; version moves in lockstep (fixed group) |
 
 ## Subdirectories
@@ -36,7 +36,7 @@ Thin adapter over `bindTextPane`; all sync logic lives in core.
 ## Dependencies
 
 ### Internal
-`@kilauea/core` (`bindTextPane`, `MermaidWysiwygEditor`, `Span`, `TextPaneBinding`).
+`@kilauea/core` (`bindTextPane`, `PeleWysiwygEditor`, `Span`, `TextPaneBinding`).
 
 ### External
 Peers: `@codemirror/commands ^6.6.1`, `@codemirror/language ^6.10.3`, `@codemirror/state ^6.4.1`, `@codemirror/view ^6.34.1`, `@lezer/highlight ^1.2.1`. Dev: `vitest ^2.1.9`, `jsdom ^25.0.1`, `typescript ^5.6.3`.

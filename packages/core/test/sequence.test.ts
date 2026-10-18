@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { MermaidWysiwygEditor, parse } from '../src'
+import { PeleWysiwygEditor, parse } from '../src'
 
 const SEQ = `sequenceDiagram
   participant Alice
@@ -45,7 +45,7 @@ describe('sequence parsing', () => {
 
 describe('sequence ops', () => {
   it('setParticipantType swaps keyword and attrs', () => {
-    const ed = new MermaidWysiwygEditor({ code: SEQ })
+    const ed = new PeleWysiwygEditor({ code: SEQ })
     ed.dispatch({ type: 'seq.setParticipantType', id: 'Alice', ptype: 'actor' })
     expect(ed.code).toContain('actor Alice')
     ed.dispatch({ type: 'seq.setParticipantType', id: 'Alice', ptype: 'database' })
@@ -56,7 +56,7 @@ describe('sequence ops', () => {
   })
 
   it('addMessage inserts after a given event (lifeline + insertion point)', () => {
-    const ed = new MermaidWysiwygEditor({ code: SEQ })
+    const ed = new PeleWysiwygEditor({ code: SEQ })
     const first = ed.result.sequence!.events[0]
     ed.dispatch({ type: 'seq.addMessage', source: 'Alice', target: 'Alice', afterEvent: first.entityId, text: 'self check' })
     const lines = ed.code.split('\n')
@@ -65,7 +65,7 @@ describe('sequence ops', () => {
   })
 
   it('addNote and toggleAutonumber', () => {
-    const ed = new MermaidWysiwygEditor({ code: SEQ })
+    const ed = new PeleWysiwygEditor({ code: SEQ })
     ed.dispatch({ type: 'seq.addNote', participant: 'Bob', placement: 'right of', text: 'hmm' })
     expect(ed.code).toContain('Note right of Bob: hmm')
     ed.dispatch({ type: 'seq.toggleAutonumber' })
@@ -75,7 +75,7 @@ describe('sequence ops', () => {
   })
 
   it('setMessageOp and reverseMessage rewrite in place', () => {
-    const ed = new MermaidWysiwygEditor({ code: SEQ })
+    const ed = new PeleWysiwygEditor({ code: SEQ })
     const first = ed.result.sequence!.events[0]
     ed.dispatch({ type: 'seq.setMessageOp', eventId: first.entityId, op: '--x' })
     expect(ed.code).toContain('Alice--xBob: Hello Bob')
@@ -85,7 +85,7 @@ describe('sequence ops', () => {
   })
 
   it('setEventText edits message and note text', () => {
-    const ed = new MermaidWysiwygEditor({ code: SEQ })
+    const ed = new PeleWysiwygEditor({ code: SEQ })
     const note = ed.result.sequence!.events[2]
     ed.dispatch({ type: 'seq.setEventText', eventId: note.entityId, text: 'pondering deeply' })
     expect(ed.code).toContain('Note over Alice: pondering deeply')
@@ -101,7 +101,7 @@ describe('sequence ops', () => {
   activate A
   deactivate A
 `
-    const ed = new MermaidWysiwygEditor({ code })
+    const ed = new PeleWysiwygEditor({ code })
     ed.dispatch({ type: 'seq.deleteParticipant', id: 'A' })
     expect(ed.code).toBe(`sequenceDiagram
   participant B
@@ -110,7 +110,7 @@ describe('sequence ops', () => {
   })
 
   it('renameParticipant rewrites all reference sites', () => {
-    const ed = new MermaidWysiwygEditor({ code: SEQ })
+    const ed = new PeleWysiwygEditor({ code: SEQ })
     ed.dispatch({ type: 'seq.renameParticipant', id: 'Bob', name: 'Robert' })
     expect(ed.code).toContain('actor Robert')
     expect(ed.code).toContain('Alice->>Robert: Hello Bob')
@@ -118,7 +118,7 @@ describe('sequence ops', () => {
   })
 
   it('addParticipant declares after the last declaration', () => {
-    const ed = new MermaidWysiwygEditor({ code: SEQ })
+    const ed = new PeleWysiwygEditor({ code: SEQ })
     const res = ed.dispatch({ type: 'seq.addParticipant', ptype: 'queue' })
     expect(res?.created).toEqual(['participant:P1'])
     const lines = ed.code.split('\n')
@@ -126,7 +126,7 @@ describe('sequence ops', () => {
   })
 
   it('moveEvent reorders statements in both directions', () => {
-    const ed = new MermaidWysiwygEditor({ code: SEQ })
+    const ed = new PeleWysiwygEditor({ code: SEQ })
     // move the last message before the first event
     const last = ed.result.sequence!.events[3]
     ed.dispatch({ type: 'seq.moveEvent', eventId: last.entityId, afterEvent: null })
@@ -144,7 +144,7 @@ describe('sequence ops', () => {
   })
 
   it('wrapInFragment wraps the event line in a block', () => {
-    const ed = new MermaidWysiwygEditor({ code: SEQ })
+    const ed = new PeleWysiwygEditor({ code: SEQ })
     const first = ed.result.sequence!.events[0]
     ed.dispatch({ type: 'seq.wrapInFragment', eventId: first.entityId, kind: 'loop' })
     const lines = ed.code.split('\n')
@@ -156,7 +156,7 @@ describe('sequence ops', () => {
   })
 
   it('entity selection sync works for sequence', () => {
-    const ed = new MermaidWysiwygEditor({ code: SEQ })
+    const ed = new PeleWysiwygEditor({ code: SEQ })
     const offset = ed.code.indexOf('Hello Bob')
     expect(ed.entityAt(offset)).toMatch(/^event:/)
     ed.setSelection(['participant:Alice'])

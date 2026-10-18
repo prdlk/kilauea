@@ -12,13 +12,13 @@ that any real Monaco editor satisfies.
 
 ```ts
 import * as monaco from 'monaco-editor'
-import { MermaidWysiwygEditor } from '@kilauea/core'
-import { bindMonaco, registerMermaidLanguage } from '@kilauea/monaco'
+import { PeleWysiwygEditor } from '@kilauea/core'
+import { bindMonaco, registerPeleLanguage } from '@kilauea/monaco'
 
-registerMermaidLanguage(monaco) // optional syntax highlighting
+registerPeleLanguage(monaco) // optional syntax highlighting
 
-const editor = new MermaidWysiwygEditor({ code: 'flowchart TD\n  A --> B' })
-const me = monaco.editor.create(host, { value: editor.code, language: 'mermaid' })
+const editor = new PeleWysiwygEditor({ code: 'flowchart TD\n  A --> B' })
+const me = monaco.editor.create(host, { value: editor.code, language: 'pele' })
 const binding = bindMonaco(editor, me)
 
 // style the selection highlight however you like:

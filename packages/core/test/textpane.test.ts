@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { MermaidWysiwygEditor, bindTextPane, type Span, type TextEdit } from '../src'
+import { PeleWysiwygEditor, bindTextPane, type Span, type TextEdit } from '../src'
 
 /** minimal in-memory adapter, the same shape a Monaco or textarea binding would implement */
 function fakePane(initial: string) {
@@ -35,7 +35,7 @@ const CODE = 'flowchart TD\n  A[Start] --> B[End]\n'
 
 describe('bindTextPane', () => {
   it('applies engine changes to the pane as minimal edits', () => {
-    const editor = new MermaidWysiwygEditor({ code: CODE })
+    const editor = new PeleWysiwygEditor({ code: CODE })
     const pane = fakePane(editor.code)
     bindTextPane(editor, pane.adapter)
 
@@ -47,7 +47,7 @@ describe('bindTextPane', () => {
   })
 
   it('flows pane edits into the engine without echoing back', () => {
-    const editor = new MermaidWysiwygEditor({ code: CODE })
+    const editor = new PeleWysiwygEditor({ code: CODE })
     const pane = fakePane(editor.code)
     const binding = bindTextPane(editor, pane.adapter)
 
@@ -58,7 +58,7 @@ describe('bindTextPane', () => {
   })
 
   it('selects the entity under the caret', () => {
-    const editor = new MermaidWysiwygEditor({ code: CODE })
+    const editor = new PeleWysiwygEditor({ code: CODE })
     const pane = fakePane(editor.code)
     const binding = bindTextPane(editor, pane.adapter)
 
@@ -68,7 +68,7 @@ describe('bindTextPane', () => {
   })
 
   it('reveals canvas selections and routes undo to the engine', () => {
-    const editor = new MermaidWysiwygEditor({ code: CODE })
+    const editor = new PeleWysiwygEditor({ code: CODE })
     const pane = fakePane(editor.code)
     const binding = bindTextPane(editor, pane.adapter)
 
@@ -84,7 +84,7 @@ describe('bindTextPane', () => {
   })
 
   it('hard-resyncs when the pane drifts', () => {
-    const editor = new MermaidWysiwygEditor({ code: CODE })
+    const editor = new PeleWysiwygEditor({ code: CODE })
     const pane = fakePane('totally out of sync')
     bindTextPane(editor, pane.adapter)
 
@@ -93,7 +93,7 @@ describe('bindTextPane', () => {
   })
 
   it('stops syncing after dispose', () => {
-    const editor = new MermaidWysiwygEditor({ code: CODE })
+    const editor = new PeleWysiwygEditor({ code: CODE })
     const pane = fakePane(editor.code)
     const binding = bindTextPane(editor, pane.adapter)
     binding.dispose()

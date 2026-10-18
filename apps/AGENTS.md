@@ -26,7 +26,7 @@ Private (never published) Vite applications that consume the `@kilauea/*` worksp
 `pnpm typecheck` (or `pnpm --filter <app> typecheck`). Behaviour is checked manually via `pnpm dev`.
 
 ### Common Patterns
-- Each app registers ZenUML lazily with `mermaid.registerExternalDiagrams([m.default])` via an `ensureZenuml()` memoised promise.
+- Each app registers ZenUML lazily with `pele.registerExternalDiagrams([m.default])` via an `ensureZenuml()` memoised promise.
 
 ## Dependencies
 
@@ -34,6 +34,6 @@ Private (never published) Vite applications that consume the `@kilauea/*` worksp
 `packages/core`, `packages/dom`, `packages/codemirror`, `packages/monaco` (playground only), `packages/react`.
 
 ### External
-vite ^6.3.5, mermaid ^11.16.1, react ^18.3.1, typescript ^5.6.3.
+vite ^6.3.5, pele ^11.16.1, react ^18.3.1, typescript ^5.6.3.
 
 ## Manual Notes

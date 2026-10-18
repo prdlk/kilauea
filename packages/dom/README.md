@@ -1,17 +1,17 @@
 # @kilauea/dom
 
-Interactive WYSIWYG canvas for [Mermaid](https://mermaid.js.org): renders synchronously through
-[pele](https://github.com/obsidianmd/pele) (bundled, no `mermaid` install needed), then overlays selection, drag-to-connect,
+Interactive WYSIWYG canvas for [Pele](https://mermaid.js.org): renders synchronously through
+[pele](https://github.com/obsidianmd/pele) (bundled, no `pele` install needed), then overlays selection, drag-to-connect,
 in-place text editing, entity popovers (shapes, arrow types, colors, cardinalities),
 and keyboard editing, every gesture compiled to a minimal source edit by
 [`@kilauea/core`](https://npmjs.com/package/@kilauea/core).
 
 ```ts
-import { MermaidWysiwygEditor } from '@kilauea/core'
-import { MermaidCanvasView } from '@kilauea/dom'
+import { PeleWysiwygEditor } from '@kilauea/core'
+import { PeleCanvasView } from '@kilauea/dom'
 
-const editor = new MermaidWysiwygEditor({ code: 'flowchart TD\n  A --> B' })
-new MermaidCanvasView({ editor, container: el })
+const editor = new PeleWysiwygEditor({ code: 'flowchart TD\n  A --> B' })
+new PeleCanvasView({ editor, container: el })
 ```
 
 Colors are CSS variables on the container or any ancestor (`--pele-bg`, `--pele-fg`,

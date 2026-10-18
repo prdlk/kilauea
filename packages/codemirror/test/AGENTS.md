@@ -9,7 +9,7 @@ Vitest suite for the CodeMirror binding, run against a real CodeMirror 6 `Editor
 ## Key Files
 | File | Description |
 |------|-------------|
-| `binding.test.ts` | `// @vitest-environment jsdom`; `mount()` helper builds `MermaidWysiwygEditor` + `MermaidCodeMirror` on a host div. Six tests: engine ops mirrored into view; view edits flow to engine without echo; selection renders `.mw-cm-entity` marks; caret move selects `node:A`; engine undo/redo syncs both surfaces; no sync after `destroy()` |
+| `binding.test.ts` | `// @vitest-environment jsdom`; `mount()` helper builds `PeleWysiwygEditor` + `PeleCodeMirror` on a host div. Six tests: engine ops mirrored into view; view edits flow to engine without echo; selection renders `.mw-cm-entity` marks; caret move selects `node:A`; engine undo/redo syncs both surfaces; no sync after `destroy()` |
 
 ## For AI Agents
 
@@ -17,7 +17,7 @@ Vitest suite for the CodeMirror binding, run against a real CodeMirror 6 `Editor
 - The jsdom pragma comment on line 1 is required for `EditorView`.
 - Always call `cm.destroy()` at the end of each test.
 - Fixture: `CODE = 'flowchart TD\\n  A[Start] --> B[End]\\n'`.
-- Not covered: keyboard undo (`Mod-z`) keymap, `revealPosition`, `mermaidLanguage` tokens.
+- Not covered: keyboard undo (`Mod-z`) keymap, `revealPosition`, `peleLanguage` tokens.
 
 ### Testing Requirements
 `pnpm --filter @kilauea/codemirror test`

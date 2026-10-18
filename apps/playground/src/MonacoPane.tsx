@@ -1,12 +1,12 @@
 import { useEffect, useRef } from 'react'
-import type { MermaidWysiwygEditor } from '@kilauea/core'
-import { bindMonaco, registerMermaidLanguage } from '@kilauea/monaco'
+import type { PeleWysiwygEditor } from '@kilauea/core'
+import { bindMonaco, registerPeleLanguage } from '@kilauea/monaco'
 
 /**
  * Monaco pane using @kilauea/monaco. The app owns the Monaco setup
  * (lazy import, worker env, theme, create options); the package owns the sync.
  */
-export function MonacoPane({ editor }: { editor: MermaidWysiwygEditor }) {
+export function MonacoPane({ editor }: { editor: PeleWysiwygEditor }) {
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -21,7 +21,7 @@ export function MonacoPane({ editor }: { editor: MermaidWysiwygEditor }) {
       ;(self as { MonacoEnvironment?: unknown }).MonacoEnvironment = { getWorker: () => new EditorWorker() }
       if (disposed) return
 
-      registerMermaidLanguage(monaco)
+      registerPeleLanguage(monaco)
       monaco.editor.defineTheme('ink-dark', {
         base: 'vs-dark',
         inherit: true,
@@ -47,7 +47,7 @@ export function MonacoPane({ editor }: { editor: MermaidWysiwygEditor }) {
 
       const me = monaco.editor.create(host, {
         value: editor.code,
-        language: 'mermaid',
+        language: 'pele',
         theme: 'ink-dark',
         fontSize: 13,
         fontFamily: '"JetBrains Mono Variable", "JetBrains Mono", ui-monospace, Menlo, monospace',

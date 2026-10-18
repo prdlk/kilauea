@@ -10,7 +10,7 @@
     </g>
     <text x="120" y="63" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="48" letter-spacing="-1.5" fill="#1C1A17">Kilauea</text>
   </g>
-  <text x="80" y="330" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="88" letter-spacing="-3" fill="#1C1A17">Edit Mermaid diagrams</text>
+  <text x="80" y="330" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="88" letter-spacing="-3" fill="#1C1A17">Edit Pele diagrams</text>
   <text x="80" y="428" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="88" letter-spacing="-3" fill="#0E7C6B">visually.</text>
   <text x="80" y="510" font-family="Inter, system-ui, sans-serif" font-weight="400" font-size="30" fill="#544F47">Click a node to rename or reshape it. Perfect for polishing AI-generated diagrams.</text>
   <g transform="translate(80, 550)">

@@ -7,7 +7,7 @@
  * the reference implementation.
  */
 
-import type { MermaidWysiwygEditor } from './editor'
+import type { PeleWysiwygEditor } from './editor'
 import type { Span, TextEdit } from './types'
 
 export interface TextPaneAdapter {
@@ -43,7 +43,7 @@ export interface TextPaneBinding {
 }
 
 /** Two-way sync between an engine and any text editor behind a TextPaneAdapter. */
-export function bindTextPane(editor: MermaidWysiwygEditor, adapter: TextPaneAdapter): TextPaneBinding {
+export function bindTextPane(editor: PeleWysiwygEditor, adapter: TextPaneAdapter): TextPaneBinding {
   let applying = false
 
   const validSpans = (spans: Span[]) => {

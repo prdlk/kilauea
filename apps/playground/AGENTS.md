@@ -4,7 +4,7 @@
 **Generated:** 2026-10-17 · **Updated:** 2026-10-17
 
 ## Purpose
-React playground and the primary manual test harness: it exercises every diagram type in `SAMPLES`, the `@kilauea/react` bindings (`MermaidCanvas`, `useMermaidEditor`), and both text panes (CodeMirror and Monaco). `pnpm dev` (root) starts it on http://localhost:5173 (`strictPort`).
+React playground and the primary manual test harness: it exercises every diagram type in `SAMPLES`, the `@kilauea/react` bindings (`PeleCanvas`, `usePeleEditor`), and both text panes (CodeMirror and Monaco). `pnpm dev` (root) starts it on http://localhost:5173 (`strictPort`).
 
 ## Key Files
 | File | Description |
@@ -30,7 +30,7 @@ React playground and the primary manual test harness: it exercises every diagram
 `pnpm --filter playground typecheck`. No automated tests.
 
 ### Common Patterns
-Palettes (`ink`, `dark`, `light`, `forest`, `neutral`) are sets of `--pele-*` CSS variables in `PALETTES`, applied as inline style on the `MermaidCanvas` host.
+Palettes (`ink`, `dark`, `light`, `forest`, `neutral`) are sets of `--pele-*` CSS variables in `PALETTES`, applied as inline style on the `PeleCanvas` host.
 
 ## Dependencies
 

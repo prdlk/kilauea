@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
-import { MermaidCanvas, useMermaidEditor } from '@kilauea/react'
+import { PeleCanvas, usePeleEditor } from '@kilauea/react'
 import { track } from './analytics'
 import {
   CodeMirrorPane,
@@ -21,7 +21,7 @@ import {
  */
 export default function PlaygroundPage() {
   const initialCode = useMemo(() => codeFromHash(window.location.hash) ?? PRESETS.flowchart, [])
-  const { editor } = useMermaidEditor(initialCode)
+  const { editor } = usePeleEditor(initialCode)
   useCanvasControlTracking()
 
   const [skin, setSkin] = useState<'light' | 'dark'>('light')
@@ -320,7 +320,7 @@ export default function PlaygroundPage() {
             </span>
           </div>
           <div style={{ position: 'relative', flex: 1, minHeight: 0 }}>
-            <MermaidCanvas
+            <PeleCanvas
               editor={editor}
               accentColor="#0E7C6B"
               panZoom

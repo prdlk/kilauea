@@ -1,6 +1,6 @@
 import type { LineInfo, Span } from '../types'
 
-/** mermaid class relation operators, longest-first for unambiguous matching */
+/** pele class relation operators, longest-first for unambiguous matching */
 export const RELATION_OPS = [
   '<|--',
   '--|>',

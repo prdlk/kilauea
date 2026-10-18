@@ -4,7 +4,7 @@
 **Generated:** 2026-10-17 · **Updated:** 2026-10-17
 
 ## Purpose
-`@kilauea/react` (v1.1.3) is a thin React (>=18) binding: a drop-in `MermaidWysiwyg` component, a canvas-only `MermaidCanvas`, and the `useMermaidEditor` hook, all wrapping `@kilauea/core`'s editor and `@kilauea/dom`'s `MermaidCanvasView` (which renders through pele; tuned via the `renderOptions` prop).
+`@kilauea/react` (v1.1.3) is a thin React (>=18) binding: a drop-in `PeleWysiwyg` component, a canvas-only `PeleCanvas`, and the `usePeleEditor` hook, all wrapping `@kilauea/core`'s editor and `@kilauea/dom`'s `PeleCanvasView` (which renders through pele; tuned via the `renderOptions` prop).
 
 ## Key Files
 | File | Description |

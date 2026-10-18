@@ -1,7 +1,7 @@
 import { useEffect, useRef, type CSSProperties } from 'react'
 import { EditorView } from '@codemirror/view'
-import { MermaidCodeMirror } from '@kilauea/codemirror'
-import type { MermaidWysiwygEditor } from '@kilauea/core'
+import { PeleCodeMirror } from '@kilauea/codemirror'
+import type { PeleWysiwygEditor } from '@kilauea/core'
 import { track } from './analytics'
 
 /** Sample diagrams + chrome shared by the inline demo and /playground. */
@@ -125,16 +125,16 @@ export function Logo({ size }: { size: number }) {
 
 /**
  * The demo's source pane IS the published CodeMirror binding: two-way sync,
- * mermaid syntax highlighting, entity highlights on canvas selection, and the
+ * pele syntax highlighting, entity highlights on canvas selection, and the
  * engine's unified undo — nothing site-specific beyond styling.
  */
-export function CodeMirrorPane({ editor }: { editor: MermaidWysiwygEditor }) {
+export function CodeMirrorPane({ editor }: { editor: PeleWysiwygEditor }) {
   const hostRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     if (!hostRef.current) return
     // wrap long lines — on phones the pane is full-width but short, and a
     // clipped line with no scroll affordance reads as missing code
-    const cm = new MermaidCodeMirror(hostRef.current, editor, [EditorView.lineWrapping])
+    const cm = new PeleCodeMirror(hostRef.current, editor, [EditorView.lineWrapping])
     return () => cm.destroy()
   }, [editor])
   return <div ref={hostRef} className="demo-cm" />

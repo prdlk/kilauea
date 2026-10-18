@@ -46,6 +46,6 @@ Package source edits hot-reload (workspace packages excluded from pre-bundle).
 `@kilauea/core`, `@kilauea/dom`, `@kilauea/codemirror`, `@kilauea/react`.
 
 ### External
-posthog-js ^1.407.2, react ^18.3.1, mermaid ^11.16.1, @codemirror/* (state ^6.7.1, view ^6.43.6, commands ^6.10.4, language ^6.12.4), vite ^6.3.5.
+posthog-js ^1.407.2, react ^18.3.1, pele ^11.16.1, @codemirror/* (state ^6.7.1, view ^6.43.6, commands ^6.10.4, language ^6.12.4), vite ^6.3.5.
 
 ## Manual Notes

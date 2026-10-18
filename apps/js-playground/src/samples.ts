@@ -202,7 +202,7 @@ export const SAMPLES: Sample[] = [
       Semantic ops
       Minimal diffs
     Rendering
-      Mermaid SVG
+      Pele SVG
       Interaction overlay
 `,
   },

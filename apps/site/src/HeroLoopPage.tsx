@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
-import { MermaidCodeMirror } from '@kilauea/codemirror'
-import { MermaidWysiwygEditor } from '@kilauea/core'
-import { MermaidCanvasView } from '@kilauea/dom'
+import { PeleCodeMirror } from '@kilauea/codemirror'
+import { PeleWysiwygEditor } from '@kilauea/core'
+import { PeleCanvasView } from '@kilauea/dom'
 
 // Deterministic RAF-driven demo of kilauea's click-to-edit + drag-to-connect
 // UX. Rather than driving the real inline-editor and connect gesture through
@@ -36,15 +36,15 @@ export default function HeroLoopPage() {
     const ghost = ghostRef.current
     if (!canvas || !codePane || !cursor || !ghost) return
 
-    const editor = new MermaidWysiwygEditor({ code: INITIAL })
-    const view = new MermaidCanvasView({
+    const editor = new PeleWysiwygEditor({ code: INITIAL })
+    const view = new PeleCanvasView({
       editor,
       container: canvas,
       panZoom: false,
       accentColor: '#0E7C6B',
       debounceMs: 0,
     })
-    const cm = new MermaidCodeMirror(codePane, editor)
+    const cm = new PeleCodeMirror(codePane, editor)
 
     const findNode = (id: 'A' | 'B' | 'C'): SVGGElement | null =>
       canvas.querySelector(`.mw-svg-host svg g.pele-node[data-id="${id}"]`)

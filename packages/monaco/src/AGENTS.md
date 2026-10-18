@@ -4,13 +4,13 @@
 **Generated:** 2026-10-17 · **Updated:** 2026-10-17
 
 ## Purpose
-Monaco binding implemented against structural interfaces, plus Monarch tokens for mermaid.
+Monaco binding implemented against structural interfaces, plus Monarch tokens for pele.
 
 ## Key Files
 | File | Description |
 |------|-------------|
 | `index.ts` | `bindMonaco(editor, monacoEditor, options)` → `TextPaneBinding`; interfaces `MonacoRangeLike`, `MonacoPositionLike`, `MonacoDisposableLike`, `MonacoModelLike`, `MonacoDecorationsCollectionLike`, `MonacoEditorLike`, `BindMonacoOptions`; re-exports language symbols (see file) |
-| `language.ts` | `mermaidMonarchTokens`, `MonacoNamespaceLike`, `registerMermaidLanguage(monaco)` |
+| `language.ts` | `peleMonarchTokens`, `MonacoNamespaceLike`, `registerPeleLanguage(monaco)` |
 
 ## For AI Agents
 
@@ -22,7 +22,7 @@ Monaco binding implemented against structural interfaces, plus Monarch tokens fo
 - Caret → entity only when `ev.reason === CURSOR_EXPLICIT` (3, `CursorChangeReason.Explicit`), so edit-driven cursor moves don't change selection. Value is hard-coded because there is no monaco import.
 - Undo keys: `onKeyDown` matches `(metaKey||ctrlKey) && browserEvent.key.toLowerCase()==='z'`, calls `preventDefault`/`stopPropagation`, shift → redo. Matched on the key string because Monaco's keyCode maps synthesized events to Unknown.
 - `dispose()` disposes subscriptions, clears decorations, then disposes the inner binding. The returned object wraps the inner binding (`applying` is a getter).
-- `registerMermaidLanguage` is idempotent (checks `getLanguages()` for id `mermaid`). The Monarch grammar is smaller than CodeMirror's (no operators like class relations / ER cardinality, no brackets).
+- `registerPeleLanguage` is idempotent (checks `getLanguages()` for id `pele`). The Monarch grammar is smaller than CodeMirror's (no operators like class relations / ER cardinality, no brackets).
 
 ### Testing Requirements
 `pnpm --filter @kilauea/monaco test`; see `../test/binding.test.ts`.
@@ -33,7 +33,7 @@ Monaco binding implemented against structural interfaces, plus Monarch tokens fo
 ## Dependencies
 
 ### Internal
-`@kilauea/core` (`bindTextPane`, `MermaidWysiwygEditor`, `TextPaneBinding`).
+`@kilauea/core` (`bindTextPane`, `PeleWysiwygEditor`, `TextPaneBinding`).
 
 ### External
 None at runtime.

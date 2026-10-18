@@ -1,5 +1,5 @@
 import {
-  MermaidWysiwygEditor,
+  PeleWysiwygEditor,
   MESSAGE_OPS,
   PARTICIPANT_TYPES,
   type Diagnostic,
@@ -148,7 +148,7 @@ function injectAnimationKeyframes(svg: SVGElement): void {
 }
 
 /** A diagram-level parse or render failure, as published to diagnostics. */
-function rendererDiagnostic(err: unknown, editor: MermaidWysiwygEditor): Diagnostic {
+function rendererDiagnostic(err: unknown, editor: PeleWysiwygEditor): Diagnostic {
   const raw = err instanceof Error ? err.message : String(err)
   const message = raw.split('\n')[0]
   let span: Diagnostic['span'] = null
@@ -170,7 +170,7 @@ export interface ViewHooks {
 }
 
 export interface ViewOptions {
-  editor: MermaidWysiwygEditor
+  editor: PeleWysiwygEditor
   container: HTMLElement
   /**
    * Pele render options. `fontFamily` / `fontFamilyMono` default to the
@@ -254,12 +254,12 @@ let styleInjected = false
 let viewCounter = 0
 
 /**
- * Interactive canvas bound to a MermaidWysiwygEditor.
+ * Interactive canvas bound to a PeleWysiwygEditor.
  * Renders through pele and overlays interaction: click-select,
  * drag-to-connect, double-click label editing.
  */
-export class MermaidCanvasView {
-  readonly editor: MermaidWysiwygEditor
+export class PeleCanvasView {
+  readonly editor: PeleWysiwygEditor
   readonly container: HTMLElement
   private renderOptions: RenderOptions
   private readonly idPrefix: string
@@ -1678,9 +1678,9 @@ export class MermaidCanvasView {
     if (flowchart && id.startsWith('edge:')) {
       const edge = flowchart.edges.find((e) => e.entityId === id)
       if (!edge) return []
-      // Mermaid can't render single-headed reverse arrows — its edge parser
+      // Pele can't render single-headed reverse arrows — its edge parser
       // requires a `>`/`x`/`o` on the end side whenever the start carries a
-      // head, so `<--` silently becomes `<-->`. Only offer combos mermaid
+      // head, so `<--` silently becomes `<-->`. Only offer combos pele
       // renders faithfully; `reverseEdge` is the way to flip direction.
       const arrows: Array<{ start: EdgeArrow; end: EdgeArrow; t: string }> = [
         { start: 'open', end: 'open', t: 'No arrow' },

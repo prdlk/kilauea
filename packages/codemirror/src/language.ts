@@ -13,8 +13,8 @@ const KEYWORDS =
 const OPERATORS =
   /^(<\|--|--\|>|<\|\.\.|\.\.\|>|\*--|--\*|o--|--o|<-->|<--|-->|<\.\.|\.\.>|-{2,}[>xo]?|={2,}[>xo]?|-\.+-*[>xo]?|~{3,}|--?>>|--?[x)]|[|}][|o]--[|o][{|]|[|}][|o]\.\.[|o][{|]|:::?)/
 
-const mermaidStream = StreamLanguage.define({
-  name: 'mermaid',
+const peleStream = StreamLanguage.define({
+  name: 'pele',
   token(stream) {
     if (stream.sol()) stream.eatSpace()
     if (stream.match(/^%%.*/)) return 'comment'
@@ -32,7 +32,7 @@ const mermaidStream = StreamLanguage.define({
   },
 })
 
-/** Lightweight mermaid syntax highlighting (token classes styled via CSS). */
-export function mermaidLanguage(): Extension {
-  return [mermaidStream, syntaxHighlighting(classHighlighter)]
+/** Lightweight pele syntax highlighting (token classes styled via CSS). */
+export function peleLanguage(): Extension {
+  return [peleStream, syntaxHighlighting(classHighlighter)]
 }
