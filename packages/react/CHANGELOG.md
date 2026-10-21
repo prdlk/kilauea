@@ -1,5 +1,13 @@
 # @kilauea/react
 
+## 2.1.0
+
+### Patch Changes
+
+- Updated dependencies [2fdc49f]
+  - @kilauea/dom@2.1.0
+  - @kilauea/core@2.1.0
+
 ## 2.0.0
 
 ### Major Changes

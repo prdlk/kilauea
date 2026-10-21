@@ -1,6 +1,6 @@
 {
   "name": "@kilauea/dom",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Interactive WYSIWYG canvas for Pele: renders through pele and overlays selection, drag-to-connect, inline label editing, and code sync.",
   "type": "module",
   "main": "./src/index.ts",
